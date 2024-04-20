@@ -1,0 +1,3744 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /hpc/group/econ/tmr17/Dropout-R1-SP/src/descriptives/descriptives.
+> log
+  log type:  text
+ opened on:   1 Aug 2023, 12:35:47
+
+. 
+. global data_loc "../../data/nlsy97/cleaned/"
+
+. global tbl_loc  "../../exhibits/tables/"
+
+. 
+. use "${data_loc}y97_all_tscrGPA.dta", clear
+
+. *=================================================
+. * Generate flags for various sample selection schemes
+. * NOTE THAT FEMALES ARE EXCLUDED, BECAUSE anyFlag==0 FOR FEMALES
+. *=================================================
+. * throw out obs once missing majors, grades, or wages once they are encounter
+> ed
+. 
+. gen major_s=1 if (choice25==6 | choice25==7 | choice25==8 | choice25==9 | cho
+> ice25==10 )
+(168,523 missing values generated)
+
+. replace major_s=0 if (choice25==11 | choice25==12 | choice25==13 | choice25==
+> 14 | choice25==15 )
+(8,479 real changes made)
+
+. 
+. sort ID year
+
+. gen long obsno = _n
+
+. gen missing = missing(major_s)
+
+. bysort ID (missing obsno) : gen firstnonmissing_maj = major_s[1]
+(106,039 missing values generated)
+
+. 
+. 
+. capture drop m_wage
+
+. capture drop m_GPA
+
+. capture drop m_maj
+
+. capture drop bad_wage
+
+. capture drop bad_grade
+
+. capture drop bad_maj
+
+. capture drop sum_m_wage
+
+. capture drop sum_m_GPA
+
+. capture drop sum_m_maj
+
+. gen m_wage = anyFlag==0 & mi(log_comp) & (weeks_worked_Oct>=4) & inrange(avgH
+> rsOct,10,.) & inlist(choice15,-2,1,2,4,5,7,8,10,11,13,14)
+
+. gen m_GPA  = anyFlag==0 & mi(GPA)      & (inlist(choice15,-2) | inrange(choic
+> e15,1,9))
+
+. gen m_maj  = anyFlag==0 & choice15==-2
+
+. 
+. sum m_wage if ~anyFlag
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      m_wage |     33,825    .0109978    .1042936          0          1
+
+. 
+. bys ID (year): gen sum_m_wage = sum(m_wage)
+
+. bys ID (year): gen sum_m_GPA  = sum(m_GPA )
+
+. bys ID (year): gen sum_m_maj  = sum(m_maj )
+
+. 
+. gen bad_wage  = sum_m_wage>=1
+
+. gen bad_grade = sum_m_GPA >=2
+
+. gen bad_major = sum_m_maj >=2
+
+. 
+. xtsum ID if anyFlag==0
+
+Variable         |      Mean   Std. Dev.       Min        Max |    Observations
+-----------------+--------------------------------------------+----------------
+ID       overall |  4263.621   2515.416          2       9021 |     N =   33825
+         between |             2508.058          2       9021 |     n =    2301
+         within  |                    0   4263.621   4263.621 | T-bar = 14.7001
+
+. xtsum ID if anyFlag==0 & bad_major==0
+
+Variable         |      Mean   Std. Dev.       Min        Max |    Observations
+-----------------+--------------------------------------------+----------------
+ID       overall |  4313.048   2512.116          2       9021 |     N =   30852
+         between |             2508.058          2       9021 |     n =    2301
+         within  |                    0   4313.048   4313.048 | T-bar = 13.4081
+
+. xtsum ID if anyFlag==0 & bad_major==0 & bad_wage==0
+
+Variable         |      Mean   Std. Dev.       Min        Max |    Observations
+-----------------+--------------------------------------------+----------------
+ID       overall |  4310.069   2512.156          2       9021 |     N =   29465
+         between |             2508.433          2       9021 |     n =    2300
+         within  |                    0   4310.069   4310.069 | T-bar = 12.8109
+
+. xtsum ID if anyFlag==0 & bad_major==0 & bad_wage==0 & bad_grade==0
+
+Variable         |      Mean   Std. Dev.       Min        Max |    Observations
+-----------------+--------------------------------------------+----------------
+ID       overall |  4392.229   2506.046          2       9021 |     N =   22398
+         between |             2508.433          2       9021 |     n =    2300
+         within  |                    0   4392.229   4392.229 | T-bar = 9.73826
+
+. 
+. replace cum_2yr=cum_2yr-1 if ID==2121 & cum_2yr>0
+(17 real changes made)
+
+. 
+. 
+. *=================================================
+. * Generate other helpful variables
+. *=================================================
+. * gen Parent_college = Peduc>=16 & ~mi(Peduc)
+. gen HS_grades = Grades_HS_best
+(6,099 missing values generated)
+
+. gen age18 = age<=0
+
+. gen age19 = age==1
+
+. gen age20 = age==2
+
+. gen age21 = age==3
+
+. 
+. gen y04 = year<=2004
+
+. gen y05 = year==2005
+
+. gen y06 = year==2006
+
+. gen y07 = year==2007
+
+. gen y08 = year==2008
+
+. gen y09 = year==2009
+
+. gen y10 = year==2010
+
+. gen y11 = year==2011
+
+. gen y12 = year==2012
+
+. gen y13 = year==2013
+
+. gen y14 = year==2014
+
+. gen y15 = year==2015
+
+. gen y16 = year==2016
+
+. 
+. forv x=1/3 {
+  2. gen cum_col_`x' = cum_college==`x'
+  3. gen cum_gs_`x'  = cum_grad_school==`x'
+  4. }
+
+. gen cum_col_4 = cum_college>=4 & !mi(cum_college)
+
+. gen cum_gs_4  = cum_grad_school>=4 & !mi(cum_grad_school)
+
+. 
+. gen yr2plus = cum_college>=2 & !mi(cum_college)
+
+. 
+. 
+. *============================================================================
+. * Create variables of interest from data file "Estimation_data_[date]"
+. *============================================================================
+. keep if male==1 & ~anyFlag & ~bad_wage & ~bad_grade & ~bad_major
+(148,298 observations deleted)
+
+. 
+. tab choice25 if grad_4yr==0
+
+                           Choice |      Freq.     Percent        Cum.
+----------------------------------+-----------------------------------
+     Missing 4-year college major |        570        2.86        2.86
+            2yr & FT, blue collar |        381        1.91        4.77
+           2yr & FT, white collar |         33        0.17        4.94
+            2yr & PT, blue collar |        407        2.04        6.98
+           2yr & PT, white collar |         22        0.11        7.09
+                    2yr & No Work |        429        2.15        9.24
+    4yr Science & FT, blue collar |         80        0.40        9.64
+   4yr Science & FT, white collar |         27        0.14        9.78
+    4yr Science & PT, blue collar |        162        0.81       10.59
+   4yr Science & PT, white collar |         29        0.15       10.74
+            4yr Science & No Work |        368        1.85       12.58
+ 4yr Humanities & FT, blue collar |        167        0.84       13.42
+4yr Humanities & FT, white collar |         40        0.20       13.62
+ 4yr Humanities & PT, blue collar |        350        1.76       15.38
+4yr Humanities & PT, white collar |         58        0.29       15.67
+         4yr Humanities & No Work |        669        3.36       19.03
+             Work PT, blue collar |      1,370        6.87       25.90
+            Work PT, white collar |        108        0.54       26.44
+             Work FT, blue collar |      8,714       43.72       70.16
+            Work FT, white collar |        851        4.27       74.43
+                             Home |      5,096       25.57      100.00
+----------------------------------+-----------------------------------
+                            Total |     19,931      100.00
+
+. tab choice25 if grad_4yr==1
+
+                           Choice |      Freq.     Percent        Cum.
+----------------------------------+-----------------------------------
+             Work PT, blue collar |         91        3.69        3.69
+            Work PT, white collar |         60        2.43        6.12
+             Work FT, blue collar |        836       33.89       40.01
+            Work FT, white collar |        986       39.97       79.98
+                             Home |        231        9.36       89.34
+    Grad School & FT, blue collar |         16        0.65       89.99
+   Grad School & FT, white collar |         91        3.69       93.68
+    Grad School & PT, blue collar |         10        0.41       94.08
+   Grad School & PT, white collar |         48        1.95       96.03
+            Grad School & No Work |         98        3.97      100.00
+----------------------------------+-----------------------------------
+                            Total |      2,467      100.00
+
+. *asdfasdf
+. 
+. * Descriptive regressions
+. reg log_comp black hispanic Parent_college Grades_HS_best age exper exper_whi
+> te_collar cum_col_1 cum_col_2 cum_col_3 cum_col_4 cum_gs_1 cum_gs_2 cum_gs_3 
+> cum_gs_4 grad_4yr finalSciMajor y04 y05 y06 y07 y08 y09 y10 y11 y12 y13 y14 y
+> 15 y16 workPT if inlist(choice25,2,4,7,9,12,14,17,19,22,24)
+note: y05 omitted because of collinearity
+note: y16 omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =     2,353
+-------------+----------------------------------   F(29, 2323)     =     20.44
+       Model |  171.690845        29  5.92037395   Prob > F        =    0.0000
+    Residual |    672.9002     2,323  .289668618   R-squared       =    0.2033
+-------------+----------------------------------   Adj R-squared   =    0.1933
+       Total |  844.591045     2,352  .359094832   Root MSE        =    .53821
+
+------------------------------------------------------------------------------
+    log_comp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       black |  -.0890636   .0336311    -2.65   0.008    -.1550136   -.0231135
+    hispanic |  -.0176926   .0338821    -0.52   0.602    -.0841349    .0487497
+Parent_col~e |   .0238118   .0242883     0.98   0.327    -.0238173    .0714408
+Grades_HS_~t |  -.0374684   .0165106    -2.27   0.023    -.0698455   -.0050913
+         age |  -.0225499   .0094829    -2.38   0.017    -.0411458   -.0039541
+       exper |    .018032   .0068161     2.65   0.008     .0046658    .0313982
+exper_whit~r |   .0592428   .0055657    10.64   0.000     .0483285    .0701571
+   cum_col_1 |   .0014376   .0460207     0.03   0.975    -.0888084    .0916836
+   cum_col_2 |  -.0382275   .0490117    -0.78   0.435    -.1343387    .0578837
+   cum_col_3 |   .1114083   .0484153     2.30   0.021     .0164666      .20635
+   cum_col_4 |   .1956394   .0490673     3.99   0.000      .099419    .2918597
+    cum_gs_1 |  -.0493627   .0600435    -0.82   0.411    -.1671072    .0683818
+    cum_gs_2 |   .0107704   .0573182     0.19   0.851    -.1016299    .1231706
+    cum_gs_3 |   .0675076   .0709908     0.95   0.342    -.0717044    .2067195
+    cum_gs_4 |   .0891052   .0584903     1.52   0.128    -.0255934    .2038039
+    grad_4yr |  -.0492079   .0428984    -1.15   0.251    -.1333311    .0349153
+finalSciMa~r |   .0957349    .030993     3.09   0.002     .0349581    .1565116
+         y04 |  -.1714268    .059349    -2.89   0.004    -.2878093   -.0550444
+         y05 |          0  (omitted)
+         y06 |  -.0112416    .065611    -0.17   0.864    -.1399039    .1174207
+         y07 |   .0686816   .0641566     1.07   0.284    -.0571287    .1944918
+         y08 |   .0598347    .064605     0.93   0.354    -.0668549    .1865242
+         y09 |  -.0127259   .0672045    -0.19   0.850    -.1445129    .1190611
+         y10 |   .0278448   .0715362     0.39   0.697    -.1124366    .1681263
+         y11 |   .0405755   .0754534     0.54   0.591    -.1073875    .1885384
+         y12 |   .0582284   .0803202     0.72   0.469    -.0992783    .2157352
+         y13 |   .0927842   .0853481     1.09   0.277    -.0745822    .2601505
+         y14 |   .0843111   .0921575     0.91   0.360    -.0964086    .2650307
+         y15 |    .173683   .0996403     1.74   0.081    -.0217102    .3690761
+         y16 |          0  (omitted)
+      workPT |  -.1395118   .0346197    -4.03   0.000    -.2074006    -.071623
+       _cons |   2.486967   .0704575    35.30   0.000     2.348801    2.625134
+------------------------------------------------------------------------------
+
+. reg log_comp black hispanic Parent_college Grades_HS_best age exper exper_whi
+> te_collar cum_col_1 cum_col_2 cum_col_3 cum_col_4 cum_gs_1 cum_gs_2 cum_gs_3 
+> cum_gs_4 grad_4yr finalSciMajor i.year workPT                                
+>       if inlist(choice25,1,3,6,8,11,13,16,18,21,23)
+
+      Source |       SS           df       MS      Number of obs   =    12,584
+-------------+----------------------------------   F(35, 12548)    =     84.36
+       Model |  652.122306        35  18.6320659   Prob > F        =    0.0000
+    Residual |  2771.44884    12,548  .220867775   R-squared       =    0.1905
+-------------+----------------------------------   Adj R-squared   =    0.1882
+       Total |  3423.57115    12,583  .272079087   Root MSE        =    .46997
+
+------------------------------------------------------------------------------
+    log_comp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       black |  -.1099691   .0111354    -9.88   0.000    -.1317961   -.0881421
+    hispanic |  -.0046362   .0112017    -0.41   0.679    -.0265934    .0173209
+Parent_col~e |  -.0029327   .0110404    -0.27   0.791    -.0245737    .0187082
+Grades_HS_~t |  -.0139748   .0057185    -2.44   0.015    -.0251839   -.0027657
+         age |   .0045003   .0036374     1.24   0.216    -.0026294    .0116301
+       exper |   .0454252   .0022783    19.94   0.000     .0409594     .049891
+exper_whit~r |   .0129688   .0053985     2.40   0.016     .0023868    .0235507
+   cum_col_1 |   .0685343   .0113572     6.03   0.000     .0462725     .090796
+   cum_col_2 |   .0232614   .0167357     1.39   0.165    -.0095431     .056066
+   cum_col_3 |   .0711342    .019943     3.57   0.000     .0320428    .1102256
+   cum_col_4 |   .0331676   .0221176     1.50   0.134    -.0101862    .0765214
+    cum_gs_1 |  -.1030616   .1186927    -0.87   0.385    -.3357175    .1295943
+    cum_gs_2 |  -.2458356   .0919854    -2.67   0.008    -.4261411   -.0655302
+    cum_gs_3 |   .0161449   .1376485     0.12   0.907    -.2536674    .2859571
+    cum_gs_4 |  -.2296882   .2117602    -1.08   0.278    -.6447705    .1853942
+    grad_4yr |   .1726465   .0252241     6.84   0.000     .1232033    .2220897
+finalSciMa~r |  -.0165091   .0233774    -0.71   0.480    -.0623324    .0293142
+             |
+        year |
+       1999  |   .0015506   .0636337     0.02   0.981    -.1231813    .1262824
+       2000  |   .0449826   .0608186     0.74   0.460    -.0742312    .1641963
+       2001  |   .0280997   .0601581     0.47   0.640    -.0898194    .1460188
+       2002  |   .0326239   .0596522     0.55   0.584    -.0843036    .1495514
+       2003  |   .0479597   .0599893     0.80   0.424    -.0696285    .1655479
+       2004  |    .088818   .0605741     1.47   0.143    -.0299165    .2075524
+       2005  |    .097661   .0614156     1.59   0.112    -.0227231    .2180451
+       2006  |   .1061554    .062255     1.71   0.088    -.0158739    .2281846
+       2007  |   .1035157   .0633852     1.63   0.102    -.0207291    .2277605
+       2008  |   .0742756   .0647967     1.15   0.252    -.0527359    .2012871
+       2009  |   .0668932   .0661946     1.01   0.312    -.0628583    .1966447
+       2010  |   .0309507   .0677249     0.46   0.648    -.1018005    .1637019
+       2011  |   .0133748    .069345     0.19   0.847     -.122552    .1493017
+       2012  |   .0262678    .071146     0.37   0.712    -.1131893     .165725
+       2013  |  -.0133502   .0730471    -0.18   0.855    -.1565336    .1298333
+       2014  |   .0375539   .0749522     0.50   0.616    -.1093639    .1844717
+       2015  |   .0007099   .0772581     0.01   0.993    -.1507279    .1521477
+             |
+      workPT |  -.1221577   .0114702   -10.65   0.000     -.144641   -.0996744
+       _cons |   2.025298   .0574311    35.26   0.000     1.912724    2.137871
+------------------------------------------------------------------------------
+
+. reg GPA black hispanic Parent_college Grades_HS_best workFT workPT age18 age1
+> 9 age20 age21 if inrange(choice25,6,10)
+
+      Source |       SS           df       MS      Number of obs   =       541
+-------------+----------------------------------   F(10, 530)      =      8.67
+       Model |  57.7044727        10  5.77044727   Prob > F        =    0.0000
+    Residual |  352.785185       530  .665632425   R-squared       =    0.1406
+-------------+----------------------------------   Adj R-squared   =    0.1244
+       Total |  410.489658       540  .760166034   Root MSE        =    .81586
+
+------------------------------------------------------------------------------
+         GPA |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       black |  -.4584793   .1119814    -4.09   0.000    -.6784612   -.2384973
+    hispanic |   -.244884   .1153767    -2.12   0.034    -.4715357   -.0182323
+Parent_col~e |    .084427   .0765473     1.10   0.271    -.0659463    .2348002
+Grades_HS_~t |   .2327498      .0571     4.08   0.000     .1205797    .3449199
+      workFT |  -.3281903   .1060348    -3.10   0.002    -.5364904   -.1198903
+      workPT |  -.1248146   .0832425    -1.50   0.134    -.2883404    .0387111
+       age18 |  -.0935897    .135568    -0.69   0.490    -.3599062    .1727268
+       age19 |   .0605983   .1048953     0.58   0.564    -.1454633    .2666599
+       age20 |   .1372167   .1019917     1.35   0.179    -.0631408    .3375742
+       age21 |  -.0364789   .1023246    -0.36   0.722    -.2374905    .1645327
+       _cons |   2.773088   .1093456    25.36   0.000     2.558284    2.987892
+------------------------------------------------------------------------------
+
+. reg GPA black hispanic Parent_college Grades_HS_best workFT workPT age18 age1
+> 9 age20 age21 if inrange(choice25,11,15)
+
+      Source |       SS           df       MS      Number of obs   =     1,043
+-------------+----------------------------------   F(10, 1032)     =     14.29
+       Model |  84.4707026        10  8.44707026   Prob > F        =    0.0000
+    Residual |  609.852336     1,032  .590942186   R-squared       =    0.1217
+-------------+----------------------------------   Adj R-squared   =    0.1131
+       Total |  694.323038     1,042  .666336889   Root MSE        =    .76873
+
+------------------------------------------------------------------------------
+         GPA |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       black |  -.3571731    .069627    -5.13   0.000    -.4937999   -.2205464
+    hispanic |  -.1417067   .0698834    -2.03   0.043    -.2788365    -.004577
+Parent_col~e |   .0710509   .0490798     1.45   0.148    -.0252567    .1673585
+Grades_HS_~t |   .2123078   .0331295     6.41   0.000     .1472989    .2773166
+      workFT |  -.2347851    .072052    -3.26   0.001    -.3761703   -.0933999
+      workPT |  -.0157488   .0537631    -0.29   0.770    -.1212462    .0897486
+       age18 |  -.2886048   .0955169    -3.02   0.003    -.4760343   -.1011753
+       age19 |  -.3391496    .072416    -4.68   0.000     -.481249   -.1970501
+       age20 |  -.3103111   .0683849    -4.54   0.000    -.4445005   -.1761217
+       age21 |  -.1312153   .0675506    -1.94   0.052    -.2637676    .0013369
+       _cons |   2.975331   .0625982    47.53   0.000     2.852497    3.098165
+------------------------------------------------------------------------------
+
+. reg GPA black hispanic Parent_college Grades_HS_best workFT workPT age18 age1
+> 9 age20 age21 yr2plus if inrange(choice25,1,5)
+
+      Source |       SS           df       MS      Number of obs   =       768
+-------------+----------------------------------   F(11, 756)      =      6.66
+       Model |  63.3758458        11  5.76144052   Prob > F        =    0.0000
+    Residual |  654.446402       756  .865669844   R-squared       =    0.0883
+-------------+----------------------------------   Adj R-squared   =    0.0750
+       Total |  717.822248       767  .935882983   Root MSE        =    .93041
+
+------------------------------------------------------------------------------
+         GPA |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       black |  -.2642033   .0981706    -2.69   0.007    -.4569227   -.0714839
+    hispanic |   .0390995   .0906747     0.43   0.666    -.1389046    .2171035
+Parent_col~e |   .0545519   .0730922     0.75   0.456    -.0889359    .1980397
+Grades_HS_~t |   .2344256   .0486684     4.82   0.000     .1388843    .3299669
+      workFT |  -.1094133   .0869151    -1.26   0.208     -.280037    .0612103
+      workPT |   .0284029   .0834212     0.34   0.734    -.1353618    .1921675
+       age18 |  -.4783243   .1273116    -3.76   0.000    -.7282505    -.228398
+       age19 |  -.4689357   .1050806    -4.46   0.000    -.6752202   -.2626512
+       age20 |  -.4961609   .1019447    -4.87   0.000    -.6962893   -.2960324
+       age21 |  -.2202289   .1173092    -1.88   0.061    -.4505194    .0100617
+     yr2plus |  -.0897976   .0877763    -1.02   0.307    -.2621118    .0825166
+       _cons |   2.967963   .0978493    30.33   0.000     2.775875    3.160052
+------------------------------------------------------------------------------
+
+. 
+. mdesc GPA black hispanic Parent_college Grades_HS_best workFT workPT age18 ag
+> e19 age20 age21 if inrange(choice25,6,10)
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+         GPA         125         666        .187688
+       black           0         666              0
+    hispanic           0         666              0
+Parent_col~e           0         666              0
+Grades_HS_~t           0         666              0
+      workFT           0         666              0
+      workPT           0         666              0
+       age18           0         666              0
+       age19           0         666              0
+       age20           0         666              0
+       age21           0         666              0
+
+. mdesc GPA black hispanic Parent_college Grades_HS_best workFT workPT age18 ag
+> e19 age20 age21 if inrange(choice25,11,15)
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+         GPA         241        1284        .187695
+       black           0        1284              0
+    hispanic           0        1284              0
+Parent_col~e           0        1284              0
+Grades_HS_~t           0        1284              0
+      workFT           0        1284              0
+      workPT           0        1284              0
+       age18           0        1284              0
+       age19           0        1284              0
+       age20           0        1284              0
+       age21           0        1284              0
+
+. mdesc GPA black hispanic Parent_college Grades_HS_best workFT workPT age18 ag
+> e19 age20 age21 yr2plus if inrange(choice25,1,5)
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+         GPA         504        1272        .396226
+       black           0        1272              0
+    hispanic           0        1272              0
+Parent_col~e           0        1272              0
+Grades_HS_~t           0        1272              0
+      workFT           0        1272              0
+      workPT           0        1272              0
+       age18           0        1272              0
+       age19           0        1272              0
+       age20           0        1272              0
+       age21           0        1272              0
+     yr2plus           0        1272              0
+
+. 
+. summarize log_comp black hispanic Parent_college Grades_HS_best age exper exp
+> er_white_collar cum_col_1 cum_col_2 cum_col_3 cum_col_4 cum_gs_1 cum_gs_2 cum
+> _gs_3 cum_gs_4 grad_4yr finalSciMajor y04 y05 y06 y07 y08 y09 y10 y11 y12 y13
+>  y14 y15 y16 workPT if inlist(choice25,2,4,7,9,12,14,17,19,22,24), sep(0)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    log_comp |      2,353    2.673287    .5992452   1.223994   4.799057
+       black |      2,353    .1529962    .3600603          0          1
+    hispanic |      2,353    .1389715    .3459903          0          1
+Parent_col~e |      2,353    .4993625    .5001059          0          1
+Grades_HS_~t |      2,353    .4792034    .8277442  -2.218189   1.777134
+         age |      2,353    9.265618    3.957523          0         17
+       exper |      2,353    6.112835    3.689091          0       17.5
+exper_whit~r |      2,353    3.137909    2.949691          0         16
+   cum_col_1 |      2,353    .0900977    .2863826          0          1
+   cum_col_2 |      2,353    .0760731    .2651714          0          1
+   cum_col_3 |      2,353    .0875478    .2826962          0          1
+   cum_col_4 |      2,353    .5728857    .4947643          0          1
+    cum_gs_1 |      2,353     .039099    .1938718          0          1
+    cum_gs_2 |      2,353    .0429239    .2027287          0          1
+    cum_gs_3 |      2,353    .0280493    .1651488          0          1
+    cum_gs_4 |      2,353    .0450489    .2074554          0          1
+    grad_4yr |      2,353    .5036124    .5000932          0          1
+finalSciMa~r |      2,353    .1950701    .3963389          0          1
+         y04 |      2,353    .1423714     .349505          0          1
+         y05 |      2,353    .0556736    .2293391          0          1
+         y06 |      2,353    .0607735    .2389651          0          1
+         y07 |      2,353    .0730982    .2603529          0          1
+         y08 |      2,353    .0824479    .2751044          0          1
+         y09 |      2,353    .0845729    .2783042          0          1
+         y10 |      2,353    .0820229     .274458          0          1
+         y11 |      2,353    .0832979    .2763907          0          1
+         y12 |      2,353    .0845729    .2783042          0          1
+         y13 |      2,353    .0871228    .2820749          0          1
+         y14 |      2,353    .0871228    .2820749          0          1
+         y15 |      2,353    .0769231     .266526          0          1
+         y16 |      2,353           0           0          0          0
+      workPT |      2,353    .1381215    .3451009          0          1
+
+. summarize log_comp black hispanic Parent_college Grades_HS_best age exper exp
+> er_white_collar cum_col_1 cum_col_2 cum_col_3 cum_col_4 cum_gs_1 cum_gs_2 cum
+> _gs_3 cum_gs_4 grad_4yr finalSciMajor i.year workPT                          
+>             if inlist(choice25,1,3,6,8,11,13,16,18,21,23), sep(0)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    log_comp |     12,584    2.336371     .521612   1.223994   4.799057
+       black |     12,584     .204466    .4033269          0          1
+    hispanic |     12,584     .190321      .39257          0          1
+Parent_col~e |     12,584    .2182931    .4131038          0          1
+Grades_HS_~t |     12,584   -.1102781    .8032817  -3.349482   1.777134
+         age |     12,584    7.052765    4.437446         -2         17
+       exper |     12,584    5.180507    3.908695          0         18
+exper_whit~r |     12,584     .247616    .8297606          0         11
+   cum_col_1 |     12,584    .1946122    .3959176          0          1
+   cum_col_2 |     12,584    .0754927    .2641952          0          1
+   cum_col_3 |     12,584     .052527    .2230961          0          1
+   cum_col_4 |     12,584    .1115702    .3148495          0          1
+    cum_gs_1 |     12,584    .0012715    .0356362          0          1
+    cum_gs_2 |     12,584    .0021456    .0462725          0          1
+    cum_gs_3 |     12,584    .0009536    .0308668          0          1
+    cum_gs_4 |     12,584    .0003973      .01993          0          1
+    grad_4yr |     12,584    .0757311    .2645779          0          1
+finalSciMa~r |     12,584    .0380642    .1913589          0          1
+             |
+        year |
+       1999  |     12,584    .0220915    .1469872          0          1
+       2000  |     12,584    .0407661    .1977556          0          1
+       2001  |     12,584    .0523681     .222777          0          1
+       2002  |     12,584    .0694533    .2542335          0          1
+       2003  |     12,584    .0735855    .2611055          0          1
+       2004  |     12,584    .0738239    .2614945          0          1
+       2005  |     12,584    .0717578    .2580967          0          1
+       2006  |     12,584    .0746186    .2627853          0          1
+       2007  |     12,584    .0711221    .2570388          0          1
+       2008  |     12,584    .0646853    .2459795          0          1
+       2009  |     12,584    .0626192    .2422864          0          1
+       2010  |     12,584    .0597584    .2370481          0          1
+       2011  |     12,584    .0579307    .2336217          0          1
+       2012  |     12,584    .0548315    .2276602          0          1
+       2013  |     12,584    .0530833    .2242085          0          1
+       2014  |     12,584    .0495073    .2169333          0          1
+       2015  |     12,584    .0425938    .2019475          0          1
+             |
+      workPT |     12,584    .1899237    .3922562          0          1
+
+. 
+. 
+. 
+. gen grades=GPA
+(19,246 missing values generated)
+
+. 
+. bys ID (year): egen gperiod = seq() if in_college & anyFlag==0
+(18606 missing values generated)
+
+. 
+. capture drop period
+
+. bys ID: gen period = _n
+
+. 
+. foreach x of numlist 1/4 {
+  2.     gen dummy_2yr`x'      = (gperiod==`x' & inrange(choice15,1,3))
+  3.     gen dummy_4yr`x'      = (gperiod==`x' & (inlist(choice15,-2) | inrange
+> (choice15,4,9)))
+  4.     gen full_time_work`x' = (gperiod==`x' & (inlist(choice15,1,4,7) | (inl
+> ist(choice15,-2) & workFT==1)))
+  5.     gen part_time_work`x' = (gperiod==`x' & (inlist(choice15,2,5,8) | (inl
+> ist(choice15,-2) & workPT==1)))
+  6.     gen age_col`x'        = age if gperiod==`x'
+  7.     
+. }
+(20,711 missing values generated)
+(21,671 missing values generated)
+(21,837 missing values generated)
+(21,967 missing values generated)
+
+. 
+. bys ID (year): generat left_all_after_first_yr          = (in_college[_n]==1 
+> & in_college[_n+1]==0 & gperiod[_n]==1)
+
+. bys ID (year): replace left_all_after_first_yr          = 2-left_all_after_fi
+> rst_yr
+(21,943 real changes made)
+
+. 
+. bys ID (year): generat left_all_next_yr                 = (in_college[_n]==1 
+> & in_college[_n+1]==0 & grad_4yr[_n+1]==0)
+
+. bys ID (year): replace left_all_next_yr                 = 2-left_all_next_yr
+(21,583 real changes made)
+
+. 
+. bys ID (year): generat left_all_next_yr2                = (in_college[_n]==1 
+> & in_college[_n+1]==0 & grad_2yr[_n+1]==0)
+
+. bys ID (year): replace left_all_next_yr2                = 2-left_all_next_yr2
+(21,446 real changes made)
+
+. 
+. bys ID (year): generat switch_maj_next_yr               = (inrange(choice15[_
+> n],7,9) & inrange(choice15[_n+1],1,6) & grad_4yr[_n+1]==0) | (inrange(choice1
+> 5[_n],4,6) & inlist(choice15[_n+1],1,2,3,7,8,9) & grad_4yr[_n+1]==0)
+
+. bys ID (year): replace switch_maj_next_yr               = 2-switch_maj_next_y
+> r
+(22,265 real changes made)
+
+. 
+. bys ID (year): generat left_for_sci_maj_next_yr         = (inrange(choice15[_
+> n],7,9) & inrange(choice15[_n+1],4,6) & grad_4yr[_n+1]==0)
+
+. bys ID (year): replace left_for_sci_maj_next_yr         = 2-left_for_sci_maj_
+> next_yr
+(22,353 real changes made)
+
+. 
+. bys ID (year): generat left_for_hum_maj_next_yr         = (inrange(choice15[_
+> n],4,6) & inrange(choice15[_n+1],7,9) & grad_4yr[_n+1]==0)
+
+. bys ID (year): replace left_for_hum_maj_next_yr         = 2-left_for_hum_maj_
+> next_yr
+(22,335 real changes made)
+
+. 
+. bys ID (year): generat left_for_sci_maj_next_yr_from_2y = (inrange(choice15[_
+> n],1,3) & inrange(choice15[_n+1],4,6) & grad_4yr[_n+1]==0)
+
+. bys ID (year): replace left_for_sci_maj_next_yr_from_2y = 2-left_for_sci_maj_
+> next_yr_from_2y
+(22,370 real changes made)
+
+. 
+. bys ID (year): generat left_for_hum_maj_next_yr_from_2y = (inrange(choice15[_
+> n],1,3) & inrange(choice15[_n+1],7,9) & grad_4yr[_n+1]==0)
+
+. bys ID (year): replace left_for_hum_maj_next_yr_from_2y = 2-left_for_hum_maj_
+> next_yr_from_2y
+(22,347 real changes made)
+
+. 
+. bys ID (year): generat left_for_2yr_next_yr             = (inlist(choice15[_n
+> ],-2,4,5,6,7,8,9) & inrange(choice15[_n+1],1,3))
+
+. bys ID (year): replace left_for_2yr_next_yr             = 2-left_for_2yr_next
+> _yr
+(22,361 real changes made)
+
+. 
+. bys ID (year): generat left_for_4yr_next_yr             = (inrange(choice15[_
+> n],1,3) & inlist(choice15[_n+1],-2,4,5,6,7,8,9))
+
+. bys ID (year): replace left_for_4yr_next_yr             = 2-left_for_4yr_next
+> _yr
+(22,297 real changes made)
+
+. 
+. ***************************************************************************
+. ***************************************************************************
+. 
+. *============================================================================
+> =
+. * Overeducation spells
+. *============================================================================
+> =
+. gen bCollar=1 if (choice25==1 | choice25==3 | choice25==6 | choice25==8 | cho
+> ice25==11 | choice25==13 | choice25==16 | choice25==18 | choice25==21 | choic
+> e25==23)
+(9,814 missing values generated)
+
+. 
+. gen wCollar=1 if (choice25==2 | choice25==4 | choice25==7 | choice25==9 | cho
+> ice25==12 | choice25==14 | choice25==17 | choice25==19 | choice25==22 | choic
+> e25==24)
+(20,045 missing values generated)
+
+. 
+. replace bCollar=0 if  wCollar==1
+(2,353 real changes made)
+
+. replace wCollar=0 if  bCollar==1
+(12,584 real changes made)
+
+. 
+. 
+. tab bCollar if grad_4yr==0
+
+    bCollar |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,168        9.13        9.13
+          1 |     11,631       90.87      100.00
+------------+-----------------------------------
+      Total |     12,799      100.00
+
+. tab bCollar if grad_4yr==1
+
+    bCollar |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,185       55.43       55.43
+          1 |        953       44.57      100.00
+------------+-----------------------------------
+      Total |      2,138      100.00
+
+. 
+. gen FamIncRaw = famIncAsTeen*1000
+
+. bys ID (year): egen evCol = max(inlist(choice25,-2,1,2,3,4,5,6,7,8,9,10,11,12
+> ,13,14,15,21,22,23,24,25))
+
+. gen nevCol = ~evCol
+
+. 
+. bys ID (year): egen avgColGPA1 = mean(GPA) if inlist(choice25,-2,1,2,3,4,5,6,
+> 7,8,9,10,11,12,13,14,15)
+(19410 missing values generated)
+
+. bys ID (year): egen avgColGPA  = mean(avgColGPA1)
+(12600 missing values generated)
+
+. drop avgColGPA1
+
+. 
+. capture drop period
+
+. sort ID year
+
+. bys ID: gen period = _n
+
+. 
+. **********
+. * Table 1
+. **********
+. 
+. *Start 2 year college
+. sum predSATmath    if inrange(choice25,1,5) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |        719    467.7113    94.19504        200        750
+
+. local satm1 = `r(mean)'
+
+. local satm1sd = `r(sd)' 
+
+. sum predSATverb    if inrange(choice25,1,5) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |        719    431.3388    104.2087        200        750
+
+. local satv1 = `r(mean)'
+
+. local satv1sd = `r(sd)'
+
+. sum HS_grades      if inrange(choice25,1,5) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |        719   -.0405696    .7518347  -2.518913   1.777134
+
+. local hs_grades1 = `r(mean)'
+
+. local hs_grades1sd = `r(sd)'
+
+. sum black          if inrange(choice25,1,5) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |        719    .2072323    .4056056          0          1
+
+. local black1 = `r(mean)'
+
+. local black1sd = `r(sd)'
+
+. sum hispanic       if inrange(choice25,1,5) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |        719    .2072323    .4056056          0          1
+
+. local hisp1 = `r(mean)'
+
+. local hisp1sd = `r(sd)'
+
+. sum Parent_college if inrange(choice25,1,5) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |        719    .2670376    .4427201          0          1
+
+. local pc1 = `r(mean)'
+
+. local pc1sd = `r(sd)'
+
+. sum FamIncRaw      if inrange(choice25,1,5) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |        719     49047.5    38979.05         32   430628.9
+
+. local inc1 = `r(mean)'/1000
+
+. local inc1sd = `r(sd)'/1000
+
+. local ob1= `r(N)'
+
+. 
+. *Start 4 year science
+. sum predSATmath    if inrange(choice25,6,10) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |        189    572.2003    114.5778        200        790
+
+. local satm2 = `r(mean)'
+
+. local satm2sd = `r(sd)'
+
+. sum predSATverb    if inrange(choice25,6,10) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |        189    524.6286    146.2684        200        790
+
+. local satv2 = `r(mean)'
+
+. local satv2sd = `r(sd)'
+
+. sum HS_grades      if inrange(choice25,6,10) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |        189    .6940303    .7281485   -1.31602   1.777134
+
+. local hs_grades2 = `r(mean)'
+
+. local hs_grades2sd = `r(sd)'
+
+. sum black          if inrange(choice25,6,10) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |        189    .1375661    .3453589          0          1
+
+. local black2 = `r(mean)'
+
+. local black2sd = `r(sd)'
+
+. sum hispanic       if inrange(choice25,6,10) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |        189    .1269841    .3338395          0          1
+
+. local hisp2 = `r(mean)'
+
+. local hisp2sd = `r(sd)'
+
+. sum Parent_college if inrange(choice25,6,10) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |        189    .5873016    .4936271          0          1
+
+. local pc2 = `r(mean)'
+
+. local pc2sd = `r(sd)'
+
+. sum FamIncRaw      if inrange(choice25,6,10) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |        189    69541.02    50278.67        600     246474
+
+. local inc2 = `r(mean)'/1000
+
+. local inc2sd = `r(sd)'/1000 
+
+. local ob2= `r(N)'
+
+. 
+. *Start 4 year hum
+. sum predSATmath    if inrange(choice25,11,15) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |        318    519.4047    103.8377        200        780
+
+. local satm3 = `r(mean)'
+
+. local satm3sd = `r(sd)'
+
+. sum predSATverb    if inrange(choice25,11,15) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |        318    482.0491    133.7434        200        790
+
+. local satv3 = `r(mean)'
+
+. local satv3sd = `r(sd)'
+
+. sum HS_grades      if inrange(choice25,11,15) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |        318    .4440087    .7737263  -1.802905   1.777134
+
+. local hs_grades3 = `r(mean)'
+
+. local hs_grades3sd = `r(sd)'
+
+. sum black          if inrange(choice25,11,15) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |        318    .2075472    .4061898          0          1
+
+. local black3 = `r(mean)'
+
+. local black3sd = `r(sd)'
+
+. sum hispanic       if inrange(choice25,11,15) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |        318    .1194969    .3248835          0          1
+
+. local hisp3 = `r(mean)'
+
+. local hisp3sd = `r(sd)'
+
+. sum Parent_college if inrange(choice25,11,15) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |        318    .5314465    .4997966          0          1
+
+. local pc3 = `r(mean)'
+
+. local pc3sd = `r(sd)'
+
+. sum FamIncRaw      if inrange(choice25,11,15) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |        318    69542.29    55816.58        255     246474
+
+. local inc3 = `r(mean)'/1000
+
+. local inc3sd = `r(sd)'/1000 
+
+. local ob3= `r(N)'
+
+. 
+. *Start 4 Missing Major
+. sum predSATmath    if inrange(choice25,-2,-2) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |        461    530.5903    110.5133        200        800
+
+. local satm4 = `r(mean)'
+
+. local satm4sd = `r(sd)'
+
+. sum predSATverb    if inrange(choice25,-2,-2) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |        461    486.4205     146.774        200        800
+
+. local satv4 = `r(mean)'
+
+. local satv4sd = `r(sd)'
+
+. sum HS_grades      if inrange(choice25,-2,-2) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |        461    .5465327    .7476921  -2.518913   1.777134
+
+. local hs_grades4 = `r(mean)'
+
+. local hs_grades4sd = `r(sd)'
+
+. sum black          if inrange(choice25,-2,-2) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |        461    .1561822    .3634224          0          1
+
+. local black4 = `r(mean)'
+
+. local black4sd = `r(sd)'
+
+. sum hispanic       if inrange(choice25,-2,-2) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |        461    .1214751    .3270334          0          1
+
+. local hisp4 = `r(mean)'
+
+. local hisp4sd = `r(sd)'
+
+. sum Parent_college if inrange(choice25,-2,-2) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |        461    .4750542    .4999198          0          1
+
+. local pc4 = `r(mean)'
+
+. local pc4sd = `r(sd)'
+
+. sum FamIncRaw      if inrange(choice25,-2,-2) & (cum_2yr+cum_4yr)==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |        461    71167.65     56206.5       1000   294559.5
+
+. local inc4 = `r(mean)'/1000 
+
+. local inc4sd = `r(sd)'/1000 
+
+. local ob4= `r(N)'
+
+. 
+. *Start 4 Neve college
+. sum predSATmath    if period==1 & nevCol
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |        613      439.14    91.15035        200        750
+
+. local satm5 = `r(mean)'
+
+. local satm5sd = `r(sd)'
+
+. sum predSATverb    if period==1 & nevCol
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |        613    408.2213     99.3848        200        750
+
+. local satv5 = `r(mean)'
+
+. local satv5sd = `r(sd)'
+
+. sum HS_grades      if period==1 & nevCol
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |        613   -.3547002    .7917321  -3.349482   1.777134
+
+. local hs_grades5 = `r(mean)'
+
+. local hs_grades5sd = `r(sd)'
+
+. sum black          if period==1 & nevCol
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |        613    .2430669    .4292855          0          1
+
+. local black5 = `r(mean)'
+
+. local black5sd = `r(sd)'
+
+. sum hispanic       if period==1 & nevCol
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |        613    .1892333    .3920137          0          1
+
+. local hisp5 = `r(mean)'
+
+. local hisp5sd = `r(sd)'
+
+. sum Parent_college if period==1 & nevCol
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |        613    .1011419    .3017628          0          1
+
+. local pc5 = `r(mean)'
+
+. local pc5sd = `r(sd)'
+
+. sum FamIncRaw      if period==1 & nevCol
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |        613    39218.24    28093.66          5     246474
+
+. local inc5 = `r(mean)'/1000 
+
+. local inc5sd = `r(sd)'/1000 
+
+. local ob5= `r(N)'
+
+. 
+. 
+. *All
+. sum predSATmath    if period==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |      2,300     488.433    108.7879        200        800
+
+. local satm6 = `r(mean)'
+
+. local satm6sd = `r(sd)'
+
+. sum predSATverb    if period==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |      2,300     450.895    126.4383        200        800
+
+. local satv6 = `r(mean)'
+
+. local satv6sd = `r(sd)'
+
+. sum HS_grades      if period==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |      2,300    .1207466    .8528771  -3.349482   1.777134
+
+. local hs_grades6 = `r(mean)'
+
+. local hs_grades6sd = `r(sd)'
+
+. sum black          if period==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |      2,300    .2008696    .4007378          0          1
+
+. local black6 = `r(mean)'
+
+. local black6sd = `r(sd)'
+
+. sum hispanic       if period==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |      2,300    .1665217    .3726293          0          1
+
+. local hisp6 = `r(mean)'
+
+. local hisp6sd = `r(sd)'
+
+. sum Parent_college if period==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |      2,300    .3273913    .4693634          0          1
+
+. local pc6 = `r(mean)'
+
+. local pc6sd = `r(sd)'
+
+. sum FamIncRaw      if period==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |      2,300     55379.1    46145.69          5   430628.9
+
+. local inc6 = `r(mean)'/1000 
+
+. local inc6sd = `r(sd)'/1000 
+
+. local ob6= `r(N)'
+
+. 
+. capture file close Ttemp
+
+. file open Ttemp using "${tbl_loc}table_1.tex", write replace
+
+. file write Ttemp "\begin{table}[ht]" _n 
+
+. file write Ttemp "\caption{Background characteristics of estimation sample by
+>  college enrollment status}" _n 
+
+. file write Ttemp "\label{tab:sumStatsPost}" _n 
+
+. file write Ttemp "\centering" _n 
+
+. file write Ttemp "\begin{threeparttable}" _n 
+
+. file write Ttemp "\begin{tabular}{lcccccc}" _n 
+
+. file write Ttemp "\toprule " _n 
+
+. file write Ttemp " & \multicolumn{4}{Starting College Type} & & \\" _n 
+
+. file write Ttemp "\midrule " _n 
+
+. file write Ttemp "Two-year & Four-year Sci. & Four-year Non-Sci. & Four-year 
+> Missing Major & No college & Total \\" _n 
+
+. file write Ttemp "\midrule " _n 
+
+. file write Ttemp "Black                           " " &  " %4.3f (`black1')  
+>      " & " %4.3f (`black2') " & " %4.3f (`black3') " & " %4.3f (`black4') " &
+>  " %4.3f (`black5') " & " %4.3f (`black6') " \\ "  _n 
+
+. file write Ttemp "                                " " & (" %4.3f (`black1sd')
+>      ") & (" %4.3f (`black2sd') ") & (" %4.3f (`black3sd') ") & (" %4.3f (`bl
+> ack4sd') ") & (" %4.3f (`black5sd') ") & (" %4.3f (`black6sd') ") \\ "  _n 
+
+. file write Ttemp "Hispanic                        " " &  " %4.3f (`hisp1')   
+>      " & " %4.3f (`hisp2') " & " %4.3f (`hisp3') " & " %4.3f (`hisp4') " & " 
+> %4.3f (`hisp5') " & " %4.3f (`hisp6') " \\ "  _n 
+
+. file write Ttemp "                                " " & (" %4.3f (`hisp1sd') 
+>      ") & (" %4.3f (`hisp2sd') ") & (" %4.3f (`hisp3sd') ") & (" %4.3f (`hisp
+> 4sd') ") & (" %4.3f (`hisp5sd') ") & (" %4.3f (`hisp6sd') ") \\ "  _n 
+
+. file write Ttemp "SAT Math                        " " &  " %4.0f (`satm1')   
+>      " & " %4.0f (`satm2') " & " %4.0f (`satm3') " & " %4.0f (`satm4') " & " 
+> %4.0f (`satm5') " & " %4.0f (`satm6') " \\ "  _n 
+
+. file write Ttemp "                                " " & (" %4.0f (`satm1sd') 
+>      ") & (" %4.0f (`satm2sd') ") & (" %4.0f (`satm3sd') ") & (" %4.0f (`satm
+> 4sd') ") & (" %4.0f (`satm5sd') ") & (" %4.0f (`satm6sd') ") \\ "  _n 
+
+. file write Ttemp "SAT Verbal                      " " &  " %4.0f (`satv1')   
+>      " & " %4.0f (`satv2') " & " %4.0f (`satv3') " & " %4.0f (`satv4') " & " 
+> %4.0f (`satv5') " & " %4.0f (`satv6') " \\ "  _n 
+
+. file write Ttemp "                                " " & (" %4.0f (`satv1sd') 
+>      ") & (" %4.0f (`satv2sd') ") & (" %4.0f (`satv3sd') ") & (" %4.0f (`satv
+> 4sd') ") & (" %4.0f (`satv5sd') ") & (" %4.0f (`satv6sd') ") \\ "  _n 
+
+. file write Ttemp "HS GPA                          " " &  " %4.3f (`hs_grades1
+> ')   " & " %4.3f (`hs_grades2') " & " %4.3f (`hs_grades3') " & " %4.3f (`hs_g
+> rades4') " & " %4.3f (`hs_grades5') " & " %4.3f (`hs_grades6') " \\ "  _n 
+
+. file write Ttemp "                                " " & (" %4.3f (`hs_grades1
+> sd') ") & (" %4.3f (`hs_grades2sd') ") & (" %4.3f (`hs_grades3sd') ") & (" %4
+> .3f (`hs_grades4sd') ") & (" %4.3f (`hs_grades5sd') ") & (" %4.3f (`hs_grades
+> 6sd') ") \\ "  _n 
+
+. file write Ttemp "Parent Graduated College        " " &  " %4.3f (`pc1') " & 
+> " %4.3f (`pc2') " & " %4.3f (`pc3') " & " %4.3f (`pc4') " & " %4.3f (`pc5') "
+>  & " %4.3f (`pc6') " \\ "  _n 
+
+. file write Ttemp "                                " " & (" %4.3f (`pc1sd') ")
+>  & (" %4.3f (`pc2sd') ") & (" %4.3f (`pc3sd') ") & (" %4.3f (`pc4sd') ") & ("
+>  %4.3f (`pc5sd') ") & (" %4.3f (`pc6sd') ") \\ "  _n 
+
+. file write Ttemp "Family Income (\\$1996) (000's)  " " &  " %4.3f (`inc1') " 
+> & " %4.3f (`inc2') " & " %4.3f (`inc3') " & " %4.3f (`inc4') " & " %4.3f (`in
+> c5') " & " %4.3f (`inc6') " \\ "  _n 
+
+. file write Ttemp "                                " " & (" %4.3f (`inc1sd') "
+> ) & (" %4.3f (`inc2sd') ") & (" %4.3f (`inc3sd') ") & (" %4.3f (`inc4sd') ") 
+> & (" %4.3f (`inc5sd') ") & (" %4.3f (`inc6sd') ") \\ "  _n 
+
+. file write Ttemp "Observations  " " & " %7.0fc (`ob1') " & " %7.0fc (`ob2') "
+>  & " %7.0fc (`ob3') " & " %7.0fc (`ob4') " & " %7.0fc (`ob5') " & " %7.0fc (`
+> ob6') " \\ "  _n
+
+. file write Ttemp "\bottomrule " _n 
+
+. file write Ttemp "\end{tabular} " _n 
+
+. file write Ttemp "\end{threeparttable} " _n 
+
+. file write Ttemp "\end{table} " _n 
+
+. file close Ttemp
+
+. 
+. 
+. 
+. gen     group=1 if bCollar==1 & grad_4yr==0
+(10,767 missing values generated)
+
+. replace group=2 if bCollar==0 & grad_4yr==0
+(1,168 real changes made)
+
+. replace group=3 if bCollar==1 & grad_4yr==1
+(953 real changes made)
+
+. replace group=4 if bCollar==0 & grad_4yr==1
+(1,185 real changes made)
+
+. 
+. gen     ageustd = age+18
+
+. 
+. **********
+. * Table 2
+. ***********
+. 
+. *BC no graduate
+. sum ageustd    if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     ageustd |     11,631    24.81274    4.434254         16         35
+
+. local ageustd7= `r(mean)'
+
+. local ageustd7sd = `r(sd)'
+
+. sum predSATmath    if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |     11,631    456.2098    94.73856        200        790
+
+. local satm7= `r(mean)'
+
+. local satm7sd = `r(sd)'
+
+. sum predSATverb    if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |     11,631    421.7526    110.7147        200        790
+
+. local satv7 = `r(mean)'
+
+. local satv7sd = `r(sd)'
+
+. sum HS_grades      if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |     11,631   -.1640035    .7839366  -3.349482   1.777134
+
+. local hs_grades7 = `r(mean)'
+
+. local hs_grades7sd = `r(sd)'
+
+. sum black          if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |     11,631    .2101281    .4074169          0          1
+
+. local black7 = `r(mean)'
+
+. local black7sd = `r(sd)'
+
+. sum hispanic       if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |     11,631    .1967157    .3975326          0          1
+
+. local hisp7 = `r(mean)'
+
+. local hisp7sd = `r(sd)'
+
+. sum Parent_college if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |     11,631     .187946    .3906858          0          1
+
+. local pc7 = `r(mean)'
+
+. local pc7sd = `r(sd)'
+
+. sum FamIncRaw      if group==1 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |     11,631    44446.06    36038.09          5   430628.9
+
+. local inc7 = `r(mean)'/1000 
+
+. local inc7sd = `r(sd)'/1000 
+
+. local ob7= `r(N)'
+
+. 
+. *WC no graduate
+. sum ageustd    if group==2 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     ageustd |      1,168    26.11558    4.318847         18         35
+
+. local ageustd8= `r(mean)'
+
+. local ageustd8sd = `r(sd)'
+
+. sum predSATmath    if group==2 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |      1,168    488.3049     96.0423        200        750
+
+. local satm8= `r(mean)'
+
+. local satm8sd = `r(sd)'
+
+. sum predSATverb    if group==2 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |      1,168    465.2613    114.3847        200        790
+
+. local satv8 = `r(mean)'
+
+. local satv8sd = `r(sd)'
+
+. sum HS_grades      if group==2
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |      1,168    .0984269    .7848011  -2.218189   1.777134
+
+. local hs_grades8 = `r(mean)'
+
+. local hs_grades8sd = `r(sd)'
+
+. sum black          if group==2 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |      1,168    .1686644    .3746156          0          1
+
+. local black8 = `r(mean)'
+
+. local black8sd = `r(sd)'
+
+. sum hispanic       if group==2 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |      1,168     .192637    .3945393          0          1
+
+. local hisp8 = `r(mean)'
+
+. local hisp8sd = `r(sd)'
+
+. sum Parent_college if group==2 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |      1,168    .3775685    .4849865          0          1
+
+. local pc8 = `r(mean)'
+
+. local pc8sd = `r(sd)'
+
+. sum FamIncRaw      if group==2
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |      1,168    54656.09    40787.57        400     246474
+
+. local inc8 = `r(mean)'/1000 
+
+. local inc8sd = `r(sd)'/1000 
+
+. local ob8= `r(N)'
+
+. 
+. *BC graduate
+. sum ageustd    if group==3 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     ageustd |        953    27.98216    3.280752         21         35
+
+. local ageustd9= `r(mean)'
+
+. local ageustd9sd = `r(sd)'
+
+. sum predSATmath    if group==3 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |        953    519.3494    109.5152        200        780
+
+. local satm9= `r(mean)'
+
+. local satm9sd = `r(sd)'
+
+. sum predSATverb    if group==3 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |        953    474.2956    150.6872        200        790
+
+. local satv9 = `r(mean)'
+
+. local satv9sd = `r(sd)'
+
+. sum HS_grades      if group==3
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |        953    .5454204    .7452415  -1.802905   1.777134
+
+. local hs_grades9 = `r(mean)'
+
+. local hs_grades9sd = `r(sd)'
+
+. sum black          if group==3 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |        953     .135362    .3422895          0          1
+
+. local black9 = `r(mean)'
+
+. local black9sd = `r(sd)'
+
+. sum hispanic       if group==3 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |        953     .112277    .3158727          0          1
+
+. local hisp9 = `r(mean)'
+
+. local hisp9sd = `r(sd)'
+
+. sum Parent_college if group==3 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |        953    .5886674    .4923337          0          1
+
+. local pc9 = `r(mean)'
+
+. local pc9sd = `r(sd)'
+
+. sum FamIncRaw      if group==3
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |        953    63501.91    43020.98         60     246474
+
+. local inc9 = `r(mean)'/1000 
+
+. local inc9sd = `r(sd)'/1000 
+
+. local ob9= `r(N)'
+
+. 
+. *WC graduate
+. sum ageustd    if group==4 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     ageustd |      1,185    28.39916    3.183864         21         35
+
+. local ageustd10= `r(mean)'
+
+. local ageustd10sd = `r(sd)'
+
+. sum predSATmath    if group==4 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATmath |      1,185    569.4055    104.9737        200        780
+
+. local satm10= `r(mean)'
+
+. local satm10sd = `r(sd)'
+
+. sum predSATverb    if group==4 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ predSATverb |      1,185    530.7926    148.4116        200        790
+
+. local satv10 = `r(mean)'
+
+. local satv10sd = `r(sd)'
+
+. sum HS_grades      if group==4
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   HS_grades |      1,185    .8545173    .6855522  -1.401941   1.777134
+
+. local hs_grades10 = `r(mean)'
+
+. local hs_grades10sd = `r(sd)'
+
+. sum black          if group==4 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+       black |      1,185    .1375527    .3445754          0          1
+
+. local black10 = `r(mean)'
+
+. local black10sd = `r(sd)'
+
+. sum hispanic       if group==4 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    hispanic |      1,185    .0860759    .2805946          0          1
+
+. local hisp10 = `r(mean)'
+
+. local hisp10sd = `r(sd)'
+
+. sum Parent_college if group==4 
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+Parent_col~e |      1,185    .6194093    .4857371          0          1
+
+. local pc10 = `r(mean)'
+
+. local pc10sd = `r(sd)'
+
+. sum FamIncRaw      if group==4
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+   FamIncRaw |      1,185    78174.68    52497.16       1000     246474
+
+. local inc10 = `r(mean)'/1000 
+
+. local inc10sd = `r(sd)'/1000 
+
+. local ob10= `r(N)'
+
+. 
+. sum bCollar if grad_4yr==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     bCollar |     12,799    .9087429    .2879857          0          1
+
+. local sharebcng = `r(mean)'
+
+. sum bCollar if grad_4yr==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     bCollar |     12,799    .9087429    .2879857          0          1
+
+. local sharewcng = 1-`r(mean)'
+
+. sum bCollar if grad_4yr==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     bCollar |      2,138    .4457437    .4971638          0          1
+
+. local sharebcg = `r(mean)'
+
+. sum bCollar if grad_4yr==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     bCollar |      2,138    .4457437    .4971638          0          1
+
+. local sharewcg = 1-`r(mean)'
+
+. 
+. 
+. capture file close Ttemp
+
+. file open Ttemp using "${tbl_loc}table_2.tex", write replace
+
+. file write Ttemp "\begin{table}[ht]" _n 
+
+. file write Ttemp "\caption{Background characteristics of estimation sample by
+>  college enrollment status}" _n 
+
+. file write Ttemp "\label{tab:sumStatsPost}" _n 
+
+. file write Ttemp "\centering" _n 
+
+. file write Ttemp "\begin{threeparttable}" _n 
+
+. file write Ttemp "\begin{tabular}{lcccc}" _n 
+
+. file write Ttemp "\toprule " _n 
+
+. file write Ttemp "Blue Collar Non-Grad. & White Collar Non-Grad. & Blue Colla
+> r Grad. & White Collar Grad. \\" _n 
+
+. file write Ttemp "Blue Collar Non-Grad. & White Collar Non-Grad. & Blue Colla
+> r Grad. & White Collar Grad. \\" _n 
+
+. file write Ttemp "                               & \multicolumn{2}{c}{Non-gra
+> duates} & \multicolumn{2}{c}{Graduates} \\ \cmidrule(r){2-3}\cmidrule(l){4-5}
+>  " _n
+
+. file write Ttemp "                               & Blue Collar & White Collar
+>  & Blue Collar & White Collar \\" _n
+
+. file write Ttemp "\midrule " _n 
+
+. file write Ttemp "Age (years)   " " & " %4.3f (`ageustd7') " & " %4.3f (`ageu
+> std8') " & " %4.3f (`ageustd9') " & " %4.3f (`ageustd10') " \\ "  _n 
+
+. file write Ttemp "    " " & (" %4.3f (`ageustd7sd') ") & (" %4.3f (`ageustd8s
+> d') ") & (" %4.3f (`ageustd9sd') ") & (" %4.3f (`ageustd10sd') ") \\ "  _n 
+
+. file write Ttemp "Black    " " & " %4.3f (`black7') " & " %4.3f (`black8') " 
+> & " %4.3f (`black9') " & " %4.3f (`black10') " \\ "  _n 
+
+. file write Ttemp "    " " & (" %4.3f (`black7sd') ") & (" %4.3f (`black8sd') 
+> ") & (" %4.3f (`black9sd') ") & (" %4.3f (`black10sd') ") \\ "  _n 
+
+. file write Ttemp "Hispanic  " " & " %4.3f (`hisp7') " & " %4.3f (`hisp8') " &
+>  " %4.3f (`hisp9') " & " %4.3f (`hisp10') " \\ "  _n 
+
+. file write Ttemp "  " " & (" %4.3f (`hisp7sd') ") & (" %4.3f (`hisp8sd') ") &
+>  (" %4.3f (`hisp9sd') ") & (" %4.3f (`hisp10sd') ") \\ "  _n 
+
+. file write Ttemp "SAT Math    " " & " %4.0f (`satm7') " & " %4.0f (`satm8') "
+>  & " %4.0f (`satm9') " & " %4.0f (`satm10') " \\ "  _n 
+
+. file write Ttemp "    " " & (" %2.0f (`satm7sd') ") & (" %2.0f (`satm8sd') ")
+>  & (" %2.0f (`satm9sd') ") & (" %2.0f (`satm10sd') ") \\ "  _n 
+
+. file write Ttemp "SAT Verbal  " " & " %4.0f (`satv7') " & " %4.0f (`satv8') "
+>  & " %4.0f (`satv9') " & " %4.0f (`satv10') " \\ "  _n 
+
+. file write Ttemp "  " " & (" %2.0f (`satv7sd') ") & (" %2.0f (`satv8sd') ") &
+>  (" %2.0f (`satv9sd') ") & (" %2.0f (`satv10sd') ") \\ "  _n 
+
+. file write Ttemp "High School GPA (z-score) " " & " %4.3f (`hs_grades7') " & 
+> " %4.3f (`hs_grades8') " & " %4.3f (`hs_grades9') " & " %4.3f (`hs_grades10')
+>  " \\ "  _n 
+
+. file write Ttemp " " " & (" %4.3f (`hs_grades7sd') ") & (" %4.3f (`hs_grades8
+> sd') ") & (" %4.3f (`hs_grades9sd') ") & (" %4.3f (`hs_grades10sd') " ) \\ " 
+>  _n 
+
+. file write Ttemp "Parent Graduated College  " " & " %4.3f (`pc7') " & " %4.3f
+>  (`pc8') " & " %4.3f (`pc9') " & " %4.3f (`pc10') " \\ "  _n 
+
+. file write Ttemp "  " " & (" %4.3f (`pc7sd') ") & (" %4.3f (`pc8sd') ") & (" 
+> %4.3f (`pc9sd') ") & (" %4.3f (`pc10sd') ") \\ "  _n 
+
+. file write Ttemp "Family Income (\\$1996) (000's)  " " & " %4.3f (`inc7') " &
+>  " %4.3f (`inc8') " & " %4.3f (`inc9') " & " %4.3f (`inc10') " \\ "  _n 
+
+. file write Ttemp " " " & (" %4.3f (`inc7sd') ") & (" %4.3f (`inc8sd') ") & ("
+>  %4.3f (`inc9sd') ") & (" %4.3f (`inc10sd') ") \\ "  _n 
+
+. file write Ttemp "Observations  " " & " %7.0fc (`ob7') " & " %7.0fc (`ob8') "
+>  & " %7.0fc (`ob9') " & " %7.0fc (`ob10') " \\ "  _n
+
+. file write Ttemp "Share Conditional on Graduation Outcome  " " & " %4.3f (`sh
+> arebcng') " & " %4.3f (`sharewcng') " & " %4.3f (`sharebcg') " & " %4.3f (`sh
+> arewcg') " \\ "  _n
+
+. file write Ttemp "\bottomrule " _n 
+
+. file write Ttemp "\end{tabular} " _n 
+
+. file write Ttemp "\end{threeparttable} " _n 
+
+. file write Ttemp "\end{table} " _n 
+
+. file close Ttemp
+
+. 
+. *********
+. * Table 5
+. **********
+. 
+. 
+. bys ID (year): gen return_next_yr_after_stopout = (cum_2yr+cum_4yr>0) & inran
+> ge(choice25[_n],16,19) & inrange(choice25[_n+1],1,15) & grad_4yr[_n]==0 & gra
+> d_4yr[_n+1]==0
+
+. bys ID (year): gen no_return_next_yr = (cum_2yr+cum_4yr>0) & inrange(choice25
+> [_n],16,19) & inrange(choice25[_n+1],16,19) & grad_4yr[_n]==0 & grad_4yr[_n+1
+> ]==0
+
+. 
+. replace exper_postgrad = 0 if grad_4yr==0
+(0 real changes made)
+
+. gen workFT2yr = (choice15==1)
+
+. gen workPT2yr = (choice15==2)
+
+. gen workFT4yr = inlist(choice15,4,7)
+
+. gen workPT4yr = inlist(choice15,5,8)
+
+. gen workPT_new    = (choice15==10)
+
+. gen workPTGS  = (choice15==13)
+
+. gen workFTGS  = (choice15==14)
+
+. capture drop y??
+
+. gen y98 = (year==1998 | year==1997) // have to merge 1997 and 1998 together
+
+. gen y99 = (year==1999)
+
+. gen y00 = (year==2000)
+
+. gen y01 = (year==2001)
+
+. gen y02 = (year==2002)
+
+. gen y03 = (year==2003)
+
+. gen y04 = (year==2004)
+
+. gen y05 = (year==2005)
+
+. gen y06 = (year==2006)
+
+. gen y07 = (year==2007)
+
+. gen y08 = (year==2008)
+
+. gen y09 = (year==2009)
+
+. gen y10 = (year==2010)
+
+. gen y11 = (year==2011)
+
+. gen y12 = (year==2012)
+
+. gen y13 = (year==2013)
+
+. gen y14 = (year==2014)
+
+. gen y15 = (year==2015)
+
+. gen y16 = (year==2016)
+
+. gen y97_y99 = (year==1998 | year==1997 | year==1999)
+
+. gen y00_y04 = (year==2000 | year==2001 | year==2002 | year==2003 | year==2004
+> )
+
+. gen age2            = age^2
+
+. gen exper2          = exper^2
+
+. gen exper_postgrad2 = exper_postgrad^2
+
+. 
+. gen college1 = cum_2yr+cum_4yr==1 & !mi(cum_2yr)
+
+. gen college2 = cum_2yr+cum_4yr==2 & !mi(cum_2yr)
+
+. gen college3 = cum_2yr+cum_4yr==3 & !mi(cum_2yr)
+
+. gen college4p= cum_2yr+cum_4yr>=4 & !mi(cum_2yr) 
+
+. 
+. gen g0college1 = grad_4yr==0 & cum_2yr+cum_4yr==1 & !mi(cum_2yr)
+
+. gen g0college2 = grad_4yr==0 & cum_2yr+cum_4yr==2 & !mi(cum_2yr)
+
+. gen g0college3 = grad_4yr==0 & cum_2yr+cum_4yr==3 & !mi(cum_2yr)
+
+. gen g0college4p= grad_4yr==0 & cum_2yr+cum_4yr>=4 & !mi(cum_2yr) 
+
+. 
+. gen gs1 = cum_grad_school==1 & !mi(cum_grad_school)
+
+. gen gs2 = cum_grad_school==2 & !mi(cum_grad_school)
+
+. gen gs3 = cum_grad_school==3 & !mi(cum_grad_school)
+
+. gen gs4p= cum_grad_school>=4 & !mi(cum_grad_school) 
+
+. 
+. gen scigrad = finalSciMajor==1 & grad_4yr==1
+
+. 
+. 
+. foreach year in 98 99 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15{
+  2.     gen black_y`year' = black*y`year'
+  3.     gen hisp_y`year' = hispanic*y`year'
+  4.     gen male_y`year' = male*y`year'
+  5. }
+
+. 
+. foreach year in 02 03 04 05 06 07 08 09 10 11 12 13 14 15{
+  2.     gen grad4yr_y`year' = grad_4yr*y`year'
+  3. }
+
+. 
+. gen black_y97_y99     = black*y97_y99
+
+. gen hisp_y97_y99      = hispanic*y97_y99
+
+. gen male_y97_y99      = male*y97_y99
+
+. gen black_y00_y04     = black*y00_y04
+
+. gen hisp_y00_y04      = hispanic*y00_y04
+
+. gen male_y00_y04      = male*y00_y04
+
+. gen grad4yr_y97_y99   = grad_4yr*y97_y99
+
+. gen grad4yr_y00_y04   = grad_4yr*y00_y04
+
+. gen grad4yr_wc        = grad_4yr*whiteCollar
+
+. gen grad4yr_male      = grad_4yr*male
+
+. gen grad4yr_black     = grad_4yr*black
+
+. gen grad4yr_hisp      = grad_4yr*hispanic
+
+. gen grad4yr_predSATmath = grad_4yr*predSATmath
+
+. gen grad4yr_predSATverb = grad_4yr*predSATverb
+
+. 
+. gen exper_white_collar2=exper_white_collar^2
+
+. gen grad_4yr_finalSciMajor=grad_4yr*finalSciMajor
+
+. 
+. reg log_comp male Peduc m_Peduc black hispanic predSATmath predSATverb Grades
+> _HS_best exper exper2 exper_white_collar exper_white_collar2 i.birth_year age
+> 18 age19 age20 workFT2yr workPT2yr workFT4yr workPT4yr workPT_new workPTGS wo
+> rkFTGS grad_4yr y98-y15 grad4yr_y?? grad4yr_wc grad4yr_male grad4yr_black gra
+> d4yr_hisp grad4yr_predS* finalSciMajor grad_4yr_finalSciMajor  if ~inlist(cho
+> ice25,5,10,15,20,25)
+note: male omitted because of collinearity
+note: m_Peduc omitted because of collinearity
+note: y15 omitted because of collinearity
+note: grad4yr_male omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =    15,401
+-------------+----------------------------------   F(63, 15337)    =     76.50
+       Model |  1111.91956        63  17.6495168   Prob > F        =    0.0000
+    Residual |  3538.45763    15,337  .230713805   R-squared       =    0.2391
+-------------+----------------------------------   Adj R-squared   =    0.2360
+       Total |  4650.37719    15,400  .301972545   Root MSE        =    .48033
+
+------------------------------------------------------------------------------
+    log_comp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        male |          0  (omitted)
+       Peduc |   .0051675   .0015949     3.24   0.001     .0020412    .0082937
+     m_Peduc |          0  (omitted)
+       black |  -.1007374   .0114463    -8.80   0.000    -.1231734   -.0783014
+    hispanic |   .0015077   .0115625     0.13   0.896    -.0211561    .0241716
+ predSATmath |    .000272   .0000654     4.16   0.000     .0001439    .0004002
+ predSATverb |   -.000098   .0000532    -1.84   0.066    -.0002023    6.39e-06
+Grades_HS_~t |  -.0132866   .0053431    -2.49   0.013    -.0237597   -.0028136
+       exper |   .0607959   .0048391    12.56   0.000     .0513107    .0702811
+      exper2 |  -.0014296   .0003113    -4.59   0.000    -.0020399   -.0008194
+exper_whit~r |   .0564463    .006474     8.72   0.000     .0437565    .0691361
+exper_whit~2 |  -.0019067   .0007327    -2.60   0.009     -.003343   -.0004705
+             |
+  birth_year |
+       1981  |   .0247287   .0124417     1.99   0.047     .0003414    .0491159
+       1982  |   .0413488   .0136429     3.03   0.002     .0146072    .0680904
+       1983  |   .0128777   .0146673     0.88   0.380    -.0158721    .0416274
+       1984  |   .0364281   .0163401     2.23   0.026     .0043996    .0684566
+             |
+       age18 |   -.108867   .0298421    -3.65   0.000    -.1673611   -.0503729
+       age19 |  -.0887957   .0239531    -3.71   0.000    -.1357466   -.0418448
+       age20 |  -.0486394   .0206763    -2.35   0.019    -.0891674   -.0081113
+   workFT2yr |  -.0489315   .0243707    -2.01   0.045    -.0967009   -.0011621
+   workPT2yr |  -.1596832   .0245184    -6.51   0.000    -.2077421   -.1116243
+   workFT4yr |   .0153207   .0284567     0.54   0.590    -.0404578    .0710993
+   workPT4yr |  -.1463669   .0223066    -6.56   0.000    -.1900904   -.1026433
+  workPT_new |  -.0783602   .0130673    -6.00   0.000    -.1039736   -.0527469
+    workPTGS |  -.2033051    .065267    -3.11   0.002    -.3312363    -.075374
+    workFTGS |  -.1557794    .048384    -3.22   0.001    -.2506178    -.060941
+    grad_4yr |  -.1753893   .3493229    -0.50   0.616    -.8601036    .5093249
+         y98 |  -.0486541   .0683509    -0.71   0.477    -.1826299    .0853217
+         y99 |  -.0430297   .0500071    -0.86   0.390    -.1410497    .0549902
+         y00 |   .0041736   .0444255     0.09   0.925    -.0829057    .0912528
+         y01 |  -.0222309   .0397214    -0.56   0.576    -.1000896    .0556278
+         y02 |  -.0236977   .0362395    -0.65   0.513    -.0947314    .0473359
+         y03 |  -.0326367   .0340728    -0.96   0.338    -.0994235      .03415
+         y04 |  -.0042707   .0325862    -0.13   0.896    -.0681434    .0596021
+         y05 |   .0063193   .0317643     0.20   0.842    -.0559425    .0685812
+         y06 |   .0259085   .0311959     0.83   0.406    -.0352392    .0870562
+         y07 |   .0200041   .0307829     0.65   0.516    -.0403341    .0803423
+         y08 |  -.0139496   .0305751    -0.46   0.648    -.0738804    .0459813
+         y09 |  -.0247001   .0301919    -0.82   0.413    -.0838799    .0344797
+         y10 |  -.0365992   .0298502    -1.23   0.220    -.0951092    .0219108
+         y11 |  -.0507988   .0293123    -1.73   0.083    -.1082543    .0066568
+         y12 |   -.026229   .0289688    -0.91   0.365    -.0830113    .0305533
+         y13 |  -.0490076   .0286213    -1.71   0.087    -.1051087    .0070936
+         y14 |   .0119861   .0285667     0.42   0.675     -.044008    .0679801
+         y15 |          0  (omitted)
+ grad4yr_y02 |   .1772223   .3935947     0.45   0.653      -.59427    .9487146
+ grad4yr_y03 |    .381364    .353825     1.08   0.281    -.3121749    1.074903
+ grad4yr_y04 |   .2957055   .3475113     0.85   0.395    -.3854579    .9768689
+ grad4yr_y05 |   .3109605    .344941     0.90   0.367    -.3651648    .9870859
+ grad4yr_y06 |   .2233724   .3438405     0.65   0.516    -.4505957    .8973405
+ grad4yr_y07 |    .269681   .3434511     0.79   0.432    -.4035239    .9428859
+ grad4yr_y08 |   .3225746    .343353     0.94   0.347    -.3504381    .9955873
+ grad4yr_y09 |   .2570159   .3432674     0.75   0.454    -.4158289    .9298607
+ grad4yr_y10 |   .2112192   .3432861     0.62   0.538    -.4616622    .8841007
+ grad4yr_y11 |   .2451656   .3433971     0.71   0.475    -.4279334    .9182646
+ grad4yr_y12 |   .2105634   .3434217     0.61   0.540     -.462584    .8837107
+ grad4yr_y13 |   .2396519   .3434335     0.70   0.485    -.4335185    .9128223
+ grad4yr_y14 |   .1575147   .3435502     0.46   0.647    -.5158844    .8309139
+ grad4yr_y15 |    .226172   .3438854     0.66   0.511    -.4478843    .9002283
+  grad4yr_wc |   .0815594   .0234691     3.48   0.001     .0355572    .1275615
+grad4yr_male |          0  (omitted)
+grad4yr_bl~k |   .0458304   .0351387     1.30   0.192    -.0230456    .1147063
+grad4yr_hisp |   .0868396   .0375826     2.31   0.021     .0131733    .1605059
+grad4yr_pr~h |  -2.51e-06    .000146    -0.02   0.986    -.0002887    .0002837
+grad4yr_pr~b |   3.61e-06   .0001024     0.04   0.972    -.0001972    .0002044
+finalSciMa~r |  -.0797295   .0264303    -3.02   0.003    -.1315361   -.0279229
+grad_4yr_f~r |   .1993114   .0355531     5.61   0.000     .1296231    .2689997
+       _cons |   1.960398   .0480071    40.84   0.000     1.866298    2.054497
+------------------------------------------------------------------------------
+
+. predict residU if e(sample), resid
+(6,997 missing values generated)
+
+. 
+. 
+. 
+. sum log_comp if no_return_next_yr==1  & age<=7 & age>=0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    log_comp |      1,350    2.363549    .5009827   1.223994   4.799057
+
+. local d1 = `r(mean)' 
+
+. local d1sd = `r(sd)' 
+
+. local d1n= `r(N)'
+
+. sum log_comp if return_next_yr_after_stopout==1 & age<=7 & age>=0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    log_comp |        113     2.19029    .4319549   1.223994   4.799057
+
+. local d2 = `r(mean)' 
+
+. local d2sd = `r(sd)' 
+
+. local d2n= `r(N)'
+
+. sum log_comp if age<=7 & age>=0 & (no_return_next_yr==1 | return_next_yr_afte
+> r_stopout==1)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    log_comp |      1,463    2.350167    .4980157   1.223994   4.799057
+
+. local d3 = `r(mean)' 
+
+. local d3sd = `r(sd)' 
+
+. local d3n= `r(N)'
+
+. 
+. ttesti `d1n' `d1' `d1sd' `d2n' `d2' `d2sd' 
+
+Two-sample t test with equal variances
+------------------------------------------------------------------------------
+         |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+       x |   1,350    2.363549     .013635    .5009827    2.336801    2.390298
+       y |     113     2.19029    .0406349    .4319549    2.109777    2.270803
+---------+--------------------------------------------------------------------
+combined |   1,463    2.350167    .0130203    .4980157    2.324627    2.375708
+---------+--------------------------------------------------------------------
+    diff |            .1732595    .0485764                .0779727    .2685464
+------------------------------------------------------------------------------
+    diff = mean(x) - mean(y)                                      t =   3.5667
+Ho: diff = 0                                     degrees of freedom =     1461
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = 0.9998         Pr(|T| > |t|) = 0.0004          Pr(T > t) = 0.0002
+
+. local dt1= `r(t)' 
+
+. 
+. 
+. sum residU if no_return_next_yr==1  & age<=7 & age>=0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      residU |      1,350    .0675875    .4771216   -1.28492    2.85436
+
+. local d4 = `r(mean)' 
+
+. local d4sd = `r(sd)' 
+
+. local d4n= `r(N)'
+
+. sum residU if return_next_yr_after_stopout==1 & age<=7 & age>=0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      residU |        113   -.0249902    .4128539   -.900597   2.355425
+
+. local d5 = `r(mean)' 
+
+. local d5sd = `r(sd)' 
+
+. local d5n= `r(N)'
+
+. sum residU if age<=7 & age>=0 & (no_return_next_yr==1 | return_next_yr_after_
+> stopout==1)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      residU |      1,463     .060437    .4729893   -1.28492    2.85436
+
+. local d6 = `r(mean)' 
+
+. local d6sd = `r(sd)' 
+
+. local d6n= `r(N)'
+
+.  
+. ttesti `d4n' `d4' `d4sd' `d5n' `d5' `d5sd' 
+
+Two-sample t test with equal variances
+------------------------------------------------------------------------------
+         |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+       x |   1,350    .0675875    .0129856    .4771216    .0421133    .0930617
+       y |     113   -.0249902     .038838    .4128539   -.1019428    .0519624
+---------+--------------------------------------------------------------------
+combined |   1,463     .060437     .012366    .4729893      .03618    .0846939
+---------+--------------------------------------------------------------------
+    diff |            .0925777    .0462724                .0018103    .1833451
+------------------------------------------------------------------------------
+    diff = mean(x) - mean(y)                                      t =   2.0007
+Ho: diff = 0                                     degrees of freedom =     1461
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = 0.9772         Pr(|T| > |t|) = 0.0456          Pr(T > t) = 0.0228
+
+. local dt2= `r(t)' 
+
+. 
+. capture file close Ttemp
+
+. file open Ttemp using "${tbl_loc}table_5.tex", write replace
+
+. file write Ttemp "\begin{table}[ht]" _n 
+
+. file write Ttemp "\caption{Background characteristics of estimation sample by
+>  college enrollment status}" _n 
+
+. file write Ttemp "\label{tab:sumStatsPost}" _n 
+
+. file write Ttemp "\centering" _n 
+
+. file write Ttemp "\begin{threeparttable}" _n 
+
+. file write Ttemp "\begin{tabular}{lcccc}" _n 
+
+. file write Ttemp "\toprule " _n 
+
+. file write Ttemp "Mean log wage & Std. Dev. & N & $|t-stat|$ \\" _n 
+
+. file write Ttemp "\midrule " _n 
+
+. file write Ttemp "Stay in work    " " & " %4.3f (`d1') " & " %4.3f (`d1sd') "
+>  & " %7.0fc (`d1n') " & "  %4.3f (`dt1') " \\ "  _n 
+
+. file write Ttemp "Return to School  " " & " %4.3f (`d2') " & " %4.3f (`d2sd')
+>  " & " %7.0fc (`d2n') " & "  " \\ "  _n 
+
+. file write Ttemp "\midrule " _n 
+
+. file write Ttemp "Total    " " & " %4.3f (`d3') " & " %4.3f (`d3sd') " & " %7
+> .0fc (`d3n') " & "  " \\ "  _n 
+
+. file write Ttemp "\midrule " _n 
+
+. file write Ttemp "Mean residual & Std. Dev. & N & $|t-stat|$ \\" _n 
+
+. file write Ttemp "Stay in work    " " & " %4.3f (`d4') " & " %4.3f (`d4sd') "
+>  & " %7.0fc (`d4n') " & "  %4.3f (`dt2')  " \\ "  _n 
+
+. file write Ttemp "Return to School  " " & " %4.3f (`d5') " & " %4.3f (`d5sd')
+>  " & " %7.0fc (`d5n') " & "  " \\ "  _n 
+
+. file write Ttemp "\midrule " _n 
+
+. file write Ttemp "Total    " " & " %4.3f (`d6') " & " %4.3f (`d6sd') " & " %7
+> .0fc (`d6n') " & "  " \\ "  _n 
+
+. file write Ttemp "\bottomrule " _n 
+
+. file write Ttemp "\end{tabular} " _n 
+
+. file write Ttemp "\end{threeparttable} " _n 
+
+. file write Ttemp "\end{table} " _n 
+
+. file close Ttemp
+
+. 
+. ************************************
+. * Table A.2 
+. * Most common occupations
+. ********************************************
+. tab occOct if bCollar==1 & grad_4yr==0, sort
+
+                                 occOct |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+Laborers and Freight, Stock, and Materi |        529        4.55        4.55
+               Food Preparation Workers |        480        4.13        8.68
+ Driver/Sales Workers and Truck Drivers |        450        3.87       12.54
+                    Retail Salespersons |        437        3.76       16.30
+         Stock Clerks and Order Fillers |        402        3.46       19.76
+                  Construction Laborers |        357        3.07       22.83
+                               Cashiers |        344        2.96       25.78
+                             Carpenters |        343        2.95       28.73
+First-Line Supervisors of Sales Workers |        313        2.69       31.42
+Automotive Service Technicians and Mech |        250        2.15       33.57
+         Janitors and Building Cleaners |        240        2.06       35.64
+Security Guards and Gaming Surveillance |        215        1.85       37.49
+                 Waiters and Waitresses |        214        1.84       39.33
+                           Electricians |        198        1.70       41.03
+Other production workers including semi |        198        1.70       42.73
+       Customer Service Representatives |        173        1.49       44.22
+ Industrial Truck and Tractor Operators |        161        1.38       45.60
+Sheriffs, Bailiffs, Correctional Office |        160        1.38       46.98
+              Agricultural workers, nec |        153        1.32       48.29
+            Grounds Maintenance Workers |        143        1.23       49.52
+     Cleaners of Vehicles and Equipment |        136        1.17       50.69
+        Assemblers and Fabricators, nec |        134        1.15       51.84
+First-Line Supervisors of Food Preparat |        125        1.07       52.92
+Shipping, Receiving, and Traffic Clerks |        120        1.03       53.95
+Welding, Soldering, and Brazing Workers |        110        0.95       54.90
+Sales Representatives, Wholesale and Ma |        107        0.92       55.82
+Nursing, Psychiatric, and Home Health A |        103        0.89       56.70
+Inspectors, Testers, Sorters, Samplers, |        101        0.87       57.57
+                 Constructions Managers |         94        0.81       58.38
+      Food Service and Lodging Managers |         88        0.76       59.14
+Pipelayers, Plumbers, Pipefitters, and  |         87        0.75       59.88
+Combined Food Preparation and Serving W |         85        0.73       60.61
+ Metal workers and plastic workers, nec |         85        0.73       61.34
+Heating, Air Conditioning, and Refriger |         84        0.72       62.07
+Bus and Truck Mechanics and Diesel Engi |         81        0.70       62.76
+First-Line Supervisors of Production an |         80        0.69       63.45
+Carpet, Floor, and Tile Installers and  |         75        0.64       64.10
+            Packers and Packagers, Hand |         75        0.64       64.74
+           Helpers, Construction Trades |         71        0.61       65.35
+Computer, Automated Teller, and Office  |         71        0.61       65.96
+  Automotive Body and Related Repairers |         70        0.60       66.56
+First-Line Supervisors of Construction  |         67        0.58       67.14
+Construction equipment operators except |         67        0.58       67.72
+Industrial and Refractory Machinery Mec |         66        0.57       68.28
+           Computer Support Specialists |         63        0.54       68.82
+First-Line Supervisors of Office and Ad |         61        0.52       69.35
+ Painters, Construction and Maintenance |         61        0.52       69.87
+                             Bartenders |         59        0.51       70.38
+   Receptionists and Information Clerks |         59        0.51       70.89
+       Prepress Technicians and Workers |         58        0.50       71.39
+                            Dishwashers |         57        0.49       71.88
+Other Installation, Maintenance, and Re |         51        0.44       72.32
+                           Firefighters |         50        0.43       72.75
+Medical Assistants and Other Healthcare |         49        0.42       73.17
+Maintenance and Repair Workers, General |         48        0.41       73.58
+Brickmasons, Blockmasons, and Stonemaso |         47        0.40       73.98
+Butchers and Other Meat, Poultry, and F |         46        0.40       74.38
+                     Parts Salespersons |         44        0.38       74.76
+                        Chefs and Cooks |         42        0.36       75.12
+                             Machinists |         42        0.36       75.48
+Food preparation and serving related wo |         41        0.35       75.83
+            Bill and Account Collectors |         41        0.35       76.18
+Production, Planning, and Expediting Cl |         40        0.34       76.53
+         Other Teachers and Instructors |         39        0.34       76.86
+Telecommunications Line Installers and  |         39        0.34       77.20
+Automotive and Watercraft Service Atten |         39        0.34       77.53
+     Sheet Metal Workers, metal-working |         38        0.33       77.86
+                    Personal Care Aides |         37        0.32       78.18
+Bookkeeping, Accounting, and Auditing C |         37        0.32       78.50
+                Extraction workers, nec |         37        0.32       78.82
+Drywall Installers, Ceiling Tile Instal |         36        0.31       79.12
+        Maids and Housekeeping Cleaners |         34        0.29       79.42
+Entertainment Attendants and Related Wo |         34        0.29       79.71
+Engineering Technicians, Except Drafter |         33        0.28       79.99
+                      Data Entry Keyers |         32        0.28       80.27
+Radio and Telecommunications Equipment  |         32        0.28       80.54
+Helpers--Installation, Maintenance, and |         31        0.27       80.81
+Property, Real Estate, and Community As |         30        0.26       81.07
+Vehicle and Mobile Equipment Mechanics, |         30        0.26       81.33
+                        Cutting Workers |         30        0.26       81.58
+First-Line Supervisors of Housekeeping  |         29        0.25       81.83
+   Hotel, Motel, and Resort Desk Clerks |         28        0.24       82.07
+              Construction workers, nec |         28        0.24       82.31
+Aircraft Mechanics and Service Technici |         28        0.24       82.56
+             Painting Workers and Dyers |         28        0.24       82.80
+                                Barbers |         27        0.23       83.03
+                                Roofers |         27        0.23       83.26
+              Crane and Tower Operators |         27        0.23       83.49
+           Military, Rank Not Specified |         27        0.23       83.72
+                               Drafters |         26        0.22       83.95
+                     Massage Therapists |         26        0.22       84.17
+Counter Attendant, Cafeteria, Food Conc |         26        0.22       84.40
+         Recreation and Fitness Workers |         26        0.22       84.62
+Reservation and Transportation Ticket A |         26        0.22       84.84
+                            Dispatchers |         26        0.22       85.07
+                        Logging Workers |         26        0.22       85.29
+First-Line Supervisors of Mechanics, In |         26        0.22       85.51
+           Material moving workers, nec |         26        0.22       85.74
+Life, Physical, and Social Science Tech |         25        0.21       85.95
+              Sales and Related Workers |         25        0.21       86.17
+               Mining Machine Operators |         25        0.21       86.38
+                            Millwrights |         25        0.21       86.60
+Packaging and Filling Machine Operators |         25        0.21       86.81
+Personal Care and Service Workers, All  |         24        0.21       87.02
+Secretaries and Administrative Assistan |         24        0.21       87.22
+Cement Masons, Concrete Finishers, and  |         24        0.21       87.43
+                 Small Engine Mechanics |         24        0.21       87.64
+Electrical, Electronics, and Electromec |         24        0.21       87.84
+Refuse and Recyclable Material Collecto |         24        0.21       88.05
+                 Office Clerks, General |         23        0.20       88.25
+                 Parking Lot Attendants |         23        0.20       88.44
+                      Childcare Workers |         22        0.19       88.63
+                                    496 |         22        0.19       88.82
+             Billing and Posting Clerks |         22        0.19       89.01
+Electronic Home Entertainment Equipment |         21        0.18       89.19
+          Locksmiths and Safe Repairers |         21        0.18       89.37
+Crushing, Grinding, Polishing, Mixing,  |         21        0.18       89.55
+Musicians, Singers, and Related Workers |         20        0.17       89.73
+Emergency Medical Technicians and Param |         20        0.17       89.90
+         Bank Tellers, Financial Clerks |         20        0.17       90.07
+Heavy Vehicle and Mobile Equipment Serv |         20        0.17       90.24
+Health Diagnosing and Treating Practiti |         19        0.16       90.40
+Hairdressers, Hairstylists, and Cosmeto |         19        0.16       90.57
+                          Telemarketers |         19        0.16       90.73
+Woodworking Machine Setters, Operators, |         19        0.16       90.90
+            Highway Maintenance Workers |         18        0.15       91.05
+First-Line Supervisors of Landscaping,  |         17        0.15       91.20
+              Counter and Rental Clerks |         17        0.15       91.34
+                            File Clerks |         17        0.15       91.49
+Security and Fire Alarm Systems Install |         17        0.15       91.63
+Conveyor operators and tenders, and hoi |         17        0.15       91.78
+Transportation, Storage, and Distributi |         16        0.14       91.92
+Supervisors, Protective Service Workers |         16        0.14       92.06
+               Meter Readers, Utilities |         16        0.14       92.19
+Office and administrative support worke |         16        0.14       92.33
+      Elevator Installers and Repairers |         16        0.14       92.47
+Electrical Power-Line Installers and Re |         16        0.14       92.61
+       Laundry and Dry-Cleaning Workers |         16        0.14       92.74
+Wholesale and Retail Buyers, Except Far |         15        0.13       92.87
+                     Teacher Assistants |         15        0.13       93.00
+Ushers, Lobby Attendants, and Ticket Ta |         15        0.13       93.13
+Supervisors of Transportation and Mater |         15        0.13       93.26
+                             Announcers |         14        0.12       93.38
+           Library Assistants, Clerical |         14        0.12       93.50
+Weighers, Measurers, Checkers, and Samp |         14        0.12       93.62
+                               Glaziers |         14        0.12       93.74
+   Construction and Building Inspectors |         14        0.12       93.86
+Control and Valve Installers and Repair |         14        0.12       93.98
+Plating and Coating Machine Setters, Op |         13        0.11       94.09
+              Transportation Inspectors |         13        0.11       94.21
+                   Pest Control Workers |         12        0.10       94.31
+                   Residential Advisors |         12        0.10       94.41
+                Couriers and Messengers |         12        0.10       94.51
+                     Computer Operators |         12        0.10       94.62
+Mail Clerks and Mail Machine Operators, |         12        0.10       94.72
+                         Fence Erectors |         12        0.10       94.82
+Extruding, Forming, Pressing, and Compa |         12        0.10       94.93
+            Helpers--Production Workers |         12        0.10       95.03
+Farmers, Ranchers, and Other Agricultur |         11        0.09       95.13
+      Surveying and Mapping Technicians |         11        0.09       95.22
+Broadcast and Sound Engineering Technic |         11        0.09       95.31
+         Payroll and Timekeeping Clerks |         11        0.09       95.41
+     Cabinetmakers and Bench Carpenters |         11        0.09       95.50
+           Law enforcement workers, nec |         10        0.09       95.59
+Rolling Machine Setters, Operators, and |         10        0.09       95.68
+Sawing Machine Setters, Operators, and  |         10        0.09       95.76
+     Locomotive Engineers and Operators |         10        0.09       95.85
+         Police Officers and Detectives |          9        0.08       95.92
+            Food Servers, Nonrestaurant |          9        0.08       96.00
+Host and Hostesses, Restaurant, Lounge, |          9        0.08       96.08
+Baggage Porters, Bellhops, and Concierg |          9        0.08       96.16
+                 Tour and Travel Guides |          9        0.08       96.23
+Interviewers, Except Eligibility and Lo |          9        0.08       96.31
+                     New Account Clerks |          9        0.08       96.39
+Information and Record Clerks, All Othe |          9        0.08       96.47
+Cutting, Punching, and Press Machine Se |          9        0.08       96.54
+Grinding, Lapping, Polishing, and Buffi |          9        0.08       96.62
+Chemical Processing Machine Setters, Op |          9        0.08       96.70
+Dredge, Excavating, and Loading Machine |          9        0.08       96.78
+                          Photographers |          8        0.07       96.84
+Diagnostic Related Technologists and Te |          8        0.07       96.91
+Models, Demonstrators, and Product Prom |          8        0.07       96.98
+           Postal Service Mail Carriers |          8        0.07       97.05
+                           Boilermakers |          8        0.07       97.12
+     Earth Drillers, Except Oil and Gas |          8        0.07       97.19
+                                Riggers |          8        0.07       97.26
+                                 Bakers |          8        0.07       97.33
+            Taxi Drivers and Chauffeurs |          8        0.07       97.39
+                        Crossing Guards |          7        0.06       97.46
+                Gaming Services Workers |          7        0.06       97.52
+   Court, Municipal, and License Clerks |          7        0.06       97.58
+      Structural Iron and Steel Workers |          7        0.06       97.64
+Paper Goods Machine Setters, Operators, |          7        0.06       97.70
+    Railroad Conductors and Yardmasters |          7        0.06       97.76
+              Pumping Station Operators |          7        0.06       97.82
+                      Funeral Directors |          6        0.05       97.87
+                        Cost Estimators |          6        0.05       97.92
+Agricultural and Food Science Technicia |          6        0.05       97.97
+   Media and Communication Workers, nec |          6        0.05       98.02
+Licensed Practical and Licensed Vocatio |          6        0.05       98.07
+Derrick, rotary drill, and service unit |          6        0.05       98.13
+                    Tool and Die Makers |          6        0.05       98.18
+Photographic Process Workers and Proces |          6        0.05       98.23
+Adhesive Bonding Machine Operators and  |          6        0.05       98.28
+       Administrative Services Managers |          5        0.04       98.32
+         Industrial Production Managers |          5        0.04       98.37
+                           Logisticians |          5        0.04       98.41
+  Correspondent clerks and order clerks |          5        0.04       98.45
+            Word Processors and Typists |          5        0.04       98.50
+     Reinforcing Iron and Rebar Workers |          5        0.04       98.54
+    Hazardous Materials Removal Workers |          5        0.04       98.58
+         Maintenance Workers, Machinery |          5        0.04       98.62
+Computer Control Programmers and Operat |          5        0.04       98.67
+Medical, Dental, and Ophthalmic Laborat |          5        0.04       98.71
+         Machine Feeders and Offbearers |          5        0.04       98.75
+First-Line Supervisors of Correctional  |          4        0.03       98.79
+Office Machine Operators, Except Comput |          4        0.03       98.82
+                Agricultural Inspectors |          4        0.03       98.86
+Paving, Surfacing, and Tamping Equipmen |          4        0.03       98.89
+                     Insulation Workers |          4        0.03       98.93
+Explosives Workers, Ordnance Handling E |          4        0.03       98.96
+Automotive Glass Installers and Repaire |          4        0.03       98.99
+Precision Instrument and Equipment Repa |          4        0.03       99.03
+Coin, Vending, and Amusement Machine Se |          4        0.03       99.06
+Pressers, Textile, Garment, and Related |          4        0.03       99.10
+Textile Winding, Twisting, and Drawing  |          4        0.03       99.13
+     Motor Vehicle Operators, All Other |          4        0.03       99.17
+Sailors and marine oilers, and ship eng |          4        0.03       99.20
+Entertainers and Performers, Sports and |          3        0.03       99.23
+Medical Records and Health Information  |          3        0.03       99.25
+                      Dental Assistants |          3        0.03       99.28
+                    Telephone Operators |          3        0.03       99.30
+Graders and Sorters, Agricultural Produ |          3        0.03       99.33
+                   Avionics Technicians |          3        0.03       99.36
+Aircraft Structure, Surfaces, Rigging,  |          3        0.03       99.38
+Food Cooking and Processing Machine Ope |          3        0.03       99.41
+Drilling and Boring Machine Tool Setter |          3        0.03       99.43
+Metal Furnace Operators, Tenders, Poure |          3        0.03       99.46
+Molders and Molding Machine Setters, Op |          3        0.03       99.48
+               Sewing Machine Operators |          3        0.03       99.51
+Textile, Apparel, and Furnishings worke |          3        0.03       99.54
+                  Opticians, Dispensing |          2        0.02       99.55
+First-Line Supervisors of Fire Fighting |          2        0.02       99.57
+              Nonfarm Animal Caretakers |          2        0.02       99.59
+  Funeral Service Workers and Embalmers |          2        0.02       99.60
+Switchboard Operators, Including Answer |          2        0.02       99.62
+                       Brokerage Clerks |          2        0.02       99.64
+Human Resources Assistants, Except Payr |          2        0.02       99.66
+               Cargo and Freight Agents |          2        0.02       99.67
+Postal Service Mail Sorters, Processors |          2        0.02       99.69
+First-Line Supervisors of Farming, Fish |          2        0.02       99.71
+    Engine and Other Machine Assemblers |          2        0.02       99.72
+Structural Metal Fabricators and Fitter |          2        0.02       99.74
+Food and Tobacco Roasting, Baking, and  |          2        0.02       99.76
+Forging Machine Setters, Operators, and |          2        0.02       99.78
+Lathe and Turning Machine Tool Setters, |          2        0.02       99.79
+Water Wastewater Treatment Plant and Sy |          2        0.02       99.81
+Cleaning, Washing, and Metal Pickling E |          2        0.02       99.83
+Railroad Brake, Signal, and Switch Oper |          2        0.02       99.85
+            Transportation workers, nec |          2        0.02       99.86
+                        Gaming Managers |          1        0.01       99.87
+                      Dental Hygienists |          1        0.01       99.88
+                    Gaming Cage Workers |          1        0.01       99.89
+                  Postal Service Clerks |          1        0.01       99.90
+            Fishing and hunting workers |          1        0.01       99.91
+           Plasterers and Stucco Masons |          1        0.01       99.91
+Electric Motor, Power Tool, and Related |          1        0.01       99.92
+Electronic Equipment Installers and Rep |          1        0.01       99.93
+                       Food Batchmakers |          1        0.01       99.94
+Extruding and Drawing Machine Setters,  |          1        0.01       99.95
+Model Makers and Patternmakers, Metal a |          1        0.01       99.96
+                           Upholsterers |          1        0.01       99.97
+Woodworkers including model makers and  |          1        0.01       99.97
+Furnace, Kiln, Oven, Drier, and Kettle  |          1        0.01       99.98
+  Etchers, Engravers, and Lithographers |          1        0.01       99.99
+Molders, Shapers, and Casters, Except M |          1        0.01      100.00
+----------------------------------------+-----------------------------------
+                                  Total |     11,631      100.00
+
+. tab occOct if bCollar==1 & grad_4yr==1, sort
+
+                                 occOct |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+First-Line Supervisors of Sales Workers |         62        6.51        6.51
+Sheriffs, Bailiffs, Correctional Office |         49        5.14       11.65
+       Customer Service Representatives |         33        3.46       15.11
+Laborers and Freight, Stock, and Materi |         32        3.36       18.47
+                 Constructions Managers |         30        3.15       21.62
+                    Retail Salespersons |         29        3.04       24.66
+Bookkeeping, Accounting, and Auditing C |         28        2.94       27.60
+           Computer Support Specialists |         26        2.73       30.33
+         Other Teachers and Instructors |         26        2.73       33.05
+First-Line Supervisors of Office and Ad |         26        2.73       35.78
+                               Cashiers |         22        2.31       38.09
+Secretaries and Administrative Assistan |         22        2.31       40.40
+Sales Representatives, Wholesale and Ma |         20        2.10       42.50
+Computer, Automated Teller, and Office  |         20        2.10       44.60
+               Food Preparation Workers |         19        1.99       46.59
+ Driver/Sales Workers and Truck Drivers |         19        1.99       48.58
+Security Guards and Gaming Surveillance |         18        1.89       50.47
+                 Waiters and Waitresses |         18        1.89       52.36
+                                    496 |         16        1.68       54.04
+Other production workers including semi |         14        1.47       55.51
+      Food Service and Lodging Managers |         13        1.36       56.87
+   Receptionists and Information Clerks |         13        1.36       58.24
+         Stock Clerks and Order Fillers |         13        1.36       59.60
+Transportation, Storage, and Distributi |         12        1.26       60.86
+         Bank Tellers, Financial Clerks |         12        1.26       62.12
+Packaging and Filling Machine Operators |         11        1.15       63.27
+           Library Assistants, Clerical |         10        1.05       64.32
+              Agricultural workers, nec |         10        1.05       65.37
+                  Construction Laborers |         10        1.05       66.42
+Inspectors, Testers, Sorters, Samplers, |         10        1.05       67.47
+                        Cost Estimators |          9        0.94       68.42
+                     Teacher Assistants |          9        0.94       69.36
+Broadcast and Sound Engineering Technic |          9        0.94       70.30
+         Recreation and Fitness Workers |          9        0.94       71.25
+                             Carpenters |          9        0.94       72.19
+Farmers, Ranchers, and Other Agricultur |          8        0.84       73.03
+         Police Officers and Detectives |          8        0.84       73.87
+Pipelayers, Plumbers, Pipefitters, and  |          8        0.84       74.71
+Other Installation, Maintenance, and Re |          8        0.84       75.55
+                               Drafters |          7        0.73       76.29
+Health Diagnosing and Treating Practiti |          7        0.73       77.02
+First-Line Supervisors of Food Preparat |          7        0.73       77.75
+                   Residential Advisors |          7        0.73       78.49
+Shipping, Receiving, and Traffic Clerks |          7        0.73       79.22
+                      Data Entry Keyers |          7        0.73       79.96
+               Mining Machine Operators |          7        0.73       80.69
+Property, Real Estate, and Community As |          6        0.63       81.32
+                           Firefighters |          6        0.63       81.95
+         Janitors and Building Cleaners |          6        0.63       82.58
+Wholesale and Retail Buyers, Except Far |          5        0.52       83.11
+                           Logisticians |          5        0.52       83.63
+Life, Physical, and Social Science Tech |          5        0.52       84.16
+                             Bartenders |          5        0.52       84.68
+Eligibility Interviewers, Government Pr |          5        0.52       85.20
+  Correspondent clerks and order clerks |          5        0.52       85.73
+           Postal Service Mail Carriers |          5        0.52       86.25
+Production, Planning, and Expediting Cl |          5        0.52       86.78
+Office and administrative support worke |          5        0.52       87.30
+Radio and Telecommunications Equipment  |          5        0.52       87.83
+Automotive Service Technicians and Mech |          5        0.52       88.35
+                        Gaming Managers |          4        0.42       88.77
+   Media and Communication Workers, nec |          4        0.42       89.19
+   Hotel, Motel, and Resort Desk Clerks |          4        0.42       89.61
+                 Office Clerks, General |          4        0.42       90.03
+Precision Instrument and Equipment Repa |          4        0.42       90.45
+            Taxi Drivers and Chauffeurs |          4        0.42       90.87
+                   Chemical Technicians |          3        0.31       91.19
+           Law enforcement workers, nec |          3        0.31       91.50
+               Meter Readers, Utilities |          3        0.31       91.82
+                     Computer Operators |          3        0.31       92.13
+First-Line Supervisors of Production an |          3        0.31       92.44
+            Packers and Packagers, Hand |          3        0.31       92.76
+Medical Assistants and Other Healthcare |          2        0.21       92.97
+First-Line Supervisors of Landscaping,  |          2        0.21       93.18
+        Maids and Housekeeping Cleaners |          2        0.21       93.39
+                Gaming Services Workers |          2        0.21       93.60
+                    Personal Care Aides |          2        0.21       93.81
+Models, Demonstrators, and Product Prom |          2        0.21       94.02
+             Billing and Posting Clerks |          2        0.21       94.23
+Interviewers, Except Eligibility and Lo |          2        0.21       94.44
+Human Resources Assistants, Except Payr |          2        0.21       94.65
+                Couriers and Messengers |          2        0.21       94.86
+                            Dispatchers |          2        0.21       95.07
+First-Line Supervisors of Construction  |          2        0.21       95.28
+Vehicle and Mobile Equipment Mechanics, |          2        0.21       95.49
+        Assemblers and Fabricators, nec |          2        0.21       95.70
+                 Parking Lot Attendants |          2        0.21       95.91
+Automotive and Watercraft Service Atten |          2        0.21       96.12
+              Crane and Tower Operators |          2        0.21       96.33
+     Cleaners of Vehicles and Equipment |          2        0.21       96.54
+           Military, Rank Not Specified |          2        0.21       96.75
+Engineering Technicians, Except Drafter |          1        0.10       96.85
+Musicians, Singers, and Related Workers |          1        0.10       96.96
+                             Announcers |          1        0.10       97.06
+Diagnostic Related Technologists and Te |          1        0.10       97.17
+Emergency Medical Technicians and Param |          1        0.10       97.27
+Nursing, Psychiatric, and Home Health A |          1        0.10       97.38
+Supervisors, Protective Service Workers |          1        0.10       97.48
+Combined Food Preparation and Serving W |          1        0.10       97.59
+            Grounds Maintenance Workers |          1        0.10       97.69
+First-Line Supervisors of Gaming Worker |          1        0.10       97.80
+                      Childcare Workers |          1        0.10       97.90
+              Counter and Rental Clerks |          1        0.10       98.01
+                     Parts Salespersons |          1        0.10       98.11
+                          Telemarketers |          1        0.10       98.22
+              Sales and Related Workers |          1        0.10       98.32
+Switchboard Operators, Including Answer |          1        0.10       98.43
+         Payroll and Timekeeping Clerks |          1        0.10       98.53
+Information and Record Clerks, All Othe |          1        0.10       98.64
+            Fishing and hunting workers |          1        0.10       98.74
+Drywall Installers, Ceiling Tile Instal |          1        0.10       98.85
+ Painters, Construction and Maintenance |          1        0.10       98.95
+Heating, Air Conditioning, and Refriger |          1        0.10       99.06
+               Home Appliance Repairers |          1        0.10       99.16
+Electrical, Electronics, and Electromec |          1        0.10       99.27
+Structural Metal Fabricators and Fitter |          1        0.10       99.37
+Computer Control Programmers and Operat |          1        0.10       99.48
+Plating and Coating Machine Setters, Op |          1        0.10       99.58
+       Prepress Technicians and Workers |          1        0.10       99.69
+       Laundry and Dry-Cleaning Workers |          1        0.10       99.79
+  Etchers, Engravers, and Lithographers |          1        0.10       99.90
+Supervisors of Transportation and Mater |          1        0.10      100.00
+----------------------------------------+-----------------------------------
+                                  Total |        953      100.00
+
+. tab occOct if bCollar==0 & grad_4yr==0, sort
+
+                                 occOct |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+  Managers, nec (including Postmasters) |        119       10.69       10.69
+Network and Computer Systems Administra |         69        6.20       16.89
+Sales Representatives, Services, All Ot |         62        5.57       22.46
+               Human Resources Managers |         50        4.49       26.95
+        General and Operations Managers |         49        4.40       31.36
+                              Designers |         46        4.13       35.49
+                     Financial Managers |         38        3.41       38.90
+Computer Scientists and Systems Analyst |         37        3.32       42.23
+Software Developers, Applications and S |         36        3.23       45.46
+                      Registered Nurses |         29        2.61       48.07
+    Credit Counselors and Loan Officers |         27        2.43       50.49
+Athletes, Coaches, Umpires, and Related |         26        2.34       52.83
+                    Management Analysts |         23        2.07       54.90
+                 Insurance Sales Agents |         23        2.07       56.96
+               Accountants and Auditors |         22        1.98       58.94
+Insurance Claims and Policy Processing  |         21        1.89       60.83
+                         Engineers, nec |         20        1.80       62.62
+Computer and Information Systems Manage |         19        1.71       64.33
+Human Resources, Training, and Labor Re |         18        1.62       65.95
+                   Computer Programmers |         18        1.62       67.57
+Securities, Commodities, and Financial  |         18        1.62       69.18
+Purchasing Agents, Except Wholesale, Re |         17        1.53       70.71
+Other Business Operations and Managemen |         17        1.53       72.24
+                             Counselors |         15        1.35       73.58
+Television, Video, and Motion Picture C |         15        1.35       74.93
+            Computer Hardware Engineers |         13        1.17       76.10
+        Paralegals and Legal Assistants |         13        1.17       77.27
+  Elementary and Middle School Teachers |         13        1.17       78.44
+            Artists and Related Workers |         13        1.17       79.60
+Claims Adjusters, Appraisers, Examiners |         12        1.08       80.68
+                 Postsecondary Teachers |         12        1.08       81.76
+              Secondary School Teachers |         12        1.08       82.84
+Community and Social Service Specialist |         11        0.99       83.83
+                   Mechanical Engineers |         10        0.90       84.73
+                                 Clergy |         10        0.90       85.62
+                    Library Technicians |         10        0.90       86.52
+Editors, News Analysts, Reporters, and  |         10        0.90       87.42
+                    Writers and Authors |          9        0.81       88.23
+   Private Detectives and Investigators |          9        0.81       89.04
+                 Religious Workers, nec |          8        0.72       89.76
+   Medical and Health Services Managers |          7        0.63       90.39
+Agents and Business Managers of Artists |          7        0.63       91.02
+                        Civil Engineers |          6        0.54       91.55
+   Real Estate Brokers and Sales Agents |          6        0.54       92.09
+Chief executives and legislators/public |          5        0.45       92.54
+               Education Administrators |          5        0.45       92.99
+            Personal Financial Advisors |          5        0.45       93.44
+                          Tax Preparers |          5        0.45       93.89
+             Legal Support Workers, nec |          5        0.45       94.34
+       Actors, Producers, and Directors |          5        0.45       94.79
+Compliance Officers, Except Agriculture |          4        0.36       95.15
+           Operations Research Analysts |          4        0.36       95.51
+   Electrical and Electronics Engineers |          4        0.36       95.87
+                         Social Workers |          4        0.36       96.23
+               Advertising Sales Agents |          4        0.36       96.59
+           Loan Interviewers and Clerks |          4        0.36       96.95
+ Architectural and Engineering Managers |          3        0.27       97.21
+                          Veterinarians |          3        0.27       97.48
+  Social and Community Service Managers |          2        0.18       97.66
+Buyers and Purchasing Agents, Farm Prod |          2        0.18       97.84
+        Meeting and Convention Planners |          2        0.18       98.02
+Tax Examiners and Collectors, and Reven |          2        0.18       98.20
+Industrial Engineers, including Health  |          2        0.18       98.38
+    Preschool and Kindergarten Teachers |          2        0.18       98.56
+                          Travel Agents |          2        0.18       98.74
+   Aircraft Pilots and Flight Engineers |          2        0.18       98.92
+Managers in Marketing, Advertising, and |          1        0.09       99.01
+                    Purchasing Managers |          1        0.09       99.10
+             Financial Specialists, nec |          1        0.09       99.19
+               Architects, Except Naval |          1        0.09       99.28
+  Conservation Scientists and Foresters |          1        0.09       99.37
+                          Psychologists |          1        0.09       99.46
+Directors, Religious Activities and Edu |          1        0.09       99.55
+Education, Training, and Library Worker |          1        0.09       99.64
+           Public Relations Specialists |          1        0.09       99.73
+                                    296 |          1        0.09       99.82
+Clinical Laboratory Technologists and T |          1        0.09       99.91
+Health Technologists and Technicians, n |          1        0.09      100.00
+----------------------------------------+-----------------------------------
+                                  Total |      1,113      100.00
+
+. tab occOct if bCollar==0 & grad_4yr==1, sort
+
+                                 occOct |      Freq.     Percent        Cum.
+----------------------------------------+-----------------------------------
+  Managers, nec (including Postmasters) |         74        6.26        6.26
+Software Developers, Applications and S |         73        6.18       12.44
+                 Postsecondary Teachers |         53        4.48       16.92
+              Secondary School Teachers |         47        3.98       20.90
+               Human Resources Managers |         43        3.64       24.53
+                                 Clergy |         39        3.30       27.83
+               Accountants and Auditors |         38        3.21       31.05
+  Elementary and Middle School Teachers |         37        3.13       34.18
+Network and Computer Systems Administra |         35        2.96       37.14
+                     Financial Managers |         32        2.71       39.85
+                   Computer Programmers |         29        2.45       42.30
+                    Writers and Authors |         26        2.20       44.50
+        General and Operations Managers |         25        2.12       46.62
+                    Management Analysts |         25        2.12       48.73
+Computer Scientists and Systems Analyst |         25        2.12       50.85
+                              Designers |         25        2.12       52.96
+                             Counselors |         22        1.86       54.82
+Chief executives and legislators/public |         20        1.69       56.51
+Industrial Engineers, including Health  |         20        1.69       58.21
+               Education Administrators |         19        1.61       59.81
+                        Civil Engineers |         19        1.61       61.42
+   Electrical and Electronics Engineers |         19        1.61       63.03
+                Physicians and Surgeons |         18        1.52       64.55
+Lawyers, and judges, magistrates, and o |         17        1.44       65.99
+Human Resources, Training, and Labor Re |         16        1.35       67.34
+            Personal Financial Advisors |         15        1.27       68.61
+               Physical Scientists, nec |         15        1.27       69.88
+                   Mechanical Engineers |         14        1.18       71.07
+                         Social Workers |         14        1.18       72.25
+             Legal Support Workers, nec |         14        1.18       73.43
+               Architects, Except Naval |         13        1.10       74.53
+Securities, Commodities, and Financial  |         13        1.10       75.63
+Sales Representatives, Services, All Ot |         13        1.10       76.73
+                     Financial Analysts |         12        1.02       77.75
+Community and Social Service Specialist |         12        1.02       78.76
+Athletes, Coaches, Umpires, and Related |         12        1.02       79.78
+   Aircraft Pilots and Flight Engineers |         12        1.02       80.80
+       Actors, Producers, and Directors |         11        0.93       81.73
+                 Insurance Sales Agents |         11        0.93       82.66
+Appraisers and Assessors of Real Estate |         10        0.85       83.50
+      Economists and market researchers |         10        0.85       84.35
+Computer and Information Systems Manage |          9        0.76       85.11
+Other Business Operations and Managemen |          9        0.76       85.87
+  Conservation Scientists and Foresters |          9        0.76       86.63
+      Chemists and Materials Scientists |          9        0.76       87.39
+                    Purchasing Managers |          8        0.68       88.07
+    Credit Counselors and Loan Officers |          8        0.68       88.75
+Petroleum, mining and geological engine |          7        0.59       89.34
+                         Engineers, nec |          7        0.59       89.93
+   Medical and Health Services Managers |          6        0.51       90.44
+        Paralegals and Legal Assistants |          6        0.51       90.95
+   Private Detectives and Investigators |          6        0.51       91.46
+               Advertising Sales Agents |          6        0.51       91.96
+  Social and Community Service Managers |          5        0.42       92.39
+                Database Administrators |          5        0.42       92.81
+           Public Relations Specialists |          5        0.42       93.23
+Television, Video, and Motion Picture C |          5        0.42       93.65
+                               Dentists |          5        0.42       94.08
+           Speech Language Pathologists |          5        0.42       94.50
+Insurance Claims and Policy Processing  |          5        0.42       94.92
+Compliance Officers, Except Agriculture |          4        0.34       95.26
+                    Materials Engineers |          4        0.34       95.60
+       Agricultural and Food Scientists |          4        0.34       95.94
+                          Psychologists |          4        0.34       96.28
+             Special Education Teachers |          4        0.34       96.62
+Education, Training, and Library Worker |          4        0.34       96.95
+           Loan Interviewers and Clerks |          4        0.34       97.29
+            Computer Hardware Engineers |          3        0.25       97.55
+             Astronomers and Physicists |          3        0.25       97.80
+            Urban and Regional Planners |          3        0.25       98.05
+                        Sales Engineers |          3        0.25       98.31
+Claims Adjusters, Appraisers, Examiners |          2        0.17       98.48
+                          Statisticians |          2        0.17       98.65
+                    Aerospace Engineers |          2        0.17       98.82
+                             Librarians |          2        0.17       98.98
+                        Therapists, nec |          2        0.17       99.15
+   Real Estate Brokers and Sales Agents |          2        0.17       99.32
+           Operations Research Analysts |          1        0.08       99.41
+Surveyors, Cartographers, and Photogram |          1        0.08       99.49
+    Preschool and Kindergarten Teachers |          1        0.08       99.58
+            Artists and Related Workers |          1        0.08       99.66
+                          Chiropractors |          1        0.08       99.75
+                          Veterinarians |          1        0.08       99.83
+Healthcare Practitioners and Technical  |          1        0.08       99.92
+                          Travel Agents |          1        0.08      100.00
+----------------------------------------+-----------------------------------
+                                  Total |      1,182      100.00
+
+. 
+. 
+. *============================================================================
+. * Table 3: Outcomes of college enrollees (Estimation subsample portion)
+. *============================================================================
+. bys ID: egen finish_4yr = max(grad_4yr)
+
+. 
+. *** "NLSY97 population ***
+. preserve
+
+. use "${data_loc}y97_all_tscrGPA.dta", clear
+
+.     tab CC_DO_SO, nol
+
+   CC_DO_SO |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |     34,580       33.13       33.13
+          2 |      9,709        9.30       42.44
+          3 |     16,568       15.87       58.31
+          4 |     37,924       36.34       94.65
+          5 |        779        0.75       95.39
+          6 |      4,807        4.61      100.00
+------------+-----------------------------------
+      Total |    104,367      100.00
+
+.     tab CC_DO_SO
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |     34,580       33.13       33.13
+  Stopout but graduate |      9,709        9.30       42.44
+   Stopout but dropout |     16,568       15.87       58.31
+               Dropout |     37,924       36.34       94.65
+CC, but right-censored |        779        0.75       95.39
+SO, but right-censored |      4,807        4.61      100.00
+-----------------------+-----------------------------------
+                 Total |    104,367      100.00
+
+.     gen CC_DO_SO_temp = CC_DO_SO
+(66,329 missing values generated)
+
+.     lab def vlCCDOSOtemp 1 "Continuous completion" 2 "Stopout but graduate" 3
+>  "Stopout then dropout" 4 "Dropout"
+
+.     lab val CC_DO_SO_temp vlCCDOSOtemp
+
+.     recode CC_DO_SO_temp (5 = 1) (6 = 2)
+(CC_DO_SO_temp: 5586 changes made)
+
+.     
+.     gen CC_DO_SO_verbose = CC_DO_SO
+(66,329 missing values generated)
+
+.     lab def vlCCDOSOv 1 "CC Sci" 2 "CC Hum" 3 "Stopout grad Sci" 4 "Stopout g
+> rad Hum" 5 "Stopout then dropout" 6 "Dropout" 7 "CC right-censored" 8 "SO rig
+> ht-censored"
+
+.     lab val CC_DO_SO_verbose vlCCDOSOv
+
+.     recode CC_DO_SO_verbose (2 = 3) (3 = 5) (4 = 6) (5 = 7) (6 = 8)
+(CC_DO_SO_verbose: 69787 changes made)
+
+.     replace CC_DO_SO_verbose = 1 if CC_DO_SO==1 & finalSciMajor==1
+(0 real changes made)
+
+.     replace CC_DO_SO_verbose = 2 if CC_DO_SO==1 & finalSciMajor==0
+(28,405 real changes made)
+
+.     replace CC_DO_SO_verbose = 3 if CC_DO_SO==2 & finalSciMajor==1
+(0 real changes made)
+
+.     replace CC_DO_SO_verbose = 4 if CC_DO_SO==2 & finalSciMajor==0
+(8,436 real changes made)
+
+.     
+.     capture drop firstObs
+
+.     bys ID: gen firstObs = _n==1
+
+.     mdesc CC_DO_SO              if firstObs &  male & (ever_start_4yr | ever_
+> start_2yr)
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+    CC_DO_SO           0        2517              0
+
+.     mdesc CC_DO_SO              if firstObs & ~male & (ever_start_4yr | ever_
+> start_2yr)
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+    CC_DO_SO           0        2976              0
+
+.     tab ID if mi(CC_DO_SO) & (ever_start_4yr | ever_start_2yr) & firstObs
+no observations
+
+.     
+.     tabulat CC_DO_SO if male & firstObs
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |        763       30.31       30.31
+  Stopout but graduate |        216        8.58       38.90
+   Stopout but dropout |        396       15.73       54.63
+               Dropout |      1,028       40.84       95.47
+CC, but right-censored |         22        0.87       96.34
+SO, but right-censored |         92        3.66      100.00
+-----------------------+-----------------------------------
+                 Total |      2,517      100.00
+
+.     tabulat CC_DO_SO if male & firstObs, mi
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |        763       16.59       16.59
+  Stopout but graduate |        216        4.70       21.29
+   Stopout but dropout |        396        8.61       29.90
+               Dropout |      1,028       22.35       52.25
+CC, but right-censored |         22        0.48       52.73
+SO, but right-censored |         92        2.00       54.73
+                     . |      2,082       45.27      100.00
+-----------------------+-----------------------------------
+                 Total |      4,599      100.00
+
+.     generat CC_DO_SO_uncond = CC_DO_SO
+(66,329 missing values generated)
+
+.     replace CC_DO_SO_uncond = 7 if mi(CC_DO_SO) & ~ever_start_4yr & ~ever_sta
+> rt_2yr
+(66,329 real changes made)
+
+.     tabulat CC_DO_SO_uncond if male & firstObs
+
+CC_DO_SO_un |
+       cond |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        763       16.59       16.59
+          2 |        216        4.70       21.29
+          3 |        396        8.61       29.90
+          4 |      1,028       22.35       52.25
+          5 |         22        0.48       52.73
+          6 |         92        2.00       54.73
+          7 |      2,082       45.27      100.00
+------------+-----------------------------------
+      Total |      4,599      100.00
+
+.     tabulat CC_DO_SO_uncond if male & firstObs, mi
+
+CC_DO_SO_un |
+       cond |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        763       16.59       16.59
+          2 |        216        4.70       21.29
+          3 |        396        8.61       29.90
+          4 |      1,028       22.35       52.25
+          5 |         22        0.48       52.73
+          6 |         92        2.00       54.73
+          7 |      2,082       45.27      100.00
+------------+-----------------------------------
+      Total |      4,599      100.00
+
+.     
+.     generat CC_DO_SO_collapse = .
+(170,696 missing values generated)
+
+.     replace CC_DO_SO_collapse = 1 if inlist(CC_DO_SO,1,5)
+(35,359 real changes made)
+
+.     replace CC_DO_SO_collapse = 2 if inlist(CC_DO_SO,2,3,6)
+(31,084 real changes made)
+
+.     replace CC_DO_SO_collapse = 3 if inlist(CC_DO_SO,4)
+(37,924 real changes made)
+
+.     lab def vlccdosocollpase 1 "CC" 2 "SO" 3 "DO"
+
+.     lab val CC_DO_SO_collapse vlccdosocollpase
+
+. 
+. use "${data_loc}y97_all_tscrGPA.dta", clear
+
+.     collapse (first) year if anyFlag==0 & bad_major==0 & bad_wage==0 & bad_gr
+> ade==0, by(ID)
+
+.     keep ID
+
+.     outsheet using estSubSampIDs.csv, comma replace
+(note: file estSubSampIDs.csv not found)
+
+. restore
+
+. 
+. *** Estimation Subsample ***
+. tempfile estimationIDs
+
+. preserve
+
+.     * This uses data from the DSCR server to generate the list of individuals
+>  included in the structural estimation.
+.     insheet using estSubSampIDs.csv, comma clear
+(1 var, 2,300 obs)
+
+.     ren id ID
+
+.     l in 1/5
+
+     +----+
+     | ID |
+     |----|
+  1. |  2 |
+  2. |  5 |
+  3. |  9 |
+  4. | 16 |
+  5. | 22 |
+     +----+
+
+.     gen veevee = 1
+
+.     count
+  2,300
+
+.     save `estimationIDs'
+file /work/tmr17/StataTMP/St852948.000003 saved
+
+. restore
+
+. preserve
+
+. use "${data_loc}y97_all_tscrGPA.dta", clear
+
+.     merge m:1 ID using `estimationIDs', nogen keep(match)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                             0
+    matched                            43,700  
+    -----------------------------------------
+
+.     codebook ID
+
+-------------------------------------------------------------------------------
+ID                                                                           ID
+-------------------------------------------------------------------------------
+
+                  type:  numeric (int)
+
+                 range:  [2,9021]                     units:  1
+         unique values:  2,300                    missing .:  0/43,700
+
+                  mean:   4265.26
+              std. dev:   2507.92
+
+           percentiles:        10%       25%       50%       75%       90%
+                             998.5    2158.5      4157      6265    7953.5
+
+.     tab CC_DO_SO, nol
+
+   CC_DO_SO |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |     11,248       34.86       34.86
+          2 |      3,135        9.72       44.58
+          3 |      4,864       15.08       59.66
+          4 |     11,666       36.16       95.82
+          5 |        190        0.59       96.41
+          6 |      1,159        3.59      100.00
+------------+-----------------------------------
+      Total |     32,262      100.00
+
+.     tab CC_DO_SO
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |     11,248       34.86       34.86
+  Stopout but graduate |      3,135        9.72       44.58
+   Stopout but dropout |      4,864       15.08       59.66
+               Dropout |     11,666       36.16       95.82
+CC, but right-censored |        190        0.59       96.41
+SO, but right-censored |      1,159        3.59      100.00
+-----------------------+-----------------------------------
+                 Total |     32,262      100.00
+
+.     gen CC_DO_SO_temp = CC_DO_SO
+(11,438 missing values generated)
+
+.     lab def vlCCDOSOtemp 1 "Continuous completion" 2 "Stopout but graduate" 3
+>  "Stopout then dropout" 4 "Dropout"
+
+.     lab val CC_DO_SO_temp vlCCDOSOtemp
+
+.     recode CC_DO_SO_temp (5 = 1) (6 = 2)
+(CC_DO_SO_temp: 1349 changes made)
+
+.     
+.     gen CC_DO_SO_verbose = CC_DO_SO
+(11,438 missing values generated)
+
+.     lab def vlCCDOSOv 1 "CC Sci" 2 "CC Hum" 3 "Stopout grad Sci" 4 "Stopout g
+> rad Hum" 5 "Stopout then dropout" 6 "Dropout" 7 "CC right-censored" 8 "SO rig
+> ht-censored"
+
+.     lab val CC_DO_SO_verbose vlCCDOSOv
+
+.     recode CC_DO_SO_verbose (2 = 3) (3 = 5) (4 = 6) (5 = 7) (6 = 8)
+(CC_DO_SO_verbose: 21014 changes made)
+
+.     replace CC_DO_SO_verbose = 1 if CC_DO_SO==1 & finalSciMajor==1
+(0 real changes made)
+
+.     replace CC_DO_SO_verbose = 2 if CC_DO_SO==1 & finalSciMajor==0
+(7,942 real changes made)
+
+.     replace CC_DO_SO_verbose = 3 if CC_DO_SO==2 & finalSciMajor==1
+(0 real changes made)
+
+.     replace CC_DO_SO_verbose = 4 if CC_DO_SO==2 & finalSciMajor==0
+(2,470 real changes made)
+
+.     
+.     
+.     capture drop firstObs
+
+.     bys ID: gen firstObs = _n==1
+
+.     mdesc CC_DO_SO              if firstObs &  male & (ever_start_4yr | ever_
+> start_2yr)
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+    CC_DO_SO           0        1698              0
+
+.     mdesc CC_DO_SO              if firstObs & ~male & (ever_start_4yr | ever_
+> start_2yr)
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+    CC_DO_SO           0           0              .
+
+.     tab ID if mi(CC_DO_SO) & (ever_start_4yr | ever_start_2yr) & firstObs
+no observations
+
+.     
+.     tabulat CC_DO_SO if male & firstObs
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |        592       34.86       34.86
+  Stopout but graduate |        165        9.72       44.58
+   Stopout but dropout |        256       15.08       59.66
+               Dropout |        614       36.16       95.82
+CC, but right-censored |         10        0.59       96.41
+SO, but right-censored |         61        3.59      100.00
+-----------------------+-----------------------------------
+                 Total |      1,698      100.00
+
+.     tabulat CC_DO_SO if male & firstObs, mi
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |        592       25.74       25.74
+  Stopout but graduate |        165        7.17       32.91
+   Stopout but dropout |        256       11.13       44.04
+               Dropout |        614       26.70       70.74
+CC, but right-censored |         10        0.43       71.17
+SO, but right-censored |         61        2.65       73.83
+                     . |        602       26.17      100.00
+-----------------------+-----------------------------------
+                 Total |      2,300      100.00
+
+.     generat CC_DO_SO_uncond = CC_DO_SO
+(11,438 missing values generated)
+
+.     replace CC_DO_SO_uncond = 7 if mi(CC_DO_SO) & ~ever_start_4yr & ~ever_sta
+> rt_2yr
+(11,438 real changes made)
+
+.     tabulat CC_DO_SO_uncond if male & firstObs
+
+CC_DO_SO_un |
+       cond |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        592       25.74       25.74
+          2 |        165        7.17       32.91
+          3 |        256       11.13       44.04
+          4 |        614       26.70       70.74
+          5 |         10        0.43       71.17
+          6 |         61        2.65       73.83
+          7 |        602       26.17      100.00
+------------+-----------------------------------
+      Total |      2,300      100.00
+
+.     tabulat CC_DO_SO_uncond if male & firstObs, mi
+
+CC_DO_SO_un |
+       cond |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        592       25.74       25.74
+          2 |        165        7.17       32.91
+          3 |        256       11.13       44.04
+          4 |        614       26.70       70.74
+          5 |         10        0.43       71.17
+          6 |         61        2.65       73.83
+          7 |        602       26.17      100.00
+------------+-----------------------------------
+      Total |      2,300      100.00
+
+.     
+.     generat CC_DO_SO_collapse = .
+(43,700 missing values generated)
+
+.     replace CC_DO_SO_collapse = 1 if inlist(CC_DO_SO,1,5)
+(11,438 real changes made)
+
+.     replace CC_DO_SO_collapse = 2 if inlist(CC_DO_SO,2,3,6)
+(9,158 real changes made)
+
+.     replace CC_DO_SO_collapse = 3 if inlist(CC_DO_SO,4)
+(11,666 real changes made)
+
+.     lab def vlccdosocollpase 1 "CC" 2 "SO" 3 "DO"
+
+.     lab val CC_DO_SO_collapse vlccdosocollpase
+
+. restore
+
+. 
+. *** Descriptive Subsample
+. qui generat first_type = .
+
+. qui replace first_type = 2 if dummy_2yr1==1 
+
+. qui replace first_type = 3 if dummy_4yr1==1 & scienceMajor==1
+
+. qui replace first_type = 4 if dummy_4yr1==1 & otherMajor==1
+
+. qui replace first_type = 5 if dummy_4yr1==1 & choice15==-2
+
+. lab def vlfirsttype 2 "Started in 2yr college" 3 "Started in 4yr college & Sc
+> i" 4 "Started in 4yr college & Hum" 5 "Started in 4yr college & Missing major
+> "
+
+. lab val first_type vlfirsttype
+
+. 
+. * Try to find the individuals who are not in the "first_type" sample but are 
+> in the "firstObs" sample
+. bys ID (year): egen firstTyper = mean(first_type)
+(8516 missing values generated)
+
+. 
+. 
+. gen CC_DO_SO_temp = CC_DO_SO
+(8,491 missing values generated)
+
+. lab def vlCCDOSOtemp 1 "Continuous completion" 2 "Stopout but graduate" 3 "St
+> opout then dropout" 4 "Dropout"
+
+. lab val CC_DO_SO_temp vlCCDOSOtemp
+
+. recode CC_DO_SO_temp (5 = 1) (6 = 2)
+(CC_DO_SO_temp: 713 changes made)
+
+. 
+. gen CC_DO_SO_verbose = CC_DO_SO
+(8,491 missing values generated)
+
+. lab def vlCCDOSOv 1 "CC Sci" 2 "CC Hum" 3 "Stopout grad Sci" 4 "Stopout grad 
+> Hum" 5 "Stopout then dropout" 6 "Dropout" 7 "CC right-censored" 8 "SO right-c
+> ensored"
+
+. lab val CC_DO_SO_verbose vlCCDOSOv
+
+. recode CC_DO_SO_verbose (2 = 3) (3 = 5) (4 = 6) (5 = 7) (6 = 8)
+(CC_DO_SO_verbose: 9860 changes made)
+
+. replace CC_DO_SO_verbose = 1 if CC_DO_SO==1 & finalSciMajor==1
+(0 real changes made)
+
+. replace CC_DO_SO_verbose = 2 if CC_DO_SO==1 & finalSciMajor==0
+(2,815 real changes made)
+
+. replace CC_DO_SO_verbose = 3 if CC_DO_SO==2 & finalSciMajor==1
+(0 real changes made)
+
+. replace CC_DO_SO_verbose = 4 if CC_DO_SO==2 & finalSciMajor==0
+(926 real changes made)
+
+. 
+. 
+. capture drop firstObs
+
+. bys ID:  gen firstObs = _n==1
+
+. bys ID: egen everFlag = max(anyFlag)
+
+. gen CC_DO_SO_nonAttend = CC_DO_SO
+(8,491 missing values generated)
+
+. replace CC_DO_SO_nonAttend = 7 if mi(CC_DO_SO_nonAttend)
+(8,491 real changes made)
+
+. lab def vlCCDOSOnonAttend 1 "Continuous completion" 2 "Stopout but graduate" 
+> 3 "Stopout then dropout" 4 "Dropout" 5 "CC trunc" 6 "SO trunc" 7 "Never colle
+> ge"
+
+. lab val CC_DO_SO_nonAttend vlCCDOSOnonAttend
+
+. tab CC_DO_SO           if firstObs
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |        592       34.86       34.86
+  Stopout but graduate |        165        9.72       44.58
+   Stopout but dropout |        256       15.08       59.66
+               Dropout |        614       36.16       95.82
+CC, but right-censored |         10        0.59       96.41
+SO, but right-censored |         61        3.59      100.00
+-----------------------+-----------------------------------
+                 Total |      1,698      100.00
+
+. tab CC_DO_SO           if firstObs, mi
+
+              CC_DO_SO |      Freq.     Percent        Cum.
+-----------------------+-----------------------------------
+ Continuous completion |        592       25.74       25.74
+  Stopout but graduate |        165        7.17       32.91
+   Stopout but dropout |        256       11.13       44.04
+               Dropout |        614       26.70       70.74
+CC, but right-censored |         10        0.43       71.17
+SO, but right-censored |         61        2.65       73.83
+                     . |        602       26.17      100.00
+-----------------------+-----------------------------------
+                 Total |      2,300      100.00
+
+. tab CC_DO_SO_nonAttend if firstObs, mi
+
+   CC_DO_SO_nonAttend |      Freq.     Percent        Cum.
+----------------------+-----------------------------------
+Continuous completion |        592       25.74       25.74
+ Stopout but graduate |        165        7.17       32.91
+ Stopout then dropout |        256       11.13       44.04
+              Dropout |        614       26.70       70.74
+             CC trunc |         10        0.43       71.17
+             SO trunc |         61        2.65       73.83
+        Never college |        602       26.17      100.00
+----------------------+-----------------------------------
+                Total |      2,300      100.00
+
+. 
+. qui tabout CC_DO_SO_verbose first_type using "${tbl_loc}table_3_Ns.tex", repl
+> ace c(freq) f(0) style(tex) 
+
+. qui tabout CC_DO_SO_verbose first_type using "${tbl_loc}table_3_pcts.tex", re
+> place c( col) f( 2p) style(tex) 
+
+. 
+. 
+. *Table 3 corresponds to the .tex files "table_3_pcts.tex" and for the observa
+> tions "table_3_Ns.tex"
+. 
+. 
+. 
+. **********
+. *Table 4
+. **********
+. *============================================================================
+. * Difference between actual and expected period-t grades (by t+1 period colle
+> ge decision) --- any t, not just first period
+. *============================================================================
+. capture drop resid*
+
+. gen workFT_s = (inlist(choice15,1,4,7) | (inlist(choice15,-2) & workFT))
+
+. gen workPT_s = (inlist(choice15,2,5,8) | (inlist(choice15,-2) & workPT))
+
+. 
+. local cs
+
+. *----------------------------------------------------------------------------
+> ----
+. * Panel 3 of Table 4
+. *----------------------------------------------------------------------------
+> ----
+. capture drop resid*
+
+. qui regress grades black hispanic predSATmath predSATverb Parent_college HS_g
+> rades i.birth_year age18 age19 age20 workFT_s workPT_s if inlist(choice15,-2,
+> 4,5,6,7,8,9) `cs'
+
+. qui predict double resid4 if e(sample), resid
+
+. reg resid4 left_all_next_yr                 if inlist(choice15,4,5,6,7,8,9) `
+> cs'
+
+      Source |       SS           df       MS      Number of obs   =     1,584
+-------------+----------------------------------   F(1, 1582)      =     79.36
+       Model |  46.2364848         1  46.2364848   Prob > F        =    0.0000
+    Residual |  921.649673     1,582  .582585128   R-squared       =    0.0478
+-------------+----------------------------------   Adj R-squared   =    0.0472
+       Total |  967.886158     1,583  .611425242   Root MSE        =    .76327
+
+------------------------------------------------------------------------------
+      resid4 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+left_all_n~r |   .6018973   .0675631     8.91   0.000     .4693746    .7344199
+       _cons |  -1.150385   .1305708    -8.81   0.000    -1.406495   -.8942748
+------------------------------------------------------------------------------
+
+. qui tabout left_all_next_yr                 if inlist(choice15,4,5,6,7,8,9) `
+> cs' using "${tbl_loc}table_4_c_d.tex", replace c( mean resid4 sd resid4 N res
+> id4) f(3 3 0) sum clab( Grades_residual Std_Dev N ) style(tex)
+
+. 
+. sum resid4 if left_all_next_yr==1 & inlist(choice15,4,5,6,7,8,9)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      resid4 |        140   -.5484876    .9786403   -2.77301   1.603066
+
+. local a1 = `r(mean)' 
+
+. local a1sd = `r(sd)' 
+
+. local a1n= `r(N)'
+
+.  
+. sum resid4 if left_all_next_yr==2 & inlist(choice15,4,5,6,7,8,9)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      resid4 |      1,444    .0534097    .7392211  -3.135526   1.871033
+
+. local a2 = `r(mean)' 
+
+. local a2sd = `r(sd)' 
+
+. local a2n= `r(N)'
+
+. 
+. ttesti `a1n' `a1' `a1sd' `a2n' `a2' `a2sd' 
+
+Two-sample t test with equal variances
+------------------------------------------------------------------------------
+         |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+       x |     140   -.5484876    .0827102    .9786403   -.7120204   -.3849548
+       y |   1,444    .0534097    .0194532    .7392211    .0152501    .0915692
+---------+--------------------------------------------------------------------
+combined |   1,584    .0002117    .0196469    .7819369    -.038325    .0387484
+---------+--------------------------------------------------------------------
+    diff |           -.6018973    .0675631               -.7344199   -.4693746
+------------------------------------------------------------------------------
+    diff = mean(x) - mean(y)                                      t =  -8.9087
+Ho: diff = 0                                     degrees of freedom =     1582
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = 0.0000         Pr(|T| > |t|) = 0.0000          Pr(T > t) = 1.0000
+
+. local at1= `r(t)' 
+
+. *----------------------------------------------------------------------------
+> ----
+. * Panel 4 of Table 4
+. *----------------------------------------------------------------------------
+> ----
+. capture drop resid*
+
+. qui regress grades black hispanic predSATmath predSATverb Parent_college HS_g
+> rades i.birth_year age18 age19 age20 workFT_s workPT_s if inlist(choice15,1,2
+> ,3)
+
+. qui predict double resid2 if e(sample), resid
+
+. reg resid2 left_all_next_yr2                 if inlist(choice15,1,2,3)
+
+      Source |       SS           df       MS      Number of obs   =       768
+-------------+----------------------------------   F(1, 766)       =     39.26
+       Model |  31.3715605         1  31.3715605   Prob > F        =    0.0000
+    Residual |  612.013892       766  .798973749   R-squared       =    0.0488
+-------------+----------------------------------   Adj R-squared   =    0.0475
+       Total |  643.385452       767  .838833706   Root MSE        =    .89385
+
+------------------------------------------------------------------------------
+      resid2 |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+left_all_n~2 |    .441811   .0705074     6.27   0.000     .3034003    .5802217
+       _cons |  -.7518841   .1242506    -6.05   0.000    -.9957961   -.5079721
+------------------------------------------------------------------------------
+
+. qui tabout left_all_next_yr2                if inlist(choice15,1,2,3) using "
+> ${tbl_loc}table_4_c_d.tex", append c( mean resid2 sd resid2 N resid2) f(3 3 0
+> ) sum clab( Grades_residual Std_Dev N ) style(tex)
+
+. 
+. sum resid2 if  left_all_next_yr2==1 & inlist(choice15,1,2,3)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      resid2 |        229   -.3100731     1.05709  -2.820206   1.979154
+
+. local a5 = `r(mean)' 
+
+. local a5sd = `r(sd)' 
+
+. local a5n= `r(N)'
+
+. 
+. sum resid2 if  left_all_next_yr2==2 & inlist(choice15,1,2,3)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      resid2 |        539    .1317379    .8148687  -2.674262   1.837577
+
+. local a6 = `r(mean)' 
+
+. local a6sd = `r(sd)' 
+
+. local a6n= `r(N)'
+
+. 
+. ttesti `a5n' `a5' `a5sd' `a6n' `a6' `a6sd' 
+
+Two-sample t test with equal variances
+------------------------------------------------------------------------------
+         |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+       x |     229   -.3100731    .0698545     1.05709   -.4477159   -.1724303
+       y |     539    .1317379    .0350989    .8148687    .0627903    .2006856
+---------+--------------------------------------------------------------------
+combined |     768    5.55e-17    .0330489    .9158787   -.0648771    .0648771
+---------+--------------------------------------------------------------------
+    diff |            -.441811    .0705074               -.5802217   -.3034003
+------------------------------------------------------------------------------
+    diff = mean(x) - mean(y)                                      t =  -6.2662
+Ho: diff = 0                                     degrees of freedom =      766
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = 0.0000         Pr(|T| > |t|) = 0.0000          Pr(T > t) = 1.0000
+
+. local at3= `r(t)' 
+
+.  
+. *Levels
+. *============================================================================
+. * Table 4: Difference between actual and expected period-t grades (by t+1 per
+> iod college decision) --- any t, not just first period
+. *============================================================================
+. capture drop resid* Resid*
+
+. 
+. local cs
+
+. *----------------------------------------------------------------------------
+> ----
+. *  Panel 1 Table 4
+. *----------------------------------------------------------------------------
+> ----
+. capture drop resid*
+
+. 
+. reg grades left_all_next_yr                 if inlist(choice15,-2,4,5,6,7,8,9
+> ) `cs'
+
+      Source |       SS           df       MS      Number of obs   =     1,899
+-------------+----------------------------------   F(1, 1897)      =    133.66
+       Model |  88.7688495         1  88.7688495   Prob > F        =    0.0000
+    Residual |  1259.85439     1,897  .664129882   R-squared       =    0.0658
+-------------+----------------------------------   Adj R-squared   =    0.0653
+       Total |  1348.62323     1,898  .710549649   Root MSE        =    .81494
+
+------------------------------------------------------------------------------
+      grades |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+left_all_n~r |   .7399494   .0640027    11.56   0.000     .6144264    .8654725
+       _cons |   1.430665   .1233978    11.59   0.000     1.188655    1.672675
+------------------------------------------------------------------------------
+
+. qui tabout left_all_next_yr                  if inlist(choice15,-2,4,5,6,7,8,
+> 9) `cs' using "${tbl_loc}table_4_a_b.tex", replace c( mean grades sd grades N
+>  grades) f(3 3 0) sum clab( GPA Std_Dev N ) style(tex)
+
+. 
+. sum grades if left_all_next_yr==1 & inlist(choice15,-2,4,5,6,7,8,9)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      grades |        179    2.170615    1.003123          0          4
+
+. local a9 = `r(mean)' 
+
+. local a9sd = `r(sd)' 
+
+. local a9n= `r(N)'
+
+.  
+. sum grades if left_all_next_yr==2 &  inlist(choice15,-2,4,5,6,7,8,9)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      grades |      1,720    2.910564     .792908          0          4
+
+. local a10 = `r(mean)' 
+
+. local a10sd = `r(sd)' 
+
+. local a10n= `r(N)'
+
+. 
+. ttesti `a9n' `a9' `a9sd' `a10n' `a10' `a10sd' 
+
+Two-sample t test with equal variances
+------------------------------------------------------------------------------
+         |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+       x |     179    2.170615     .074977    1.003123    2.022656    2.318573
+       y |   1,720    2.910564    .0191187     .792908    2.873066    2.948062
+---------+--------------------------------------------------------------------
+combined |   1,899    2.840816    .0193435    .8429411    2.802879    2.878753
+---------+--------------------------------------------------------------------
+    diff |           -.7399494    .0640027               -.8654725   -.6144264
+------------------------------------------------------------------------------
+    diff = mean(x) - mean(y)                                      t = -11.5612
+Ho: diff = 0                                     degrees of freedom =     1897
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = 0.0000         Pr(|T| > |t|) = 0.0000          Pr(T > t) = 1.0000
+
+. local at5= `r(t)'
+
+. 
+. *----------------------------------------------------------------------------
+> ----
+. * Panel 2 Table 4
+. *----------------------------------------------------------------------------
+> ----
+. capture drop resid*
+
+. 
+. reg grades left_all_next_yr2                 if inlist(choice15,1,2,3)
+
+      Source |       SS           df       MS      Number of obs   =       768
+-------------+----------------------------------   F(1, 766)       =     44.23
+       Model |  39.1835006         1  39.1835006   Prob > F        =    0.0000
+    Residual |  678.638748       766  .885951368   R-squared       =    0.0546
+-------------+----------------------------------   Adj R-squared   =    0.0534
+       Total |  717.822248       767  .935882983   Root MSE        =    .94125
+
+------------------------------------------------------------------------------
+      grades |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+left_all_n~2 |   .4937648   .0742461     6.65   0.000     .3480149    .6395147
+       _cons |   1.810689   .1308389    13.84   0.000     1.553844    2.067535
+------------------------------------------------------------------------------
+
+. qui tabout left_all_next_yr2                if inlist(choice15,1,2,3) using "
+> ${tbl_loc}table_4_a_b.tex", append c( mean grades sd grades N grades) f(3 3 0
+> ) sum clab( GPA Std_Dev N ) style(tex)
+
+. 
+. sum grades if  left_all_next_yr2==1 & inlist(choice15,1,2,3)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      grades |        229    2.304454    1.098495          0          4
+
+. local a13 = `r(mean)' 
+
+. local a13sd = `r(sd)' 
+
+. local a13n= `r(N)'
+
+. 
+. 
+. sum grades if  left_all_next_yr2==2 & inlist(choice15,1,2,3)
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      grades |        539    2.798219    .8660392          0          4
+
+. local a14 = `r(mean)' 
+
+. local a14sd = `r(sd)' 
+
+. local a14n= `r(N)'
+
+. 
+. ttesti `a13n' `a13' `a13sd' `a14n' `a14' `a14sd' 
+
+Two-sample t test with equal variances
+------------------------------------------------------------------------------
+         |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+       x |     229    2.304454    .0725906    1.098495     2.16142    2.447488
+       y |     539    2.798219     .037303    .8660392    2.724942    2.871496
+---------+--------------------------------------------------------------------
+combined |     768     2.65099    .0349084    .9674105    2.582462    2.719517
+---------+--------------------------------------------------------------------
+    diff |           -.4937648    .0742461               -.6395147   -.3480149
+------------------------------------------------------------------------------
+    diff = mean(x) - mean(y)                                      t =  -6.6504
+Ho: diff = 0                                     degrees of freedom =      766
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = 0.0000         Pr(|T| > |t|) = 0.0000          Pr(T > t) = 1.0000
+
+. local at7= `r(t)'
+
+. 
+. *File "table_4_a_b.tex" provides the first two panels of Table 4
+. *File "table_4_c_d.tex" provides the last two panels of Table 4
+. *table needs to be created manually and t-stat needs to be entered manually
+. 
+. !rm -f estSubSampIDs.csv
+
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /hpc/group/econ/tmr17/Dropout-R1-SP/src/descriptives/descriptives.
+> log
+  log type:  text
+ closed on:   1 Aug 2023, 12:36:28
+-------------------------------------------------------------------------------

@@ -1,0 +1,85 @@
+# raw data
+data/cps/raw/cps*.dat.gz
+data/cps/cleaned/*.dta
+data/sipp/raw/*.do
+data/sipp/raw/*.log
+data/sipp/raw/*.dat
+data/sipp/raw/*.dta
+data/sipp/raw/*.zip
+data/sipp/raw/*.dct
+data/nlsy97/raw/*.dct
+data/nlsy97/raw/*.dta
+
+# cleaned (combined) data
+data/nlsy97/cleaned/*.dta
+
+# stage 1 log files and saved datasets
+src/estimation-stage1/*.diary
+src/estimation-stage1/*.log
+output/all-stage-1/*.mat
+output/all-stage-1/*.diary
+output/all-stage-1/*.csv
+output/all-stage-1/*.txt
+output/all-stage-1/*.pdf
+
+# archived specifications
+src/archive
+output/msys-only
+output/learning-type-inflex
+output/all-stage-1-old
+
+# learning log files and saved datasets
+src/estimation-stage2-learning/*.diary
+src/estimation-stage2-learning/*.log
+output/learning/*.mat
+output/learning/*.diary
+output/learning/*.csv
+output/learning/*.txt
+
+# flow utility estimation log files and saved datasets
+src/estimation-stage3-gridsearch/**/*.diary
+src/estimation-stage3-gridsearch/**/*.log
+output/utility-grid-search/**/*.diary
+output/utility-grid-search/**/*.mat
+output/utility-grid-search/**/*.csv
+src/estimation-stage3-5-structural/*.diary
+src/estimation-stage3-5-structural/*.log
+output/utility/*.diary
+output/utility/*.mat
+output/utility/*.csv
+
+# parametric bootstrap log files and saved datsets
+src/parametric-bootstrap/*.diary
+src/parametric-bootstrap/*.log
+src/parametric-bootstrap/*.err
+output/bootstrap/*.mat
+output/bootstrap/*.diary
+output/bootstrap/*.csv
+
+# forward simulation log files and saved datasets
+src/simulations-forward-fit/*.log
+output/model-fit/*.mat
+output/model-fit/*.diary
+output/model-fit/*.csv
+
+# counterfactual simulation saved datasets and log files
+src/simulations-counterfactual/baseline/*.jlog
+src/simulations-counterfactual/baseline/*.jerr
+output/cfl/baseline/*.mat
+output/cfl/baseline/*.csv
+src/simulations-counterfactual/no-frictions/*.jlog
+src/simulations-counterfactual/no-frictions/*.jerr
+output/cfl/no-frictions/*.mat
+output/cfl/no-frictions/*.csv
+src/simulations-counterfactual/no-cred-cons/*.jlog
+src/simulations-counterfactual/no-cred-cons/*.jerr
+output/cfl/no-cred-cons/*.mat
+output/cfl/no-cred-cons/*.csv
+
+# post-simulation analysis log files and saved datasets
+
+# unneeded exhibit files (intermediate ones)
+exhibits/tables/junk/*.tex
+output/cfl/baseline/*.tex
+output/cfl/no-frictions/*.tex
+output/cfl/no-cred-cons/*.tex

@@ -1,0 +1,36 @@
+% source is T14fwdjointtruncstata.tex
+\begin{table}[ht]
+\caption{College completion status frequencies: baseline model, static model}
+\label{tab:CCDOSOfwd-compare-fit}
+\centering{}
+\begin{threeparttable}
+\begin{tabular}{lcc}
+\toprule
+                                          & Baseline & Static \\
+Status                                    & model    & model  \\
+\midrule
+Continuous completion (CC), Science&6.39&6.23 \\
+Continuous completion (CC), Non-Science&14.86&14.84 \\
+Stop out (SO) but graduated Science&0.97&1.00 \\
+Stop out (SO) but graduated Non-Science&3.45&3.21 \\
+Stop out (SO) then drop out&9.02&8.83 \\
+Truncated&5.76&5.73 \\
+Drop out (DO)&32.44&31.88 \\
+Never went to college&27.11&28.28 \\
+\midrule
+Graduate from 4-year college & 25.67 & 25.29 \\ 
+Ever Switch Major & 25.37 & 25.61 \\ 
+Time to degree & 5.16 & 5.15 \\ 
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Model frequencies are constructed using 10 simulations of the structural model for each individual included in the estimation. ``Baseline model'' refers to the forward simulation of the model using the structural flow utilities and CCP future value adjustment terms in the choice probabilities. ``Static model'' refers to an analogous forward simulation that instead uses a more flexible, static random utility model for the choice probabilities. 
+
+\medskip
+
+We set the panel length in all columns to be 10 periods. Completion status is computed on the first 10 periods of data (i.e. assuming that college is not an option after period 10).
+
+\medskip
+
+``Truncated'' refers to those who were enrolled in period 10.
+\end{threeparttable}
+\end{table}

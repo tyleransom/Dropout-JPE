@@ -1,0 +1,175 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /afs/econ.duke.edu/data/apm16/Dropout/y97/RawData/AFQT_MATCHING_MA
+> TH/AFQT_MATCHING_MATH_with_weights.log
+  log type:  text
+ opened on:  14 Jan 2014, 11:19:42
+
+. 
+. /***************************************************
+> MATCHING AFQT SCORES ACROSS NLSY 1979 and NLSY 1997
+> 
+> This do file creates a data file with comparable AFQT scores across both NLSY
+> 79 and NLSY97.
+> There are two main steps in creating the comparable AFQT scores:
+> 
+> 1. The 1979 ASVAB is a Paper and Pencil (P&P) test, while the 1997 ASVAB was 
+> computer adminstered. 
+> To make the scores comparable across cohorts, we rely on a percentile mapping
+>  provided by Dan Segall (Segall (1997))
+> 
+> 2. The age at which respondents took the test differs between 1979 and 1997. 
+> The 1997 sample is much younger.
+> For both samples, we observe a large sample of individuals taking the test at
+>  age 16. We use this overlap in the 
+> test-taking age by mapping all test scores within cohorts into the age 16-dis
+> tribution based on the within age 
+> ranking of test scores. 
+> 
+> For details, see Segall (1997) and Altonji, Bharadwaj & Lange (2009).
+> 
+> Altonji, J., Bharadwaj, P. & Lange, F. "Changes in the Characteristics of Ame
+> rican Youth - 
+> Implications for Adult Outcomes" NBER Working Papers No. 13883, revised 2009.
+> Segall, D. O. (1997). "Equating the CAT-ASVAB". In W. A. Sands, B. K. Waters,
+>  & J. R. McBride (Eds.), 
+>         Computerized adaptive testing: From inquiry to operation (pp. 181-198
+> ). Washington, DC: American Psychological Association. 
+> Date: August 19, 2009.
+> ******************************************************/
+. 
+. // Set path to directory containing afqt1997a.csv //
+. capture cd "/afs/econ.duke.edu/data/apm16/Dropout/y97/RawData/AFQT_MATCHING_A
+> R"
+
+. * cd "/Users/JKukkur/Documents/Research/ABL/AFQT MATCHING"
+. 
+. tempfile afqt97 afqt_append nlsy_agestd agestd_afqt missings finished_product
+
+. 
+. /****************************************************************
+> First Step of score conversion: 
+> Transfrom CAT Test Scores from NLSY97 into Paper and Pencil Test Scores using
+>  mapping provided by Dan Segall.
+> Combine this data with raw data from NLSY79.
+> *****************************************************************/
+. 
+. 
+. // afqt1997a.csv contains individual id's and sex from NLSY1997 and the ASVAB
+>  component scores provided by Dan Segall. 
+. // The are P&P equivalent scores based on the mapping procedure described in 
+> Segall (1996). 
+. // Dan Segall suuplied us with these P&P equivalent scores using ASVAB compon
+> ent scores contained in (DICTIONARY FILE).
+. insheet using afqt1997a.csv, comma
+(36 vars, 8984 obs)
+
+. ren v1 pid
+
+. ren v2 male
+
+. gen asvabAR=ar if ar!=0 // pc=paragraph comprehension, no=numerical comprehen
+> sion 
+(1871 missing values generated)
+
+. keep pid male asvabAR
+
+. sort pid
+
+. save `afqt97', replace
+(note: file /tmp/St17942.000004 not found)
+file /tmp/St17942.000004 saved
+
+. 
+. // Merge age in for the NLSY97 sample //
+. infile using age97.dct, clear
+
+infile dictionary {
+  R0000100 "PUBID - YTH ID CODE 1997"
+  R1194100 "CV_AGE_INT_DATE 1997"
+  R2553500 "CV_AGE_INT_DATE 1998"
+  R3876300 "CV_AGE_INT_DATE 1999"
+  R5453700 "CV_AGE_INT_DATE 2000"
+  R7216000 "CV_AGE_INT_DATE 2001"
+  S1531400 "CV_AGE_INT_DATE 2002"
+  S2001000 "CV_AGE_INT_DATE 2003"
+  S3801100 "CV_AGE_INT_DATE 2004"
+}
+
+(8984 observations read)
+
+. ren R0000100    pid
+
+. ren R1194100    age  // age as of 1997 (test-taking year for NLSY97) //
+
+. keep pid age
+
+. sort pid
+
+. merge pid using `afqt97' 
+(note: you are using old merge syntax; see [D] merge for new syntax)
+
+. drop _merge 
+
+. sort pid
+
+. save `afqt97', replace
+file /tmp/St17942.000004 saved
+
+. 
+. // Merge in weights for 1997 data //
+. // We use the custom weight provided by the NLSY for the year 1997, the year 
+> when the ASVAB was administered. //
+. insheet using weights97.csv, clear
+(2 vars, 8984 obs)
+
+. sort pid
+
+. merge pid using `afqt97'
+(note: you are using old merge syntax; see [D] merge for new syntax)
+pid was int now float
+
+. drop _merge 
+
+. gen sample=1                            // Sample Identifier: 1= 1997 NLSY sa
+> mple, 0=1979 NLSY sample //
+
+. sort sample pid
+
+. save `afqt97', replace
+file /tmp/St17942.000004 saved
+
+. 
+. // NLSY 1979 Sample: Age Information and AFQT-scores //
+. // NLSY 1979 Sample: Age Information and AFQT-scores //
+. infile using nlsy79_vars.dct, clear
+
+infile dictionary {
+  R0000100 "ID# (1-12686) 79"
+  R0000500 "DATE OF BIRTH - YR 79"
+  R0173600 "SAMPLE ID  79 INT"
+  R0406510 "AGE OF R @ INT DATE 80"
+  R0618011 "PROFILES ASVAB SEC 2-STD SCRNR 81"
+  R0618012 "PROFILES ASVAB SEC 3-STD SCRNR 81"
+  R0618013 "PROFILES ASVAB SEC 4-STD SCRNR 81"
+  R0618014 "PROFILES ASVAB SEC 5-STD SCRNR 81"
+}
+
+(12686 observations read)
+
+. ren R0000100 pid                
+
+. ren R0000500 birthyear 
+
+. ren R0173600 sampid
+
+. ren R0406510 age                                                             
+>            // Age as of 1980 (test taking year for NLSY79) //
+
+. 
+. ren R0618010 gs
+variable R0618010 not found
+r(111);
+
+end of do-file
+r(111);

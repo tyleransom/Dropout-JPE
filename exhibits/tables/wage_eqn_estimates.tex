@@ -1,0 +1,47 @@
+\begin{table}[ht]
+\caption{Estimates of White- and Blue-collar Wage Parameters}
+\label{tab:WageEstimates}
+\centering
+\begin{threeparttable}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{White Collar} & \multicolumn{2}{c}{Blue Collar} \\
+\cmidrule(r){2-3}\cmidrule(l){4-5}
+ & Coeff.  & Std. Error  & Coeff.  & Std. Error\\
+\midrule
+%Constant & 2.257 & (0.026) & 2.156 & (0.025) \\ 
+Black & -0.059 & (0.024) & -0.098 & (0.020) \\ 
+Hispanic & 0.049 & (0.028) & 0.018 & (0.021) \\ 
+Parent graduated college & 0.003 & (0.021) & 0.004 & (0.019) \\ 
+HS Grades (z-score) & -0.019 & (0.015) & -0.017 & (0.009) \\ 
+%Born in 1980 & -0.051 & (0.024) & -0.012 & (0.024) \\ 
+%Born in 1981 & -0.080 & (0.027) & 0.024 & (0.024) \\ 
+%Born in 1982 & -0.001 & (0.028) & 0.033 & (0.024) \\ 
+%Born in 1983 & -0.023 & (0.025) & -0.015 & (0.021) \\ 
+%Age 18 or younger & -0.048 & (0.022) & -0.079 & (0.017) \\ 
+%Age 19 & -0.012 & (0.024) & -0.080 & (0.015) \\ 
+%Age 20 & -0.007 & (0.026) & -0.041 & (0.013) \\ 
+Work experience (any sector) & 0.035 & (0.003) & 0.039 & (0.001) \\ 
+Work experience (white collar sector) & 0.020 & (0.003) & 0.010 & (0.003) \\ 
+Years of college completed & 0.063 & (0.010) & 0.038 & (0.005) \\ 
+College graduate (any major) & 0.113 & (0.024) & 0.061 & (0.018) \\ 
+College graduate (science major) & 0.132 & (0.035) & 0.091 & (0.026) \\ 
+Work part-time & 0.011 & (0.020) & -0.044 & (0.009) \\ 
+\midrule
+Unobserved type \\ 
+Schooling ability type H & 0.087 & (0.026) & 0.086 & (0.024) \\ 
+Schooling preference type H & -0.411 & (0.038) & -0.255 & (0.024) \\ 
+Work motivation type H & 0.248 & (0.032) & 0.189 & (0.025) \\ 
+\midrule
+$\lambda_{0}$ (in-school work index intercept) & 0.718 & (0.007) & 0.659 & (0.009) \\ 
+$\lambda_{1}$ (in-school work index loading)   & 0.633 & (0.009) & 0.667 & (0.005) \\ 
+\midrule
+%Year dummies & \multicolumn{2}{c}{ $\checkmark$ } & \multicolumn{2}{c}{ $\checkmark$ } \\
+Mean of dependent variable & \multicolumn{2}{c}{ 2.669 } & \multicolumn{2}{c}{ 2.332 } \\ 
+Person-year obs.  & \multicolumn{2}{c}{ 2,373 } & \multicolumn{2}{c}{ 12,755 } \\
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Bootstrap standard errors in parentheses. Estimates for the constant, birth cohort dummies, age group dummies (18 and under, 19, 20), and calendar year dummies are suppressed. Reference categories for multinomial variables are as follows: ``White'' for race/ethnicity, ``Work full-time'' for work intensity, and ``L'' for each unobserved type.
+
+\end{threeparttable}
+\end{table}

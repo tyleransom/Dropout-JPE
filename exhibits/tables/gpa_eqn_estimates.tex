@@ -1,0 +1,42 @@
+\begin{table}[ht]
+\caption{Estimates of 2- and 4-year GPA Parameters}
+\label{tab:GPAEstimates}
+\centering
+\begin{threeparttable}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{4 year Science} & \multicolumn{2}{c}{4 year Non-Science} & \multicolumn{2}{c}{2 year}\\
+\cmidrule(r){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
+ & Coeff.  & Std. Error  & Coeff.  & Std. Error  & Coeff.  & Std. Error\\
+\midrule
+%Constant & 2.281 & (0.135) & 2.240 & (0.088) & 2.707 & (0.092) \\ 
+Black & -0.352 & (0.074) & -0.469 & (0.051) & -0.314 & (0.065) \\ 
+Hispanic & -0.192 & (0.086) & -0.151 & (0.060) & -0.038 & (0.065) \\ 
+Parent graduated college & 0.087 & (0.052) & 0.163 & (0.044) & 0.032 & (0.064) \\ 
+HS Grades (z-score) & 0.177 & (0.032) & 0.211 & (0.025) & 0.234 & (0.026) \\ 
+%Born in 1980 & -0.064 & (0.091) & -0.009 & (0.068) & 0.298 & (0.078) \\ 
+%Born in 1981 & -0.021 & (0.090) & 0.073 & (0.063) & 0.069 & (0.082) \\ 
+%Born in 1982 & -0.194 & (0.087) & 0.086 & (0.061) & 0.001 & (0.076) \\ 
+%Born in 1983 & -0.106 & (0.091) & -0.005 & (0.063) & 0.109 & (0.079) \\ 
+%Age 18 or younger & -0.237 & (0.068) & -0.337 & (0.040) & -0.504 & (0.048) \\ 
+%Age 19 & -0.061 & (0.070) & -0.259 & (0.040) & -0.380 & (0.065) \\ 
+%Age 20 & 0.043 & (0.063) & -0.244 & (0.045) & -0.345 & (0.068) \\ 
+Work full-time & -0.173 & (0.061) & -0.156 & (0.041) & -0.103 & (0.048) \\ 
+Work part-time & -0.029 & (0.051) & 0.036 & (0.029) & -0.002 & (0.054) \\ 
+Year 2 or higher in college &  &  &  &  & -0.008 & (0.039) \\ 
+\midrule
+Unobserved type \\ 
+Schooling ability type H & 0.151 & (0.075) & 0.078 & (0.050) & 0.021 & (0.064) \\ 
+Schooling preference type H & 0.649 & (0.122) & 0.467 & (0.085) & -0.039 & (0.111) \\ 
+Work motivation type H & -0.003 & (0.080) & 0.010 & (0.059) & -0.007 & (0.079) \\ 
+\midrule
+$\lambda_{0}$ (ability index intercept) & -0.261 & (0.227) & 0.302 & (0.108) & 0.000 & (---) \\ 
+$\lambda_{1}$ (ability index loading) & 1.044 & (0.082) & 0.907 & (0.042) & 1.000 & (---) \\ 
+\midrule
+Mean of dependent variable & \multicolumn{2}{c}{ 2.778 } & \multicolumn{2}{c}{ 2.683 } & \multicolumn{2}{c}{ 2.468 } \\ 
+Person-year obs.  & \multicolumn{2}{c}{  867 } & \multicolumn{2}{c}{ 1,653 } & \multicolumn{2}{c}{ 1,272 }\\
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Bootstrap standard errors in parentheses. Estimates for the constant, birth cohort dummies, and age group dummies (18 and under, 19, 20) are suppressed. Reference categories for multinomial variables are as follows: ``White'' for race/ethnicity, ``Not working while in school'' for work intensity, and ``L'' for each unobserved type.
+\end{threeparttable}
+\end{table}

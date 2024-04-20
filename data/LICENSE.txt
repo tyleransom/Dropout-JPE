@@ -1,0 +1,41 @@
+For IPUMS CPS files, IPUMS' Standard Redistribution Terms 
+apply (https://www.ipums.org/about/terms#redistribution)
+
+    You will not redistribute the data without permission. You may 
+    publish a subset of the data to meet journal requirements for 
+    accessing data related to a particular publication. Contact us for
+    permission for any other redistribution; we will consider requests
+    for free and commercial redistribution. 
+
+For SIPP data, NBER's use of the GNU General Public license applies 
+(see the bottom of https://data.nber.org/sipp/1984/sip84fp.do for an example).
+
+    Copyright 2004 shared by the National Bureau of Economic Research and Jean Roth
+
+    National Bureau of Economic Research.
+    1050 Massachusetts Avenue
+    Cambridge, MA 02138
+    jroth@nber.org
+
+    This program and all programs referenced in it are free software. You
+    can redistribute the program or modify it under the terms of the GNU
+    General Public License as published by the Free Software Foundation;
+    either version 2 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+    USA.
+
+The NLSY data obtained through the Bureau of Labor Statistics is
+in the public domain. (See https://www.usa.gov/government-works.)
+
+An extract from the NLSY data was obtained from Fabian Lange's website
+(http://www.fabianlange.ca/linked_files/data/AFQT%20MATCHING.zip) for the
+purpose of computing equi-percentile mappings of ASVAB test scores across
+the NLSY79 and NLSY97.

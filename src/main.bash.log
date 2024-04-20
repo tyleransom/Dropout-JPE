@@ -1,0 +1,9 @@
+set: Variable name must begin with a letter.
+Submitted batch job 29997812
+squeue: error: get_addr_info: getaddrinfo() failed: Temporary failure in name resolution
+squeue: error: slurm_set_addr: Unable to resolve "dcc-sched-01"
+squeue: error: Unable to establish control machine address
+slurm_load_jobs error: Resource temporarily unavailable
+slurmstepd: error: get_addr_info: getaddrinfo() failed: Temporary failure in name resolution
+slurmstepd: error: slurm_set_addr: Unable to resolve "dcc-sched-01"
+slurmstepd: error: Unable to establish control machine address

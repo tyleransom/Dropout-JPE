@@ -1,0 +1,50 @@
+% source is T12Cfltruncstata.tex
+\begin{table}[ht]
+\caption{Average abilities for different choice paths in full-information counterfactual scenario}
+\label{tab:trueAbilityCfl}
+\centering{}
+\resizebox{.95\textwidth}{!}{
+\begin{threeparttable}
+\begin{tabular}{lcccccc}
+\toprule
+Choice Path  & White Collar  & Blue Collar  & Science  & Non-Science  & 2-year  & Share(\%)\\
+\midrule
+\multicolumn{7}{l}{\emph{Continuous enrollment, graduate in science with $ x$ years of in-school work experience}}\\
+$x=0$&0.36&0.06&1.04&0.69&0.28&0.98 \\
+$x>0$, white collar only&1.41&0.69&1.09&0.83&0.49&0.48 \\
+$x>0$, blue collar only&0.57&0.42&1.02&0.70&0.31&7.59 \\
+$x>0$, mixture&1.16&0.59&0.93&0.65&0.33&1.25 \\
+\midrule
+\multicolumn{7}{l}{\emph{Continuous enrollment, graduate in non-science with $ x$ years of in-school work experience}}\\
+$x=0$&0.02&-0.38&0.59&0.89&0.55&1.86 \\
+$x>0$, white collar only&0.80&-0.03&0.62&0.91&0.49&0.50 \\
+$x>0$, blue collar only&0.19&-0.07&0.59&0.86&0.58&10.27 \\
+$x>0$, mixture&0.65&0.12&0.53&0.77&0.48&1.10 \\
+\midrule
+\multicolumn{7}{l}{\emph{Stop out (SO)}}\\
+SO, graduate in science&0.36&0.25&0.87&0.60&0.30&1.74 \\
+SO, graduate in non-science&0.06&-0.12&0.51&0.74&0.54&4.33 \\
+SO then DO, start in 2yr&-0.20&-0.13&-0.33&-0.32&-0.13&3.17 \\
+SO then DO, start in science&-0.19&-0.05&0.06&-0.05&-0.05&0.98 \\
+SO then DO, start in non-science&-0.24&-0.18&-0.10&0.02&0.06&2.57 \\
+Truncated&-0.09&-0.12&0.04&0.14&0.15&4.73 \\
+\midrule
+\multicolumn{7}{l}{\emph{Drop out (DO) after $ x$ years of school}}\\
+$x=1$&-0.18&-0.03&-0.33&-0.33&-0.17&15.73 \\
+$x=2$&-0.21&-0.09&-0.25&-0.24&-0.13&5.77 \\
+$x=3$&-0.09&-0.03&-0.10&-0.08&-0.03&2.58 \\
+$x=4$&-0.20&-0.01&-0.06&-0.05&0.06&1.26 \\
+$x\geq5$&-0.06&-0.02&0.04&-0.06&-0.11&0.76 \\
+\midrule
+\multicolumn{7}{l}{\emph{Never attended college}}\\
+Never attend college&-0.13&-0.01&-0.43&-0.48&-0.30&32.35 \\
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Abilities are reported in standard deviation units. This table is constructed using 10 simulations of the counterfactual model described in the title for each individual included in the estimation.
+
+\medskip
+
+``Truncated'' refers to those who were enrolled in period 10.
+\end{threeparttable}
+}
+\end{table}

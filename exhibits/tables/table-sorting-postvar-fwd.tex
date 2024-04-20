@@ -1,0 +1,52 @@
+% source is T13Fwdtruncstata.tex
+\begin{table}[ht]
+\caption{Average posterior variances after last period of college for different choice paths in baseline model}
+\label{tab:postVarFwd}
+\centering{}
+\resizebox{.95\textwidth}{!}{
+\begin{threeparttable}
+\begin{tabular}{lcccccc}
+\toprule
+Choice Path  & White Collar  & Blue Collar  & Science  & Non-Science  & 2-year  & Share(\%)\\
+\midrule
+\multicolumn{7}{l}{\emph{Continuous enrollment, graduate in science with $ x$ years of in-school work experience}}\\
+$x=0$&0.12&0.07&0.07&0.13&0.27&1.39 \\
+$x>0$, white collar only&0.06&0.06&0.07&0.13&0.27&0.52 \\
+$x>0$, blue collar only&0.10&0.03&0.07&0.12&0.26&3.63 \\
+$x>0$, mixture&0.06&0.03&0.07&0.12&0.25&0.85 \\
+\midrule
+\multicolumn{7}{l}{\emph{Continuous enrollment, graduate in non-science with $ x$ years of in-school work experience}}\\
+$x=0$&0.12&0.07&0.09&0.07&0.23&3.03 \\
+$x>0$, white collar only&0.06&0.06&0.09&0.07&0.23&1.04 \\
+$x>0$, blue collar only&0.10&0.03&0.09&0.07&0.22&8.88 \\
+$x>0$, mixture&0.06&0.03&0.08&0.07&0.21&1.90 \\
+\midrule
+\multicolumn{7}{l}{\emph{Stop out (SO)}}\\
+SO, graduate in science&0.09&0.03&0.08&0.10&0.20&0.97 \\
+SO, graduate in non-science&0.09&0.03&0.09&0.08&0.19&3.45 \\
+SO then DO, start in 2yr&0.09&0.03&0.15&0.16&0.14&4.98 \\
+SO then DO, start in science&0.09&0.03&0.10&0.14&0.20&1.37 \\
+SO then DO, start in non-science&0.09&0.03&0.12&0.11&0.19&2.67 \\
+Truncated&0.08&0.02&0.11&0.12&0.17&5.76 \\
+\midrule
+\multicolumn{7}{l}{\emph{Drop out (DO) after $ x$ years of school}}\\
+$x=1$&0.11&0.05&0.17&0.21&0.25&16.59 \\
+$x=2$&0.11&0.04&0.15&0.17&0.20&7.85 \\
+$x=3$&0.10&0.04&0.13&0.15&0.19&4.22 \\
+$x=4$&0.10&0.03&0.11&0.12&0.18&1.93 \\
+$x\geq5$&0.09&0.03&0.10&0.10&0.16&1.85 \\
+\midrule
+\multicolumn{7}{l}{\emph{Never attended college}}\\
+Never attend college&0.09&0.02&0.20&0.27&0.35&27.11 \\
+\midrule
+Time 0 population variance & 0.13 & 0.07 & 0.21 & 0.27 & 0.35 & \\
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Average posterior variances of ability across individuals are reported in each cell. This table is constructed using 10 simulations of the baseline model for each individual included in the estimation.
+
+\medskip
+
+``Truncated'' refers to those who were enrolled in period 10.
+\end{threeparttable}
+}
+\end{table}

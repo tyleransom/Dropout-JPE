@@ -1,0 +1,36 @@
+% source is T14richtruncstata.tex and T14poortruncstata.tex
+\begin{table}[ht]
+\caption{College completion status in model and counterfactuals: heterogeneity by level of family income}
+\label{tab:CCDOSOcflbyinc}
+\centering{}
+\begin{threeparttable}
+\begin{tabular}{lcccc}
+\toprule
+                                          &          & \multicolumn{3}{c}{Counterfactuals} \\
+\cmidrule(l){3-5}
+                                          &          &            & Full info. \& & Full info. \& \\
+                                          & Baseline & Full info. & no search      & reduced credit \\
+Status                                    & model    & alone      & frictions      & constraints     \\
+\midrule
+\multicolumn{5}{l}{\textit{Panel A: Above-median family income in high school}} \\
+\qquad Dropout&28.83&23.73&22.34&21.88 \\
+\qquad Never went to college&20.85&27.01&25.60&21.22 \\
+\qquad Graduate from 4-year college & 35.40 & 38.22 & 40.43 & 43.64 \\ 
+\qquad Ever Switch Major & 27.53 & 26.87 & 28.09 & 28.11 \\ 
+&&&&\\
+\multicolumn{5}{l}{\textit{Panel B: Below-median family income in high school}} \\
+\qquad Dropout&36.04&28.46&27.99&27.66 \\
+\qquad Never went to college&33.37&37.69&36.81&33.26 \\
+\qquad Graduate from 4-year college & 15.93 & 22.01 & 23.70 & 24.37 \\ 
+\qquad Ever Switch Major & 22.19 & 22.75 & 23.87 & 23.53 \\ 
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Model frequencies are constructed using 10 simulations of the structural model for each individual included in the estimation. Counterfactual frequencies use 10 simulations of each counterfactual model. ``Full info. alone'' refers to our counterfactual where individuals have complete information about their abilities. ``Full info. \& no search frictions'' maintains full information and sets to 1 the white collar job offer arrival rate for everyone in every period. ``Full info. \& reduced credit constraints'' maintains full information, removes college loans, and sets in-college non-wage consumption to its 75th percentile for all individuals. 
+
+\medskip
+
+We set the panel length in all columns to be 10 periods. Completion status is computed on the first 10 periods of data (i.e. assuming that college is not an option after period 10).
+
+\end{threeparttable}
+}
+\end{table}

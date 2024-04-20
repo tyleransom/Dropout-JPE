@@ -1,0 +1,47 @@
+\begin{table}[ht]
+\caption{Estimates of Probability of Graduation}
+\label{tab:GprobEstimates}
+\centering
+\begin{threeparttable}
+\renewcommand{\arraystretch}{0.7}
+\begin{tabular}{lcc}
+\toprule
+Variable  & Coeff.  & Std. Error \\ 
+\midrule
+Constant & -3.557 & (0.331) \\ 
+Black & -0.834 & (0.146) \\ 
+Hispanic & -0.485 & (0.151) \\ 
+HS Grades (z-score) & 0.253 & (0.056) \\ 
+Parent graduated college & -0.024 & (0.103) \\ 
+Born in 1980 & 0.605 & (0.155) \\ 
+Born in 1981 & 0.329 & (0.137) \\ 
+Born in 1982 & 0.353 & (0.130) \\ 
+Born in 1983 & 0.499 & (0.142) \\ 
+Family Income (\$10,000) & 0.017 & (0.010) \\ 
+College experience completion profiles: & & \\ 
+\qquad 0  years of 2yr & 0.458 & (0.216) \\ 
+\qquad 2+ years of 2yr & 0.520 & (0.190) \\ 
+\qquad 2  years of 4yr & 1.355 & (0.213) \\ 
+\qquad 3  years of 4yr & 1.738 & (0.219) \\ 
+\qquad 4  years of 4yr & 2.728 & (0.306) \\ 
+\qquad 5  years of 4yr & 0.768 & (14.847) \\ 
+\qquad 6+ years of 4yr & 0.905 & (0.395) \\ 
+\qquad 2  years of 4yr and 0 years of 2yr & -2.805 & (0.318) \\ 
+\qquad 4  years of 4yr and 0 years of 2yr & -0.574 & (0.327) \\ 
+\qquad 5  years of 4yr and 0 years of 2yr & 2.163 & (14.831) \\ 
+\qquad 6+ years of 4yr and 0 years of 2yr & 1.360 & (0.455) \\ 
+Science major & -0.336 & (0.141) \\ 
+Prior ability science $\times$ Science major & 1.848 & (0.298) \\ 
+Prior ability non-sci. $\times$ Non-Sci. major & 1.351 & (0.179) \\ 
+Work part-time & -0.063 & (0.128) \\ 
+Work full-time & 0.361 & (0.142) \\ 
+Schooling ability type H & -0.096 & (0.155) \\ 
+Schooling preference type H & 0.783 & (0.322) \\ 
+Work motivation type H & -0.043 & (0.189) \\ 
+\midrule
+Person-year observations & \multicolumn{2}{c}{1,115} \\ 
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Parameter estimates from a logit predicting probability of graduating in the following period. Estimated only on four-year college students in their junior year and above. Bootstrap standard errors in parentheses. Reference categories for multinomial variables are as follows: ``White'' for race/ethnicity, ``Born in 1984'' for birth year, ``1 year of 2yr college'' and ``3 years of 4yr college and 0 years of 2yr college'' for college experience, ``Not working'' for work intensity, and ``L'' for each unobserved type.
+\end{threeparttable}
+\end{table}

@@ -1,0 +1,1838 @@
+
+. 
+. clear all
+
+. 
+. * This do-file creates a rectangularized panel (wide format) in CSV format, f
+> or importing into Matlab
+. 
+. global clnloc ../../../data/nlsy97/cleaned/
+
+. use ${clnloc}y97_all_tscrGPA.dta, clear
+
+. 
+. local schAbilMeasures      asvab?? SATmath SATverb
+
+. local schAbilPrefMeasures  numAPs lateForSchoolNoExcuse breakRulesRegularly R
+> 1ExtraClass R1WeekdaysExtraClass HrsExtraClass tookClassDuringBreak reasonToo
+> kClassDuringBreak
+
+. local workAbilPrefMeasures highStandardsWork doMoreThanExpected pctChanceWork
+> 20Hrs30 parPctChanceWork20Hrs30
+
+. local consumpMeasures      tui4imp grant4pr grant4impPos grant4impPosRMSE loa
+> n4pr loan4impPos loan4impPosRMSE tui2imp grant2pr grant2impPos grant2impPosRM
+> SE loan2pr loan2impPos loan2impPosRMSE ParTrans2RMSE ParTrans4RMSE loan18_4pr
+>  loan18_4impPos loan18_4impPosRMSE loan18_2pr loan18_2impPos loan18_2impPosRM
+> SE loan18_4imp loan18_2imp
+
+. 
+. * drop log_wage log_comp
+. ren GPA grades
+
+. ren log_wage    log_wageJobMain
+
+. ren log_comp    log_compJobMain
+
+. ren log_wageOct log_wage
+
+. ren log_compOct log_comp
+
+. ren avgHrsOct hours_per_week_Oct
+
+. ren DKMajor DKmajor
+
+. keep ID year Choice choice15 choice15A choice15B choice25 whiteCollar male bl
+> ack hispanic age AFQT ASVAB* predSAT*Z efc `schAbilMeasures' `schAbilPrefMeas
+> ures' `workAbilPrefMeasures' `consumpMeasures' cum_2yr cum_4yr BA_year AA_yea
+> r BA_month AA_month grad_2yr grad_4yr CC_DO_SO Grades_HS_best famIncAsTeen gr
+> ades log_wage log_comp log_wageJobMain log_compJobMain hours_per_week_Oct wee
+> ks_worked_Oct Peduc m_Peduc Parent_college famIncAsTeen m_famIncAsTeen anyFla
+> g anyFlagFemale in_grad_school scienceMajor* DKmajor missingMajor otherMajor*
+>  finalSciMajor* final_major Major lnParTransHat4 lnParTransHat2 prParTrans2 p
+> rParTrans4 E_ParTrans2 E_ParTrans4
+
+. 
+. generat yearw = year
+
+. replace year  = year-1996
+(170,696 real changes made)
+
+. 
+. ren Choice choice
+
+. order ID male black hispanic AFQT ASVABmath ASVABverb predSAT*Z efc `schAbilM
+> easures' `schAbilPrefMeasures' `workAbilPrefMeasures' `consumpMeasures' BA_ye
+> ar AA_year BA_month AA_month CC_DO_SO Grades_HS_best Peduc m_Peduc Parent_col
+> lege famIncAsTeen m_famIncAsTeen finalSciMajor* final_major yearw choice age 
+> cum_2yr cum_4yr grad_2yr grad_4yr grades log_wage log_comp log_wageJobMain lo
+> g_compJobMain hours_per_week_Oct weeks_worked_Oct anyFlag anyFlagFemale in_gr
+> ad_school scienceMajor* DKmajor missingMajor otherMajor* Major lnParTransHat4
+>  lnParTransHat2 prParTrans2 prParTrans4 E_ParTrans2 E_ParTrans4
+
+. drop ASVAB ASVABmathNotNO 
+
+. reshape wide yearw age choice15 choice15A choice15B choice25 whiteCollar choi
+> ce cum_2yr cum_4yr grad_2yr grad_4yr grades log_wage log_comp log_wageJobMain
+>  log_compJobMain hours_per_week_Oct weeks_worked_Oct anyFlag anyFlagFemale in
+> _grad_school scienceMajor DKmajor missingMajor otherMajor scienceMajorA other
+> MajorA scienceMajorB otherMajorB Major lnParTransHat4 lnParTransHat2 prParTra
+> ns2 prParTrans4 E_ParTrans2 E_ParTrans4, i(ID) j(year)
+(note: j = 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19)
+
+Data                               long   ->   wide
+-----------------------------------------------------------------------------
+Number of obs.                   170696   ->    8984
+Number of variables                 107   ->     772
+j variable (19 values)             year   ->   (dropped)
+xij variables:
+                                  yearw   ->   yearw1 yearw2 ... yearw19
+                                    age   ->   age1 age2 ... age19
+                               choice15   ->   choice151 choice152 ... choice15
+> 19
+                              choice15A   ->   choice15A1 choice15A2 ... choice
+> 15A19
+                              choice15B   ->   choice15B1 choice15B2 ... choice
+> 15B19
+                               choice25   ->   choice251 choice252 ... choice25
+> 19
+                            whiteCollar   ->   whiteCollar1 whiteCollar2 ... wh
+> iteCollar19
+                                 choice   ->   choice1 choice2 ... choice19
+                                cum_2yr   ->   cum_2yr1 cum_2yr2 ... cum_2yr19
+                                cum_4yr   ->   cum_4yr1 cum_4yr2 ... cum_4yr19
+                               grad_2yr   ->   grad_2yr1 grad_2yr2 ... grad_2yr
+> 19
+                               grad_4yr   ->   grad_4yr1 grad_4yr2 ... grad_4yr
+> 19
+                                 grades   ->   grades1 grades2 ... grades19
+                               log_wage   ->   log_wage1 log_wage2 ... log_wage
+> 19
+                               log_comp   ->   log_comp1 log_comp2 ... log_comp
+> 19
+                        log_wageJobMain   ->   log_wageJobMain1 log_wageJobMain
+> 2 ... log_wageJobMain19
+                        log_compJobMain   ->   log_compJobMain1 log_compJobMain
+> 2 ... log_compJobMain19
+                     hours_per_week_Oct   ->   hours_per_week_Oct1 hours_per_we
+> ek_Oct2 ... hours_per_week_Oct19
+                       weeks_worked_Oct   ->   weeks_worked_Oct1 weeks_worked_O
+> ct2 ... weeks_worked_Oct19
+                                anyFlag   ->   anyFlag1 anyFlag2 ... anyFlag19
+                          anyFlagFemale   ->   anyFlagFemale1 anyFlagFemale2 ..
+> . anyFlagFemale19
+                         in_grad_school   ->   in_grad_school1 in_grad_school2 
+> ... in_grad_school19
+                           scienceMajor   ->   scienceMajor1 scienceMajor2 ... 
+> scienceMajor19
+                                DKmajor   ->   DKmajor1 DKmajor2 ... DKmajor19
+                           missingMajor   ->   missingMajor1 missingMajor2 ... 
+> missingMajor19
+                             otherMajor   ->   otherMajor1 otherMajor2 ... othe
+> rMajor19
+                          scienceMajorA   ->   scienceMajorA1 scienceMajorA2 ..
+> . scienceMajorA19
+                            otherMajorA   ->   otherMajorA1 otherMajorA2 ... ot
+> herMajorA19
+                          scienceMajorB   ->   scienceMajorB1 scienceMajorB2 ..
+> . scienceMajorB19
+                            otherMajorB   ->   otherMajorB1 otherMajorB2 ... ot
+> herMajorB19
+                                  Major   ->   Major1 Major2 ... Major19
+                         lnParTransHat4   ->   lnParTransHat41 lnParTransHat42 
+> ... lnParTransHat419
+                         lnParTransHat2   ->   lnParTransHat21 lnParTransHat22 
+> ... lnParTransHat219
+                            prParTrans2   ->   prParTrans21 prParTrans22 ... pr
+> ParTrans219
+                            prParTrans4   ->   prParTrans41 prParTrans42 ... pr
+> ParTrans419
+                            E_ParTrans2   ->   E_ParTrans21 E_ParTrans22 ... E_
+> ParTrans219
+                            E_ParTrans4   ->   E_ParTrans41 E_ParTrans42 ... E_
+> ParTrans419
+-----------------------------------------------------------------------------
+
+. order ID male black hispanic AFQT ASVABmath ASVABverb predSAT*Z efc `schAbilM
+> easures' `schAbilPrefMeasures' `workAbilPrefMeasures' `consumpMeasures' BA_ye
+> ar AA_year BA_month AA_month CC_DO_SO Grades_HS_best Peduc m_Peduc Parent_col
+> lege famIncAsTeen m_famIncAsTeen finalSciMajor finalSciMajorA finalSciMajorB 
+> final_major
+
+. desc
+
+Contains data
+  obs:         8,984                          
+ vars:           772                          
+ size:    14,904,456                          
+-------------------------------------------------------------------------------
+              storage   display    value
+variable name   type    format     label      variable label
+-------------------------------------------------------------------------------
+ID              int     %9.0g                 ID
+male            byte    %9.0g                 
+black           byte    %9.0g                 
+hispanic        byte    %9.0g                 
+AFQT            float   %9.0g                 
+ASVABmath       float   %9.0g                 
+ASVABverb       float   %9.0g                 
+predSATmathZ    float   %9.0g                 
+predSATverbZ    float   %9.0g                 
+efc             float   %9.0g                 
+asvabAR         float   %9.0g                 
+asvabCS         float   %9.0g                 
+asvabMK         float   %9.0g                 
+asvabNO         float   %9.0g                 
+asvabPC         float   %9.0g                 
+asvabWK         float   %9.0g                 
+SATmath         float   %9.0g                 
+SATverb         float   %9.0g                 
+numAPs          byte    %9.0g                 
+lateForSchool~e byte    %9.0g                 LATE SCH WITHOUT EXCUSE 1997
+breakRulesReg~y byte    %9.0g                 
+R1ExtraClass    byte    %9.0g                 R TAKE CLASS/LESSONS 1997
+R1WeekdaysExt~s byte    %9.0g                 # WKDAYS CLASS/LESSONS 1997
+HrsExtraClass   float   %9.0g                 
+tookClassDuri~k byte    %9.0g                 R TAKE CLASS DUR SCH BRK? 1997
+reasonTookCla~k byte    %27.0g     vlreasontookbreak
+                                              
+highStandards~k byte    %9.0g                 
+doMoreThanExp~d byte    %9.0g                 
+pctChanceWor~30 byte    %9.0g                 % CHNC WRK 20+ HRS/WK BY 30 YRS
+                                                1997
+parPctChance~30 byte    %9.0g                 % CHNC R WRK 20+ HRS/WK 30 YRS
+                                                1997
+tui4imp         float   %9.0g                 
+grant4pr        float   %9.0g                 
+grant4impPos    float   %9.0g                 
+grant4impPosR~E float   %9.0g                 
+loan4pr         float   %9.0g                 
+loan4impPos     float   %9.0g                 
+loan4impPosRMSE float   %9.0g                 
+tui2imp         float   %9.0g                 
+grant2pr        float   %9.0g                 
+grant2impPos    float   %9.0g                 
+grant2impPosR~E float   %9.0g                 
+loan2pr         float   %9.0g                 
+loan2impPos     float   %9.0g                 
+loan2impPosRMSE float   %9.0g                 
+ParTrans2RMSE   float   %9.0g                 
+ParTrans4RMSE   float   %9.0g                 
+loan18_4pr      float   %9.0g                 
+loan18_4impPos  float   %9.0g                 
+loan18_4impPo~E float   %9.0g                 
+loan18_2pr      float   %9.0g                 
+loan18_2impPos  float   %9.0g                 
+loan18_2impPo~E float   %9.0g                 
+loan18_4imp     float   %9.0g                 
+loan18_2imp     float   %9.0g                 
+BA_year         int     %9.0g                 Year received BA degree
+AA_year         int     %9.0g                 Year received AA degree
+BA_month        byte    %9.0g                 
+AA_month        byte    %9.0g                 
+CC_DO_SO        byte    %22.0g     vlCCDOSO   
+Grades_HS_best  float   %9.0g                 
+Peduc           byte    %9.0g                 
+m_Peduc         byte    %9.0g                 
+Parent_college  byte    %9.0g                 
+famIncAsTeen    float   %9.0g                 
+m_famIncAsTeen  byte    %9.0g                 
+finalSciMajor   byte    %9.0g                 
+finalSciMajorA  byte    %9.0g                 
+finalSciMajorB  byte    %9.0g                 
+final_major     int     %9.0g                 
+yearw1          float   %9.0g                 1 yearw
+choice1         byte    %9.0g                 1 choice
+age1            byte    %9.0g                 1 age
+cum_2yr1        byte    %9.0g                 1 cum_2yr
+cum_4yr1        byte    %9.0g                 1 cum_4yr
+grad_2yr1       byte    %9.0g                 1 grad_2yr
+grad_4yr1       byte    %9.0g                 1 grad_4yr
+grades1         float   %9.0g                 1 grades
+log_wage1       float   %9.0g                 1 log_wage
+log_comp1       float   %9.0g                 1 log_comp
+log_wageJobM~n1 float   %9.0g                 1 log_wageJobMain
+log_compJobM~n1 float   %9.0g                 1 log_compJobMain
+hours_per_we~t1 float   %9.0g                 1 hours_per_week_Oct
+weeks_worked~t1 byte    %8.0g                 1 weeks_worked_Oct
+anyFlag1        byte    %9.0g                 1 anyFlag
+anyFlagFemale1  byte    %9.0g                 1 anyFlagFemale
+in_grad_school1 byte    %9.0g                 1 in_grad_school
+scienceMajor1   byte    %9.0g                 1 scienceMajor
+scienceMajorA1  byte    %9.0g                 1 scienceMajorA
+scienceMajorB1  byte    %9.0g                 1 scienceMajorB
+DKmajor1        byte    %9.0g                 1 DKmajor
+missingMajor1   byte    %9.0g                 1 missingMajor
+otherMajor1     byte    %9.0g                 1 otherMajor
+otherMajorA1    byte    %9.0g                 1 otherMajorA
+otherMajorB1    byte    %9.0g                 1 otherMajorB
+Major1          int     %33.0g     vl_Majors
+                                              1 Major
+lnParTransHat41 float   %9.0g                 1 lnParTransHat4
+lnParTransHat21 float   %9.0g                 1 lnParTransHat2
+prParTrans21    float   %9.0g                 1 prParTrans2
+prParTrans41    float   %9.0g                 1 prParTrans4
+E_ParTrans21    float   %9.0g                 1 E_ParTrans2
+E_ParTrans41    float   %9.0g                 1 E_ParTrans4
+whiteCollar1    byte    %9.0g                 1 whiteCollar
+choice151       byte    %28.0g     vl_choice15
+                                              1 choice15
+choice15A1      byte    %28.0g     vl_choice15
+                                              1 choice15A
+choice15B1      byte    %28.0g     vl_choice15
+                                              1 choice15B
+choice251       byte    %33.0g     vl_choice25
+                                              1 choice25
+yearw2          float   %9.0g                 2 yearw
+choice2         byte    %9.0g                 2 choice
+age2            byte    %9.0g                 2 age
+cum_2yr2        byte    %9.0g                 2 cum_2yr
+cum_4yr2        byte    %9.0g                 2 cum_4yr
+grad_2yr2       byte    %9.0g                 2 grad_2yr
+grad_4yr2       byte    %9.0g                 2 grad_4yr
+grades2         float   %9.0g                 2 grades
+log_wage2       float   %9.0g                 2 log_wage
+log_comp2       float   %9.0g                 2 log_comp
+log_wageJobM~n2 float   %9.0g                 2 log_wageJobMain
+log_compJobM~n2 float   %9.0g                 2 log_compJobMain
+hours_per_we~t2 float   %9.0g                 2 hours_per_week_Oct
+weeks_worked~t2 byte    %8.0g                 2 weeks_worked_Oct
+anyFlag2        byte    %9.0g                 2 anyFlag
+anyFlagFemale2  byte    %9.0g                 2 anyFlagFemale
+in_grad_school2 byte    %9.0g                 2 in_grad_school
+scienceMajor2   byte    %9.0g                 2 scienceMajor
+scienceMajorA2  byte    %9.0g                 2 scienceMajorA
+scienceMajorB2  byte    %9.0g                 2 scienceMajorB
+DKmajor2        byte    %9.0g                 2 DKmajor
+missingMajor2   byte    %9.0g                 2 missingMajor
+otherMajor2     byte    %9.0g                 2 otherMajor
+otherMajorA2    byte    %9.0g                 2 otherMajorA
+otherMajorB2    byte    %9.0g                 2 otherMajorB
+Major2          int     %33.0g     vl_Majors
+                                              2 Major
+lnParTransHat42 float   %9.0g                 2 lnParTransHat4
+lnParTransHat22 float   %9.0g                 2 lnParTransHat2
+prParTrans22    float   %9.0g                 2 prParTrans2
+prParTrans42    float   %9.0g                 2 prParTrans4
+E_ParTrans22    float   %9.0g                 2 E_ParTrans2
+E_ParTrans42    float   %9.0g                 2 E_ParTrans4
+whiteCollar2    byte    %9.0g                 2 whiteCollar
+choice152       byte    %28.0g     vl_choice15
+                                              2 choice15
+choice15A2      byte    %28.0g     vl_choice15
+                                              2 choice15A
+choice15B2      byte    %28.0g     vl_choice15
+                                              2 choice15B
+choice252       byte    %33.0g     vl_choice25
+                                              2 choice25
+yearw3          float   %9.0g                 3 yearw
+choice3         byte    %9.0g                 3 choice
+age3            byte    %9.0g                 3 age
+cum_2yr3        byte    %9.0g                 3 cum_2yr
+cum_4yr3        byte    %9.0g                 3 cum_4yr
+grad_2yr3       byte    %9.0g                 3 grad_2yr
+grad_4yr3       byte    %9.0g                 3 grad_4yr
+grades3         float   %9.0g                 3 grades
+log_wage3       float   %9.0g                 3 log_wage
+log_comp3       float   %9.0g                 3 log_comp
+log_wageJobM~n3 float   %9.0g                 3 log_wageJobMain
+log_compJobM~n3 float   %9.0g                 3 log_compJobMain
+hours_per_we~t3 float   %9.0g                 3 hours_per_week_Oct
+weeks_worked~t3 byte    %8.0g                 3 weeks_worked_Oct
+anyFlag3        byte    %9.0g                 3 anyFlag
+anyFlagFemale3  byte    %9.0g                 3 anyFlagFemale
+in_grad_school3 byte    %9.0g                 3 in_grad_school
+scienceMajor3   byte    %9.0g                 3 scienceMajor
+scienceMajorA3  byte    %9.0g                 3 scienceMajorA
+scienceMajorB3  byte    %9.0g                 3 scienceMajorB
+DKmajor3        byte    %9.0g                 3 DKmajor
+missingMajor3   byte    %9.0g                 3 missingMajor
+otherMajor3     byte    %9.0g                 3 otherMajor
+otherMajorA3    byte    %9.0g                 3 otherMajorA
+otherMajorB3    byte    %9.0g                 3 otherMajorB
+Major3          int     %33.0g     vl_Majors
+                                              3 Major
+lnParTransHat43 float   %9.0g                 3 lnParTransHat4
+lnParTransHat23 float   %9.0g                 3 lnParTransHat2
+prParTrans23    float   %9.0g                 3 prParTrans2
+prParTrans43    float   %9.0g                 3 prParTrans4
+E_ParTrans23    float   %9.0g                 3 E_ParTrans2
+E_ParTrans43    float   %9.0g                 3 E_ParTrans4
+whiteCollar3    byte    %9.0g                 3 whiteCollar
+choice153       byte    %28.0g     vl_choice15
+                                              3 choice15
+choice15A3      byte    %28.0g     vl_choice15
+                                              3 choice15A
+choice15B3      byte    %28.0g     vl_choice15
+                                              3 choice15B
+choice253       byte    %33.0g     vl_choice25
+                                              3 choice25
+yearw4          float   %9.0g                 4 yearw
+choice4         byte    %9.0g                 4 choice
+age4            byte    %9.0g                 4 age
+cum_2yr4        byte    %9.0g                 4 cum_2yr
+cum_4yr4        byte    %9.0g                 4 cum_4yr
+grad_2yr4       byte    %9.0g                 4 grad_2yr
+grad_4yr4       byte    %9.0g                 4 grad_4yr
+grades4         float   %9.0g                 4 grades
+log_wage4       float   %9.0g                 4 log_wage
+log_comp4       float   %9.0g                 4 log_comp
+log_wageJobM~n4 float   %9.0g                 4 log_wageJobMain
+log_compJobM~n4 float   %9.0g                 4 log_compJobMain
+hours_per_we~t4 float   %9.0g                 4 hours_per_week_Oct
+weeks_worked~t4 byte    %8.0g                 4 weeks_worked_Oct
+anyFlag4        byte    %9.0g                 4 anyFlag
+anyFlagFemale4  byte    %9.0g                 4 anyFlagFemale
+in_grad_school4 byte    %9.0g                 4 in_grad_school
+scienceMajor4   byte    %9.0g                 4 scienceMajor
+scienceMajorA4  byte    %9.0g                 4 scienceMajorA
+scienceMajorB4  byte    %9.0g                 4 scienceMajorB
+DKmajor4        byte    %9.0g                 4 DKmajor
+missingMajor4   byte    %9.0g                 4 missingMajor
+otherMajor4     byte    %9.0g                 4 otherMajor
+otherMajorA4    byte    %9.0g                 4 otherMajorA
+otherMajorB4    byte    %9.0g                 4 otherMajorB
+Major4          int     %33.0g     vl_Majors
+                                              4 Major
+lnParTransHat44 float   %9.0g                 4 lnParTransHat4
+lnParTransHat24 float   %9.0g                 4 lnParTransHat2
+prParTrans24    float   %9.0g                 4 prParTrans2
+prParTrans44    float   %9.0g                 4 prParTrans4
+E_ParTrans24    float   %9.0g                 4 E_ParTrans2
+E_ParTrans44    float   %9.0g                 4 E_ParTrans4
+whiteCollar4    byte    %9.0g                 4 whiteCollar
+choice154       byte    %28.0g     vl_choice15
+                                              4 choice15
+choice15A4      byte    %28.0g     vl_choice15
+                                              4 choice15A
+choice15B4      byte    %28.0g     vl_choice15
+                                              4 choice15B
+choice254       byte    %33.0g     vl_choice25
+                                              4 choice25
+yearw5          float   %9.0g                 5 yearw
+choice5         byte    %9.0g                 5 choice
+age5            byte    %9.0g                 5 age
+cum_2yr5        byte    %9.0g                 5 cum_2yr
+cum_4yr5        byte    %9.0g                 5 cum_4yr
+grad_2yr5       byte    %9.0g                 5 grad_2yr
+grad_4yr5       byte    %9.0g                 5 grad_4yr
+grades5         float   %9.0g                 5 grades
+log_wage5       float   %9.0g                 5 log_wage
+log_comp5       float   %9.0g                 5 log_comp
+log_wageJobM~n5 float   %9.0g                 5 log_wageJobMain
+log_compJobM~n5 float   %9.0g                 5 log_compJobMain
+hours_per_we~t5 float   %9.0g                 5 hours_per_week_Oct
+weeks_worked~t5 byte    %8.0g                 5 weeks_worked_Oct
+anyFlag5        byte    %9.0g                 5 anyFlag
+anyFlagFemale5  byte    %9.0g                 5 anyFlagFemale
+in_grad_school5 byte    %9.0g                 5 in_grad_school
+scienceMajor5   byte    %9.0g                 5 scienceMajor
+scienceMajorA5  byte    %9.0g                 5 scienceMajorA
+scienceMajorB5  byte    %9.0g                 5 scienceMajorB
+DKmajor5        byte    %9.0g                 5 DKmajor
+missingMajor5   byte    %9.0g                 5 missingMajor
+otherMajor5     byte    %9.0g                 5 otherMajor
+otherMajorA5    byte    %9.0g                 5 otherMajorA
+otherMajorB5    byte    %9.0g                 5 otherMajorB
+Major5          int     %33.0g     vl_Majors
+                                              5 Major
+lnParTransHat45 float   %9.0g                 5 lnParTransHat4
+lnParTransHat25 float   %9.0g                 5 lnParTransHat2
+prParTrans25    float   %9.0g                 5 prParTrans2
+prParTrans45    float   %9.0g                 5 prParTrans4
+E_ParTrans25    float   %9.0g                 5 E_ParTrans2
+E_ParTrans45    float   %9.0g                 5 E_ParTrans4
+whiteCollar5    byte    %9.0g                 5 whiteCollar
+choice155       byte    %28.0g     vl_choice15
+                                              5 choice15
+choice15A5      byte    %28.0g     vl_choice15
+                                              5 choice15A
+choice15B5      byte    %28.0g     vl_choice15
+                                              5 choice15B
+choice255       byte    %33.0g     vl_choice25
+                                              5 choice25
+yearw6          float   %9.0g                 6 yearw
+choice6         byte    %9.0g                 6 choice
+age6            byte    %9.0g                 6 age
+cum_2yr6        byte    %9.0g                 6 cum_2yr
+cum_4yr6        byte    %9.0g                 6 cum_4yr
+grad_2yr6       byte    %9.0g                 6 grad_2yr
+grad_4yr6       byte    %9.0g                 6 grad_4yr
+grades6         float   %9.0g                 6 grades
+log_wage6       float   %9.0g                 6 log_wage
+log_comp6       float   %9.0g                 6 log_comp
+log_wageJobM~n6 float   %9.0g                 6 log_wageJobMain
+log_compJobM~n6 float   %9.0g                 6 log_compJobMain
+hours_per_we~t6 float   %9.0g                 6 hours_per_week_Oct
+weeks_worked~t6 byte    %8.0g                 6 weeks_worked_Oct
+anyFlag6        byte    %9.0g                 6 anyFlag
+anyFlagFemale6  byte    %9.0g                 6 anyFlagFemale
+in_grad_school6 byte    %9.0g                 6 in_grad_school
+scienceMajor6   byte    %9.0g                 6 scienceMajor
+scienceMajorA6  byte    %9.0g                 6 scienceMajorA
+scienceMajorB6  byte    %9.0g                 6 scienceMajorB
+DKmajor6        byte    %9.0g                 6 DKmajor
+missingMajor6   byte    %9.0g                 6 missingMajor
+otherMajor6     byte    %9.0g                 6 otherMajor
+otherMajorA6    byte    %9.0g                 6 otherMajorA
+otherMajorB6    byte    %9.0g                 6 otherMajorB
+Major6          int     %33.0g     vl_Majors
+                                              6 Major
+lnParTransHat46 float   %9.0g                 6 lnParTransHat4
+lnParTransHat26 float   %9.0g                 6 lnParTransHat2
+prParTrans26    float   %9.0g                 6 prParTrans2
+prParTrans46    float   %9.0g                 6 prParTrans4
+E_ParTrans26    float   %9.0g                 6 E_ParTrans2
+E_ParTrans46    float   %9.0g                 6 E_ParTrans4
+whiteCollar6    byte    %9.0g                 6 whiteCollar
+choice156       byte    %28.0g     vl_choice15
+                                              6 choice15
+choice15A6      byte    %28.0g     vl_choice15
+                                              6 choice15A
+choice15B6      byte    %28.0g     vl_choice15
+                                              6 choice15B
+choice256       byte    %33.0g     vl_choice25
+                                              6 choice25
+yearw7          float   %9.0g                 7 yearw
+choice7         byte    %9.0g                 7 choice
+age7            byte    %9.0g                 7 age
+cum_2yr7        byte    %9.0g                 7 cum_2yr
+cum_4yr7        byte    %9.0g                 7 cum_4yr
+grad_2yr7       byte    %9.0g                 7 grad_2yr
+grad_4yr7       byte    %9.0g                 7 grad_4yr
+grades7         float   %9.0g                 7 grades
+log_wage7       float   %9.0g                 7 log_wage
+log_comp7       float   %9.0g                 7 log_comp
+log_wageJobM~n7 float   %9.0g                 7 log_wageJobMain
+log_compJobM~n7 float   %9.0g                 7 log_compJobMain
+hours_per_we~t7 float   %9.0g                 7 hours_per_week_Oct
+weeks_worked~t7 byte    %8.0g                 7 weeks_worked_Oct
+anyFlag7        byte    %9.0g                 7 anyFlag
+anyFlagFemale7  byte    %9.0g                 7 anyFlagFemale
+in_grad_school7 byte    %9.0g                 7 in_grad_school
+scienceMajor7   byte    %9.0g                 7 scienceMajor
+scienceMajorA7  byte    %9.0g                 7 scienceMajorA
+scienceMajorB7  byte    %9.0g                 7 scienceMajorB
+DKmajor7        byte    %9.0g                 7 DKmajor
+missingMajor7   byte    %9.0g                 7 missingMajor
+otherMajor7     byte    %9.0g                 7 otherMajor
+otherMajorA7    byte    %9.0g                 7 otherMajorA
+otherMajorB7    byte    %9.0g                 7 otherMajorB
+Major7          int     %33.0g     vl_Majors
+                                              7 Major
+lnParTransHat47 float   %9.0g                 7 lnParTransHat4
+lnParTransHat27 float   %9.0g                 7 lnParTransHat2
+prParTrans27    float   %9.0g                 7 prParTrans2
+prParTrans47    float   %9.0g                 7 prParTrans4
+E_ParTrans27    float   %9.0g                 7 E_ParTrans2
+E_ParTrans47    float   %9.0g                 7 E_ParTrans4
+whiteCollar7    byte    %9.0g                 7 whiteCollar
+choice157       byte    %28.0g     vl_choice15
+                                              7 choice15
+choice15A7      byte    %28.0g     vl_choice15
+                                              7 choice15A
+choice15B7      byte    %28.0g     vl_choice15
+                                              7 choice15B
+choice257       byte    %33.0g     vl_choice25
+                                              7 choice25
+yearw8          float   %9.0g                 8 yearw
+choice8         byte    %9.0g                 8 choice
+age8            byte    %9.0g                 8 age
+cum_2yr8        byte    %9.0g                 8 cum_2yr
+cum_4yr8        byte    %9.0g                 8 cum_4yr
+grad_2yr8       byte    %9.0g                 8 grad_2yr
+grad_4yr8       byte    %9.0g                 8 grad_4yr
+grades8         float   %9.0g                 8 grades
+log_wage8       float   %9.0g                 8 log_wage
+log_comp8       float   %9.0g                 8 log_comp
+log_wageJobM~n8 float   %9.0g                 8 log_wageJobMain
+log_compJobM~n8 float   %9.0g                 8 log_compJobMain
+hours_per_we~t8 float   %9.0g                 8 hours_per_week_Oct
+weeks_worked~t8 byte    %8.0g                 8 weeks_worked_Oct
+anyFlag8        byte    %9.0g                 8 anyFlag
+anyFlagFemale8  byte    %9.0g                 8 anyFlagFemale
+in_grad_school8 byte    %9.0g                 8 in_grad_school
+scienceMajor8   byte    %9.0g                 8 scienceMajor
+scienceMajorA8  byte    %9.0g                 8 scienceMajorA
+scienceMajorB8  byte    %9.0g                 8 scienceMajorB
+DKmajor8        byte    %9.0g                 8 DKmajor
+missingMajor8   byte    %9.0g                 8 missingMajor
+otherMajor8     byte    %9.0g                 8 otherMajor
+otherMajorA8    byte    %9.0g                 8 otherMajorA
+otherMajorB8    byte    %9.0g                 8 otherMajorB
+Major8          int     %33.0g     vl_Majors
+                                              8 Major
+lnParTransHat48 float   %9.0g                 8 lnParTransHat4
+lnParTransHat28 float   %9.0g                 8 lnParTransHat2
+prParTrans28    float   %9.0g                 8 prParTrans2
+prParTrans48    float   %9.0g                 8 prParTrans4
+E_ParTrans28    float   %9.0g                 8 E_ParTrans2
+E_ParTrans48    float   %9.0g                 8 E_ParTrans4
+whiteCollar8    byte    %9.0g                 8 whiteCollar
+choice158       byte    %28.0g     vl_choice15
+                                              8 choice15
+choice15A8      byte    %28.0g     vl_choice15
+                                              8 choice15A
+choice15B8      byte    %28.0g     vl_choice15
+                                              8 choice15B
+choice258       byte    %33.0g     vl_choice25
+                                              8 choice25
+yearw9          float   %9.0g                 9 yearw
+choice9         byte    %9.0g                 9 choice
+age9            byte    %9.0g                 9 age
+cum_2yr9        byte    %9.0g                 9 cum_2yr
+cum_4yr9        byte    %9.0g                 9 cum_4yr
+grad_2yr9       byte    %9.0g                 9 grad_2yr
+grad_4yr9       byte    %9.0g                 9 grad_4yr
+grades9         float   %9.0g                 9 grades
+log_wage9       float   %9.0g                 9 log_wage
+log_comp9       float   %9.0g                 9 log_comp
+log_wageJobM~n9 float   %9.0g                 9 log_wageJobMain
+log_compJobM~n9 float   %9.0g                 9 log_compJobMain
+hours_per_we~t9 float   %9.0g                 9 hours_per_week_Oct
+weeks_worked~t9 byte    %8.0g                 9 weeks_worked_Oct
+anyFlag9        byte    %9.0g                 9 anyFlag
+anyFlagFemale9  byte    %9.0g                 9 anyFlagFemale
+in_grad_school9 byte    %9.0g                 9 in_grad_school
+scienceMajor9   byte    %9.0g                 9 scienceMajor
+scienceMajorA9  byte    %9.0g                 9 scienceMajorA
+scienceMajorB9  byte    %9.0g                 9 scienceMajorB
+DKmajor9        byte    %9.0g                 9 DKmajor
+missingMajor9   byte    %9.0g                 9 missingMajor
+otherMajor9     byte    %9.0g                 9 otherMajor
+otherMajorA9    byte    %9.0g                 9 otherMajorA
+otherMajorB9    byte    %9.0g                 9 otherMajorB
+Major9          int     %33.0g     vl_Majors
+                                              9 Major
+lnParTransHat49 float   %9.0g                 9 lnParTransHat4
+lnParTransHat29 float   %9.0g                 9 lnParTransHat2
+prParTrans29    float   %9.0g                 9 prParTrans2
+prParTrans49    float   %9.0g                 9 prParTrans4
+E_ParTrans29    float   %9.0g                 9 E_ParTrans2
+E_ParTrans49    float   %9.0g                 9 E_ParTrans4
+whiteCollar9    byte    %9.0g                 9 whiteCollar
+choice159       byte    %28.0g     vl_choice15
+                                              9 choice15
+choice15A9      byte    %28.0g     vl_choice15
+                                              9 choice15A
+choice15B9      byte    %28.0g     vl_choice15
+                                              9 choice15B
+choice259       byte    %33.0g     vl_choice25
+                                              9 choice25
+yearw10         float   %9.0g                 10 yearw
+choice10        byte    %9.0g                 10 choice
+age10           byte    %9.0g                 10 age
+cum_2yr10       byte    %9.0g                 10 cum_2yr
+cum_4yr10       byte    %9.0g                 10 cum_4yr
+grad_2yr10      byte    %9.0g                 10 grad_2yr
+grad_4yr10      byte    %9.0g                 10 grad_4yr
+grades10        float   %9.0g                 10 grades
+log_wage10      float   %9.0g                 10 log_wage
+log_comp10      float   %9.0g                 10 log_comp
+log_wageJobM~10 float   %9.0g                 10 log_wageJobMain
+log_compJobM~10 float   %9.0g                 10 log_compJobMain
+hours_per_we~10 float   %9.0g                 10 hours_per_week_Oct
+weeks_worked~10 byte    %8.0g                 10 weeks_worked_Oct
+anyFlag10       byte    %9.0g                 10 anyFlag
+anyFlagFemale10 byte    %9.0g                 10 anyFlagFemale
+in_grad_scho~10 byte    %9.0g                 10 in_grad_school
+scienceMajor10  byte    %9.0g                 10 scienceMajor
+scienceMajorA10 byte    %9.0g                 10 scienceMajorA
+scienceMajorB10 byte    %9.0g                 10 scienceMajorB
+DKmajor10       byte    %9.0g                 10 DKmajor
+missingMajor10  byte    %9.0g                 10 missingMajor
+otherMajor10    byte    %9.0g                 10 otherMajor
+otherMajorA10   byte    %9.0g                 10 otherMajorA
+otherMajorB10   byte    %9.0g                 10 otherMajorB
+Major10         int     %33.0g     vl_Majors
+                                              10 Major
+lnParTransH~410 float   %9.0g                 10 lnParTransHat4
+lnParTransH~210 float   %9.0g                 10 lnParTransHat2
+prParTrans210   float   %9.0g                 10 prParTrans2
+prParTrans410   float   %9.0g                 10 prParTrans4
+E_ParTrans210   float   %9.0g                 10 E_ParTrans2
+E_ParTrans410   float   %9.0g                 10 E_ParTrans4
+whiteCollar10   byte    %9.0g                 10 whiteCollar
+choice1510      byte    %28.0g     vl_choice15
+                                              10 choice15
+choice15A10     byte    %28.0g     vl_choice15
+                                              10 choice15A
+choice15B10     byte    %28.0g     vl_choice15
+                                              10 choice15B
+choice2510      byte    %33.0g     vl_choice25
+                                              10 choice25
+yearw11         float   %9.0g                 11 yearw
+choice11        byte    %9.0g                 11 choice
+age11           byte    %9.0g                 11 age
+cum_2yr11       byte    %9.0g                 11 cum_2yr
+cum_4yr11       byte    %9.0g                 11 cum_4yr
+grad_2yr11      byte    %9.0g                 11 grad_2yr
+grad_4yr11      byte    %9.0g                 11 grad_4yr
+grades11        float   %9.0g                 11 grades
+log_wage11      float   %9.0g                 11 log_wage
+log_comp11      float   %9.0g                 11 log_comp
+log_wageJobM~11 float   %9.0g                 11 log_wageJobMain
+log_compJobM~11 float   %9.0g                 11 log_compJobMain
+hours_per_we~11 float   %9.0g                 11 hours_per_week_Oct
+weeks_worked~11 byte    %8.0g                 11 weeks_worked_Oct
+anyFlag11       byte    %9.0g                 11 anyFlag
+anyFlagFemale11 byte    %9.0g                 11 anyFlagFemale
+in_grad_scho~11 byte    %9.0g                 11 in_grad_school
+scienceMajor11  byte    %9.0g                 11 scienceMajor
+scienceMajorA11 byte    %9.0g                 11 scienceMajorA
+scienceMajorB11 byte    %9.0g                 11 scienceMajorB
+DKmajor11       byte    %9.0g                 11 DKmajor
+missingMajor11  byte    %9.0g                 11 missingMajor
+otherMajor11    byte    %9.0g                 11 otherMajor
+otherMajorA11   byte    %9.0g                 11 otherMajorA
+otherMajorB11   byte    %9.0g                 11 otherMajorB
+Major11         int     %33.0g     vl_Majors
+                                              11 Major
+lnParTransH~411 float   %9.0g                 11 lnParTransHat4
+lnParTransH~211 float   %9.0g                 11 lnParTransHat2
+prParTrans211   float   %9.0g                 11 prParTrans2
+prParTrans411   float   %9.0g                 11 prParTrans4
+E_ParTrans211   float   %9.0g                 11 E_ParTrans2
+E_ParTrans411   float   %9.0g                 11 E_ParTrans4
+whiteCollar11   byte    %9.0g                 11 whiteCollar
+choice1511      byte    %28.0g     vl_choice15
+                                              11 choice15
+choice15A11     byte    %28.0g     vl_choice15
+                                              11 choice15A
+choice15B11     byte    %28.0g     vl_choice15
+                                              11 choice15B
+choice2511      byte    %33.0g     vl_choice25
+                                              11 choice25
+yearw12         float   %9.0g                 12 yearw
+choice12        byte    %9.0g                 12 choice
+age12           byte    %9.0g                 12 age
+cum_2yr12       byte    %9.0g                 12 cum_2yr
+cum_4yr12       byte    %9.0g                 12 cum_4yr
+grad_2yr12      byte    %9.0g                 12 grad_2yr
+grad_4yr12      byte    %9.0g                 12 grad_4yr
+grades12        float   %9.0g                 12 grades
+log_wage12      float   %9.0g                 12 log_wage
+log_comp12      float   %9.0g                 12 log_comp
+log_wageJobM~12 float   %9.0g                 12 log_wageJobMain
+log_compJobM~12 float   %9.0g                 12 log_compJobMain
+hours_per_we~12 float   %9.0g                 12 hours_per_week_Oct
+weeks_worked~12 byte    %8.0g                 12 weeks_worked_Oct
+anyFlag12       byte    %9.0g                 12 anyFlag
+anyFlagFemale12 byte    %9.0g                 12 anyFlagFemale
+in_grad_scho~12 byte    %9.0g                 12 in_grad_school
+scienceMajor12  byte    %9.0g                 12 scienceMajor
+scienceMajorA12 byte    %9.0g                 12 scienceMajorA
+scienceMajorB12 byte    %9.0g                 12 scienceMajorB
+DKmajor12       byte    %9.0g                 12 DKmajor
+missingMajor12  byte    %9.0g                 12 missingMajor
+otherMajor12    byte    %9.0g                 12 otherMajor
+otherMajorA12   byte    %9.0g                 12 otherMajorA
+otherMajorB12   byte    %9.0g                 12 otherMajorB
+Major12         int     %33.0g     vl_Majors
+                                              12 Major
+lnParTransH~412 float   %9.0g                 12 lnParTransHat4
+lnParTransH~212 float   %9.0g                 12 lnParTransHat2
+prParTrans212   float   %9.0g                 12 prParTrans2
+prParTrans412   float   %9.0g                 12 prParTrans4
+E_ParTrans212   float   %9.0g                 12 E_ParTrans2
+E_ParTrans412   float   %9.0g                 12 E_ParTrans4
+whiteCollar12   byte    %9.0g                 12 whiteCollar
+choice1512      byte    %28.0g     vl_choice15
+                                              12 choice15
+choice15A12     byte    %28.0g     vl_choice15
+                                              12 choice15A
+choice15B12     byte    %28.0g     vl_choice15
+                                              12 choice15B
+choice2512      byte    %33.0g     vl_choice25
+                                              12 choice25
+yearw13         float   %9.0g                 13 yearw
+choice13        byte    %9.0g                 13 choice
+age13           byte    %9.0g                 13 age
+cum_2yr13       byte    %9.0g                 13 cum_2yr
+cum_4yr13       byte    %9.0g                 13 cum_4yr
+grad_2yr13      byte    %9.0g                 13 grad_2yr
+grad_4yr13      byte    %9.0g                 13 grad_4yr
+grades13        float   %9.0g                 13 grades
+log_wage13      float   %9.0g                 13 log_wage
+log_comp13      float   %9.0g                 13 log_comp
+log_wageJobM~13 float   %9.0g                 13 log_wageJobMain
+log_compJobM~13 float   %9.0g                 13 log_compJobMain
+hours_per_we~13 float   %9.0g                 13 hours_per_week_Oct
+weeks_worked~13 byte    %8.0g                 13 weeks_worked_Oct
+anyFlag13       byte    %9.0g                 13 anyFlag
+anyFlagFemale13 byte    %9.0g                 13 anyFlagFemale
+in_grad_scho~13 byte    %9.0g                 13 in_grad_school
+scienceMajor13  byte    %9.0g                 13 scienceMajor
+scienceMajorA13 byte    %9.0g                 13 scienceMajorA
+scienceMajorB13 byte    %9.0g                 13 scienceMajorB
+DKmajor13       byte    %9.0g                 13 DKmajor
+missingMajor13  byte    %9.0g                 13 missingMajor
+otherMajor13    byte    %9.0g                 13 otherMajor
+otherMajorA13   byte    %9.0g                 13 otherMajorA
+otherMajorB13   byte    %9.0g                 13 otherMajorB
+Major13         int     %33.0g     vl_Majors
+                                              13 Major
+lnParTransH~413 float   %9.0g                 13 lnParTransHat4
+lnParTransH~213 float   %9.0g                 13 lnParTransHat2
+prParTrans213   float   %9.0g                 13 prParTrans2
+prParTrans413   float   %9.0g                 13 prParTrans4
+E_ParTrans213   float   %9.0g                 13 E_ParTrans2
+E_ParTrans413   float   %9.0g                 13 E_ParTrans4
+whiteCollar13   byte    %9.0g                 13 whiteCollar
+choice1513      byte    %28.0g     vl_choice15
+                                              13 choice15
+choice15A13     byte    %28.0g     vl_choice15
+                                              13 choice15A
+choice15B13     byte    %28.0g     vl_choice15
+                                              13 choice15B
+choice2513      byte    %33.0g     vl_choice25
+                                              13 choice25
+yearw14         float   %9.0g                 14 yearw
+choice14        byte    %9.0g                 14 choice
+age14           byte    %9.0g                 14 age
+cum_2yr14       byte    %9.0g                 14 cum_2yr
+cum_4yr14       byte    %9.0g                 14 cum_4yr
+grad_2yr14      byte    %9.0g                 14 grad_2yr
+grad_4yr14      byte    %9.0g                 14 grad_4yr
+grades14        float   %9.0g                 14 grades
+log_wage14      float   %9.0g                 14 log_wage
+log_comp14      float   %9.0g                 14 log_comp
+log_wageJobM~14 float   %9.0g                 14 log_wageJobMain
+log_compJobM~14 float   %9.0g                 14 log_compJobMain
+hours_per_we~14 float   %9.0g                 14 hours_per_week_Oct
+weeks_worked~14 byte    %8.0g                 14 weeks_worked_Oct
+anyFlag14       byte    %9.0g                 14 anyFlag
+anyFlagFemale14 byte    %9.0g                 14 anyFlagFemale
+in_grad_scho~14 byte    %9.0g                 14 in_grad_school
+scienceMajor14  byte    %9.0g                 14 scienceMajor
+scienceMajorA14 byte    %9.0g                 14 scienceMajorA
+scienceMajorB14 byte    %9.0g                 14 scienceMajorB
+DKmajor14       byte    %9.0g                 14 DKmajor
+missingMajor14  byte    %9.0g                 14 missingMajor
+otherMajor14    byte    %9.0g                 14 otherMajor
+otherMajorA14   byte    %9.0g                 14 otherMajorA
+otherMajorB14   byte    %9.0g                 14 otherMajorB
+Major14         int     %33.0g     vl_Majors
+                                              14 Major
+lnParTransH~414 float   %9.0g                 14 lnParTransHat4
+lnParTransH~214 float   %9.0g                 14 lnParTransHat2
+prParTrans214   float   %9.0g                 14 prParTrans2
+prParTrans414   float   %9.0g                 14 prParTrans4
+E_ParTrans214   float   %9.0g                 14 E_ParTrans2
+E_ParTrans414   float   %9.0g                 14 E_ParTrans4
+whiteCollar14   byte    %9.0g                 14 whiteCollar
+choice1514      byte    %28.0g     vl_choice15
+                                              14 choice15
+choice15A14     byte    %28.0g     vl_choice15
+                                              14 choice15A
+choice15B14     byte    %28.0g     vl_choice15
+                                              14 choice15B
+choice2514      byte    %33.0g     vl_choice25
+                                              14 choice25
+yearw15         float   %9.0g                 15 yearw
+choice15        byte    %9.0g                 15 choice
+age15           byte    %9.0g                 15 age
+cum_2yr15       byte    %9.0g                 15 cum_2yr
+cum_4yr15       byte    %9.0g                 15 cum_4yr
+grad_2yr15      byte    %9.0g                 15 grad_2yr
+grad_4yr15      byte    %9.0g                 15 grad_4yr
+grades15        float   %9.0g                 15 grades
+log_wage15      float   %9.0g                 15 log_wage
+log_comp15      float   %9.0g                 15 log_comp
+log_wageJobM~15 float   %9.0g                 15 log_wageJobMain
+log_compJobM~15 float   %9.0g                 15 log_compJobMain
+hours_per_we~15 float   %9.0g                 15 hours_per_week_Oct
+weeks_worked~15 byte    %8.0g                 15 weeks_worked_Oct
+anyFlag15       byte    %9.0g                 15 anyFlag
+anyFlagFemale15 byte    %9.0g                 15 anyFlagFemale
+in_grad_scho~15 byte    %9.0g                 15 in_grad_school
+scienceMajor15  byte    %9.0g                 15 scienceMajor
+scienceMajorA15 byte    %9.0g                 15 scienceMajorA
+scienceMajorB15 byte    %9.0g                 15 scienceMajorB
+DKmajor15       byte    %9.0g                 15 DKmajor
+missingMajor15  byte    %9.0g                 15 missingMajor
+otherMajor15    byte    %9.0g                 15 otherMajor
+otherMajorA15   byte    %9.0g                 15 otherMajorA
+otherMajorB15   byte    %9.0g                 15 otherMajorB
+Major15         int     %33.0g     vl_Majors
+                                              15 Major
+lnParTransH~415 float   %9.0g                 15 lnParTransHat4
+lnParTransH~215 float   %9.0g                 15 lnParTransHat2
+prParTrans215   float   %9.0g                 15 prParTrans2
+prParTrans415   float   %9.0g                 15 prParTrans4
+E_ParTrans215   float   %9.0g                 15 E_ParTrans2
+E_ParTrans415   float   %9.0g                 15 E_ParTrans4
+whiteCollar15   byte    %9.0g                 15 whiteCollar
+choice1515      byte    %28.0g     vl_choice15
+                                              15 choice15
+choice15A15     byte    %28.0g     vl_choice15
+                                              15 choice15A
+choice15B15     byte    %28.0g     vl_choice15
+                                              15 choice15B
+choice2515      byte    %33.0g     vl_choice25
+                                              15 choice25
+yearw16         float   %9.0g                 16 yearw
+choice16        byte    %9.0g                 16 choice
+age16           byte    %9.0g                 16 age
+cum_2yr16       byte    %9.0g                 16 cum_2yr
+cum_4yr16       byte    %9.0g                 16 cum_4yr
+grad_2yr16      byte    %9.0g                 16 grad_2yr
+grad_4yr16      byte    %9.0g                 16 grad_4yr
+grades16        float   %9.0g                 16 grades
+log_wage16      float   %9.0g                 16 log_wage
+log_comp16      float   %9.0g                 16 log_comp
+log_wageJobM~16 float   %9.0g                 16 log_wageJobMain
+log_compJobM~16 float   %9.0g                 16 log_compJobMain
+hours_per_we~16 float   %9.0g                 16 hours_per_week_Oct
+weeks_worked~16 byte    %8.0g                 16 weeks_worked_Oct
+anyFlag16       byte    %9.0g                 16 anyFlag
+anyFlagFemale16 byte    %9.0g                 16 anyFlagFemale
+in_grad_scho~16 byte    %9.0g                 16 in_grad_school
+scienceMajor16  byte    %9.0g                 16 scienceMajor
+scienceMajorA16 byte    %9.0g                 16 scienceMajorA
+scienceMajorB16 byte    %9.0g                 16 scienceMajorB
+DKmajor16       byte    %9.0g                 16 DKmajor
+missingMajor16  byte    %9.0g                 16 missingMajor
+otherMajor16    byte    %9.0g                 16 otherMajor
+otherMajorA16   byte    %9.0g                 16 otherMajorA
+otherMajorB16   byte    %9.0g                 16 otherMajorB
+Major16         int     %33.0g     vl_Majors
+                                              16 Major
+lnParTransH~416 float   %9.0g                 16 lnParTransHat4
+lnParTransH~216 float   %9.0g                 16 lnParTransHat2
+prParTrans216   float   %9.0g                 16 prParTrans2
+prParTrans416   float   %9.0g                 16 prParTrans4
+E_ParTrans216   float   %9.0g                 16 E_ParTrans2
+E_ParTrans416   float   %9.0g                 16 E_ParTrans4
+whiteCollar16   byte    %9.0g                 16 whiteCollar
+choice1516      byte    %28.0g     vl_choice15
+                                              16 choice15
+choice15A16     byte    %28.0g     vl_choice15
+                                              16 choice15A
+choice15B16     byte    %28.0g     vl_choice15
+                                              16 choice15B
+choice2516      byte    %33.0g     vl_choice25
+                                              16 choice25
+yearw17         float   %9.0g                 17 yearw
+choice17        byte    %9.0g                 17 choice
+age17           byte    %9.0g                 17 age
+cum_2yr17       byte    %9.0g                 17 cum_2yr
+cum_4yr17       byte    %9.0g                 17 cum_4yr
+grad_2yr17      byte    %9.0g                 17 grad_2yr
+grad_4yr17      byte    %9.0g                 17 grad_4yr
+grades17        float   %9.0g                 17 grades
+log_wage17      float   %9.0g                 17 log_wage
+log_comp17      float   %9.0g                 17 log_comp
+log_wageJobM~17 float   %9.0g                 17 log_wageJobMain
+log_compJobM~17 float   %9.0g                 17 log_compJobMain
+hours_per_we~17 float   %9.0g                 17 hours_per_week_Oct
+weeks_worked~17 byte    %8.0g                 17 weeks_worked_Oct
+anyFlag17       byte    %9.0g                 17 anyFlag
+anyFlagFemale17 byte    %9.0g                 17 anyFlagFemale
+in_grad_scho~17 byte    %9.0g                 17 in_grad_school
+scienceMajor17  byte    %9.0g                 17 scienceMajor
+scienceMajorA17 byte    %9.0g                 17 scienceMajorA
+scienceMajorB17 byte    %9.0g                 17 scienceMajorB
+DKmajor17       byte    %9.0g                 17 DKmajor
+missingMajor17  byte    %9.0g                 17 missingMajor
+otherMajor17    byte    %9.0g                 17 otherMajor
+otherMajorA17   byte    %9.0g                 17 otherMajorA
+otherMajorB17   byte    %9.0g                 17 otherMajorB
+Major17         int     %33.0g     vl_Majors
+                                              17 Major
+lnParTransH~417 float   %9.0g                 17 lnParTransHat4
+lnParTransH~217 float   %9.0g                 17 lnParTransHat2
+prParTrans217   float   %9.0g                 17 prParTrans2
+prParTrans417   float   %9.0g                 17 prParTrans4
+E_ParTrans217   float   %9.0g                 17 E_ParTrans2
+E_ParTrans417   float   %9.0g                 17 E_ParTrans4
+whiteCollar17   byte    %9.0g                 17 whiteCollar
+choice1517      byte    %28.0g     vl_choice15
+                                              17 choice15
+choice15A17     byte    %28.0g     vl_choice15
+                                              17 choice15A
+choice15B17     byte    %28.0g     vl_choice15
+                                              17 choice15B
+choice2517      byte    %33.0g     vl_choice25
+                                              17 choice25
+yearw18         float   %9.0g                 18 yearw
+choice18        byte    %9.0g                 18 choice
+age18           byte    %9.0g                 18 age
+cum_2yr18       byte    %9.0g                 18 cum_2yr
+cum_4yr18       byte    %9.0g                 18 cum_4yr
+grad_2yr18      byte    %9.0g                 18 grad_2yr
+grad_4yr18      byte    %9.0g                 18 grad_4yr
+grades18        float   %9.0g                 18 grades
+log_wage18      float   %9.0g                 18 log_wage
+log_comp18      float   %9.0g                 18 log_comp
+log_wageJobM~18 float   %9.0g                 18 log_wageJobMain
+log_compJobM~18 float   %9.0g                 18 log_compJobMain
+hours_per_we~18 float   %9.0g                 18 hours_per_week_Oct
+weeks_worked~18 byte    %8.0g                 18 weeks_worked_Oct
+anyFlag18       byte    %9.0g                 18 anyFlag
+anyFlagFemale18 byte    %9.0g                 18 anyFlagFemale
+in_grad_scho~18 byte    %9.0g                 18 in_grad_school
+scienceMajor18  byte    %9.0g                 18 scienceMajor
+scienceMajorA18 byte    %9.0g                 18 scienceMajorA
+scienceMajorB18 byte    %9.0g                 18 scienceMajorB
+DKmajor18       byte    %9.0g                 18 DKmajor
+missingMajor18  byte    %9.0g                 18 missingMajor
+otherMajor18    byte    %9.0g                 18 otherMajor
+otherMajorA18   byte    %9.0g                 18 otherMajorA
+otherMajorB18   byte    %9.0g                 18 otherMajorB
+Major18         int     %33.0g     vl_Majors
+                                              18 Major
+lnParTransH~418 float   %9.0g                 18 lnParTransHat4
+lnParTransH~218 float   %9.0g                 18 lnParTransHat2
+prParTrans218   float   %9.0g                 18 prParTrans2
+prParTrans418   float   %9.0g                 18 prParTrans4
+E_ParTrans218   float   %9.0g                 18 E_ParTrans2
+E_ParTrans418   float   %9.0g                 18 E_ParTrans4
+whiteCollar18   byte    %9.0g                 18 whiteCollar
+choice1518      byte    %28.0g     vl_choice15
+                                              18 choice15
+choice15A18     byte    %28.0g     vl_choice15
+                                              18 choice15A
+choice15B18     byte    %28.0g     vl_choice15
+                                              18 choice15B
+choice2518      byte    %33.0g     vl_choice25
+                                              18 choice25
+yearw19         float   %9.0g                 19 yearw
+choice19        byte    %9.0g                 19 choice
+age19           byte    %9.0g                 19 age
+cum_2yr19       byte    %9.0g                 19 cum_2yr
+cum_4yr19       byte    %9.0g                 19 cum_4yr
+grad_2yr19      byte    %9.0g                 19 grad_2yr
+grad_4yr19      byte    %9.0g                 19 grad_4yr
+grades19        float   %9.0g                 19 grades
+log_wage19      float   %9.0g                 19 log_wage
+log_comp19      float   %9.0g                 19 log_comp
+log_wageJobM~19 float   %9.0g                 19 log_wageJobMain
+log_compJobM~19 float   %9.0g                 19 log_compJobMain
+hours_per_we~19 float   %9.0g                 19 hours_per_week_Oct
+weeks_worked~19 byte    %8.0g                 19 weeks_worked_Oct
+anyFlag19       byte    %9.0g                 19 anyFlag
+anyFlagFemale19 byte    %9.0g                 19 anyFlagFemale
+in_grad_scho~19 byte    %9.0g                 19 in_grad_school
+scienceMajor19  byte    %9.0g                 19 scienceMajor
+scienceMajorA19 byte    %9.0g                 19 scienceMajorA
+scienceMajorB19 byte    %9.0g                 19 scienceMajorB
+DKmajor19       byte    %9.0g                 19 DKmajor
+missingMajor19  byte    %9.0g                 19 missingMajor
+otherMajor19    byte    %9.0g                 19 otherMajor
+otherMajorA19   byte    %9.0g                 19 otherMajorA
+otherMajorB19   byte    %9.0g                 19 otherMajorB
+Major19         int     %33.0g     vl_Majors
+                                              19 Major
+lnParTransH~419 float   %9.0g                 19 lnParTransHat4
+lnParTransH~219 float   %9.0g                 19 lnParTransHat2
+prParTrans219   float   %9.0g                 19 prParTrans2
+prParTrans419   float   %9.0g                 19 prParTrans4
+E_ParTrans219   float   %9.0g                 19 E_ParTrans2
+E_ParTrans419   float   %9.0g                 19 E_ParTrans4
+whiteCollar19   byte    %9.0g                 19 whiteCollar
+choice1519      byte    %28.0g     vl_choice15
+                                              19 choice15
+choice15A19     byte    %28.0g     vl_choice15
+                                              19 choice15A
+choice15B19     byte    %28.0g     vl_choice15
+                                              19 choice15B
+choice2519      byte    %33.0g     vl_choice25
+                                              19 choice25
+-------------------------------------------------------------------------------
+Sorted by: ID
+     Note: Dataset has changed since last saved.
+
+. 
+. save ${clnloc}y97_all_wide, replace
+file ../../../data/nlsy97/cleaned/y97_all_wide.dta saved
+
+. 
+. recode _all (.r .d .n .v .i = .)
+(ID: 0 changes made)
+(male: 0 changes made)
+(black: 0 changes made)
+(hispanic: 0 changes made)
+(AFQT: 0 changes made)
+(ASVABmath: 0 changes made)
+(ASVABverb: 0 changes made)
+(predSATmathZ: 0 changes made)
+(predSATverbZ: 0 changes made)
+(efc: 0 changes made)
+(asvabAR: 0 changes made)
+(asvabCS: 0 changes made)
+(asvabMK: 0 changes made)
+(asvabNO: 0 changes made)
+(asvabPC: 0 changes made)
+(asvabWK: 0 changes made)
+(SATmath: 0 changes made)
+(SATverb: 0 changes made)
+(numAPs: 0 changes made)
+(lateForSchoolNoExcuse: 163 changes made)
+(breakRulesRegularly: 1104 changes made)
+(R1ExtraClass: 3599 changes made)
+(R1WeekdaysExtraClass: 7528 changes made)
+(HrsExtraClass: 0 changes made)
+(tookClassDuringBreak: 5074 changes made)
+(reasonTookClassDuringBreak: 8442 changes made)
+(highStandardsWork: 1114 changes made)
+(doMoreThanExpected: 1110 changes made)
+(pctChanceWork20Hrs30: 5476 changes made)
+(parPctChanceWork20Hrs30: 5960 changes made)
+(tui4imp: 0 changes made)
+(grant4pr: 0 changes made)
+(grant4impPos: 0 changes made)
+(grant4impPosRMSE: 0 changes made)
+(loan4pr: 0 changes made)
+(loan4impPos: 0 changes made)
+(loan4impPosRMSE: 0 changes made)
+(tui2imp: 0 changes made)
+(grant2pr: 0 changes made)
+(grant2impPos: 0 changes made)
+(grant2impPosRMSE: 0 changes made)
+(loan2pr: 0 changes made)
+(loan2impPos: 0 changes made)
+(loan2impPosRMSE: 0 changes made)
+(ParTrans2RMSE: 0 changes made)
+(ParTrans4RMSE: 0 changes made)
+(loan18_4pr: 0 changes made)
+(loan18_4impPos: 0 changes made)
+(loan18_4impPosRMSE: 0 changes made)
+(loan18_2pr: 0 changes made)
+(loan18_2impPos: 0 changes made)
+(loan18_2impPosRMSE: 0 changes made)
+(loan18_4imp: 0 changes made)
+(loan18_2imp: 0 changes made)
+(BA_year: 0 changes made)
+(AA_year: 0 changes made)
+(BA_month: 0 changes made)
+(AA_month: 0 changes made)
+(CC_DO_SO: 0 changes made)
+(Grades_HS_best: 0 changes made)
+(Peduc: 0 changes made)
+(m_Peduc: 0 changes made)
+(Parent_college: 0 changes made)
+(famIncAsTeen: 0 changes made)
+(m_famIncAsTeen: 0 changes made)
+(finalSciMajor: 0 changes made)
+(finalSciMajorA: 0 changes made)
+(finalSciMajorB: 0 changes made)
+(final_major: 0 changes made)
+(yearw1: 0 changes made)
+(choice1: 0 changes made)
+(age1: 0 changes made)
+(cum_2yr1: 0 changes made)
+(cum_4yr1: 0 changes made)
+(grad_2yr1: 0 changes made)
+(grad_4yr1: 0 changes made)
+(grades1: 0 changes made)
+(log_wage1: 0 changes made)
+(log_comp1: 0 changes made)
+(log_wageJobMain1: 0 changes made)
+(log_compJobMain1: 0 changes made)
+(hours_per_week_Oct1: 0 changes made)
+(weeks_worked_Oct1: 0 changes made)
+(anyFlag1: 0 changes made)
+(anyFlagFemale1: 0 changes made)
+(in_grad_school1: 0 changes made)
+(scienceMajor1: 0 changes made)
+(scienceMajorA1: 0 changes made)
+(scienceMajorB1: 0 changes made)
+(DKmajor1: 0 changes made)
+(missingMajor1: 0 changes made)
+(otherMajor1: 0 changes made)
+(otherMajorA1: 0 changes made)
+(otherMajorB1: 0 changes made)
+(Major1: 0 changes made)
+(lnParTransHat41: 0 changes made)
+(lnParTransHat21: 0 changes made)
+(prParTrans21: 0 changes made)
+(prParTrans41: 0 changes made)
+(E_ParTrans21: 0 changes made)
+(E_ParTrans41: 0 changes made)
+(whiteCollar1: 0 changes made)
+(choice151: 0 changes made)
+(choice15A1: 0 changes made)
+(choice15B1: 0 changes made)
+(choice251: 0 changes made)
+(yearw2: 0 changes made)
+(choice2: 0 changes made)
+(age2: 0 changes made)
+(cum_2yr2: 0 changes made)
+(cum_4yr2: 0 changes made)
+(grad_2yr2: 0 changes made)
+(grad_4yr2: 0 changes made)
+(grades2: 0 changes made)
+(log_wage2: 0 changes made)
+(log_comp2: 0 changes made)
+(log_wageJobMain2: 0 changes made)
+(log_compJobMain2: 0 changes made)
+(hours_per_week_Oct2: 0 changes made)
+(weeks_worked_Oct2: 0 changes made)
+(anyFlag2: 0 changes made)
+(anyFlagFemale2: 0 changes made)
+(in_grad_school2: 0 changes made)
+(scienceMajor2: 0 changes made)
+(scienceMajorA2: 0 changes made)
+(scienceMajorB2: 0 changes made)
+(DKmajor2: 0 changes made)
+(missingMajor2: 0 changes made)
+(otherMajor2: 0 changes made)
+(otherMajorA2: 0 changes made)
+(otherMajorB2: 0 changes made)
+(Major2: 0 changes made)
+(lnParTransHat42: 0 changes made)
+(lnParTransHat22: 0 changes made)
+(prParTrans22: 0 changes made)
+(prParTrans42: 0 changes made)
+(E_ParTrans22: 0 changes made)
+(E_ParTrans42: 0 changes made)
+(whiteCollar2: 0 changes made)
+(choice152: 0 changes made)
+(choice15A2: 0 changes made)
+(choice15B2: 0 changes made)
+(choice252: 0 changes made)
+(yearw3: 0 changes made)
+(choice3: 0 changes made)
+(age3: 0 changes made)
+(cum_2yr3: 0 changes made)
+(cum_4yr3: 0 changes made)
+(grad_2yr3: 0 changes made)
+(grad_4yr3: 0 changes made)
+(grades3: 0 changes made)
+(log_wage3: 0 changes made)
+(log_comp3: 0 changes made)
+(log_wageJobMain3: 0 changes made)
+(log_compJobMain3: 0 changes made)
+(hours_per_week_Oct3: 0 changes made)
+(weeks_worked_Oct3: 0 changes made)
+(anyFlag3: 0 changes made)
+(anyFlagFemale3: 0 changes made)
+(in_grad_school3: 0 changes made)
+(scienceMajor3: 0 changes made)
+(scienceMajorA3: 0 changes made)
+(scienceMajorB3: 0 changes made)
+(DKmajor3: 0 changes made)
+(missingMajor3: 0 changes made)
+(otherMajor3: 0 changes made)
+(otherMajorA3: 0 changes made)
+(otherMajorB3: 0 changes made)
+(Major3: 0 changes made)
+(lnParTransHat43: 0 changes made)
+(lnParTransHat23: 0 changes made)
+(prParTrans23: 0 changes made)
+(prParTrans43: 0 changes made)
+(E_ParTrans23: 0 changes made)
+(E_ParTrans43: 0 changes made)
+(whiteCollar3: 0 changes made)
+(choice153: 0 changes made)
+(choice15A3: 0 changes made)
+(choice15B3: 0 changes made)
+(choice253: 0 changes made)
+(yearw4: 0 changes made)
+(choice4: 0 changes made)
+(age4: 0 changes made)
+(cum_2yr4: 0 changes made)
+(cum_4yr4: 0 changes made)
+(grad_2yr4: 0 changes made)
+(grad_4yr4: 0 changes made)
+(grades4: 0 changes made)
+(log_wage4: 0 changes made)
+(log_comp4: 0 changes made)
+(log_wageJobMain4: 0 changes made)
+(log_compJobMain4: 0 changes made)
+(hours_per_week_Oct4: 0 changes made)
+(weeks_worked_Oct4: 0 changes made)
+(anyFlag4: 0 changes made)
+(anyFlagFemale4: 0 changes made)
+(in_grad_school4: 0 changes made)
+(scienceMajor4: 0 changes made)
+(scienceMajorA4: 0 changes made)
+(scienceMajorB4: 0 changes made)
+(DKmajor4: 0 changes made)
+(missingMajor4: 0 changes made)
+(otherMajor4: 0 changes made)
+(otherMajorA4: 0 changes made)
+(otherMajorB4: 0 changes made)
+(Major4: 0 changes made)
+(lnParTransHat44: 0 changes made)
+(lnParTransHat24: 0 changes made)
+(prParTrans24: 0 changes made)
+(prParTrans44: 0 changes made)
+(E_ParTrans24: 0 changes made)
+(E_ParTrans44: 0 changes made)
+(whiteCollar4: 0 changes made)
+(choice154: 0 changes made)
+(choice15A4: 0 changes made)
+(choice15B4: 0 changes made)
+(choice254: 0 changes made)
+(yearw5: 0 changes made)
+(choice5: 0 changes made)
+(age5: 0 changes made)
+(cum_2yr5: 0 changes made)
+(cum_4yr5: 0 changes made)
+(grad_2yr5: 0 changes made)
+(grad_4yr5: 0 changes made)
+(grades5: 0 changes made)
+(log_wage5: 0 changes made)
+(log_comp5: 0 changes made)
+(log_wageJobMain5: 0 changes made)
+(log_compJobMain5: 0 changes made)
+(hours_per_week_Oct5: 0 changes made)
+(weeks_worked_Oct5: 0 changes made)
+(anyFlag5: 0 changes made)
+(anyFlagFemale5: 0 changes made)
+(in_grad_school5: 0 changes made)
+(scienceMajor5: 0 changes made)
+(scienceMajorA5: 0 changes made)
+(scienceMajorB5: 0 changes made)
+(DKmajor5: 0 changes made)
+(missingMajor5: 0 changes made)
+(otherMajor5: 0 changes made)
+(otherMajorA5: 0 changes made)
+(otherMajorB5: 0 changes made)
+(Major5: 0 changes made)
+(lnParTransHat45: 0 changes made)
+(lnParTransHat25: 0 changes made)
+(prParTrans25: 0 changes made)
+(prParTrans45: 0 changes made)
+(E_ParTrans25: 0 changes made)
+(E_ParTrans45: 0 changes made)
+(whiteCollar5: 0 changes made)
+(choice155: 0 changes made)
+(choice15A5: 0 changes made)
+(choice15B5: 0 changes made)
+(choice255: 0 changes made)
+(yearw6: 0 changes made)
+(choice6: 0 changes made)
+(age6: 0 changes made)
+(cum_2yr6: 0 changes made)
+(cum_4yr6: 0 changes made)
+(grad_2yr6: 0 changes made)
+(grad_4yr6: 0 changes made)
+(grades6: 0 changes made)
+(log_wage6: 0 changes made)
+(log_comp6: 0 changes made)
+(log_wageJobMain6: 0 changes made)
+(log_compJobMain6: 0 changes made)
+(hours_per_week_Oct6: 0 changes made)
+(weeks_worked_Oct6: 0 changes made)
+(anyFlag6: 0 changes made)
+(anyFlagFemale6: 0 changes made)
+(in_grad_school6: 0 changes made)
+(scienceMajor6: 0 changes made)
+(scienceMajorA6: 0 changes made)
+(scienceMajorB6: 0 changes made)
+(DKmajor6: 0 changes made)
+(missingMajor6: 0 changes made)
+(otherMajor6: 0 changes made)
+(otherMajorA6: 0 changes made)
+(otherMajorB6: 0 changes made)
+(Major6: 0 changes made)
+(lnParTransHat46: 0 changes made)
+(lnParTransHat26: 0 changes made)
+(prParTrans26: 0 changes made)
+(prParTrans46: 0 changes made)
+(E_ParTrans26: 0 changes made)
+(E_ParTrans46: 0 changes made)
+(whiteCollar6: 0 changes made)
+(choice156: 0 changes made)
+(choice15A6: 0 changes made)
+(choice15B6: 0 changes made)
+(choice256: 0 changes made)
+(yearw7: 0 changes made)
+(choice7: 0 changes made)
+(age7: 0 changes made)
+(cum_2yr7: 0 changes made)
+(cum_4yr7: 0 changes made)
+(grad_2yr7: 0 changes made)
+(grad_4yr7: 0 changes made)
+(grades7: 0 changes made)
+(log_wage7: 0 changes made)
+(log_comp7: 0 changes made)
+(log_wageJobMain7: 0 changes made)
+(log_compJobMain7: 0 changes made)
+(hours_per_week_Oct7: 0 changes made)
+(weeks_worked_Oct7: 0 changes made)
+(anyFlag7: 0 changes made)
+(anyFlagFemale7: 0 changes made)
+(in_grad_school7: 0 changes made)
+(scienceMajor7: 0 changes made)
+(scienceMajorA7: 0 changes made)
+(scienceMajorB7: 0 changes made)
+(DKmajor7: 0 changes made)
+(missingMajor7: 0 changes made)
+(otherMajor7: 0 changes made)
+(otherMajorA7: 0 changes made)
+(otherMajorB7: 0 changes made)
+(Major7: 0 changes made)
+(lnParTransHat47: 0 changes made)
+(lnParTransHat27: 0 changes made)
+(prParTrans27: 0 changes made)
+(prParTrans47: 0 changes made)
+(E_ParTrans27: 0 changes made)
+(E_ParTrans47: 0 changes made)
+(whiteCollar7: 0 changes made)
+(choice157: 0 changes made)
+(choice15A7: 0 changes made)
+(choice15B7: 0 changes made)
+(choice257: 0 changes made)
+(yearw8: 0 changes made)
+(choice8: 0 changes made)
+(age8: 0 changes made)
+(cum_2yr8: 0 changes made)
+(cum_4yr8: 0 changes made)
+(grad_2yr8: 0 changes made)
+(grad_4yr8: 0 changes made)
+(grades8: 0 changes made)
+(log_wage8: 0 changes made)
+(log_comp8: 0 changes made)
+(log_wageJobMain8: 0 changes made)
+(log_compJobMain8: 0 changes made)
+(hours_per_week_Oct8: 0 changes made)
+(weeks_worked_Oct8: 0 changes made)
+(anyFlag8: 0 changes made)
+(anyFlagFemale8: 0 changes made)
+(in_grad_school8: 0 changes made)
+(scienceMajor8: 0 changes made)
+(scienceMajorA8: 0 changes made)
+(scienceMajorB8: 0 changes made)
+(DKmajor8: 0 changes made)
+(missingMajor8: 0 changes made)
+(otherMajor8: 0 changes made)
+(otherMajorA8: 0 changes made)
+(otherMajorB8: 0 changes made)
+(Major8: 0 changes made)
+(lnParTransHat48: 0 changes made)
+(lnParTransHat28: 0 changes made)
+(prParTrans28: 0 changes made)
+(prParTrans48: 0 changes made)
+(E_ParTrans28: 0 changes made)
+(E_ParTrans48: 0 changes made)
+(whiteCollar8: 0 changes made)
+(choice158: 0 changes made)
+(choice15A8: 0 changes made)
+(choice15B8: 0 changes made)
+(choice258: 0 changes made)
+(yearw9: 0 changes made)
+(choice9: 0 changes made)
+(age9: 0 changes made)
+(cum_2yr9: 0 changes made)
+(cum_4yr9: 0 changes made)
+(grad_2yr9: 0 changes made)
+(grad_4yr9: 0 changes made)
+(grades9: 0 changes made)
+(log_wage9: 0 changes made)
+(log_comp9: 0 changes made)
+(log_wageJobMain9: 0 changes made)
+(log_compJobMain9: 0 changes made)
+(hours_per_week_Oct9: 0 changes made)
+(weeks_worked_Oct9: 0 changes made)
+(anyFlag9: 0 changes made)
+(anyFlagFemale9: 0 changes made)
+(in_grad_school9: 0 changes made)
+(scienceMajor9: 0 changes made)
+(scienceMajorA9: 0 changes made)
+(scienceMajorB9: 0 changes made)
+(DKmajor9: 0 changes made)
+(missingMajor9: 0 changes made)
+(otherMajor9: 0 changes made)
+(otherMajorA9: 0 changes made)
+(otherMajorB9: 0 changes made)
+(Major9: 0 changes made)
+(lnParTransHat49: 0 changes made)
+(lnParTransHat29: 0 changes made)
+(prParTrans29: 0 changes made)
+(prParTrans49: 0 changes made)
+(E_ParTrans29: 0 changes made)
+(E_ParTrans49: 0 changes made)
+(whiteCollar9: 0 changes made)
+(choice159: 0 changes made)
+(choice15A9: 0 changes made)
+(choice15B9: 0 changes made)
+(choice259: 0 changes made)
+(yearw10: 0 changes made)
+(choice10: 0 changes made)
+(age10: 0 changes made)
+(cum_2yr10: 0 changes made)
+(cum_4yr10: 0 changes made)
+(grad_2yr10: 0 changes made)
+(grad_4yr10: 0 changes made)
+(grades10: 0 changes made)
+(log_wage10: 0 changes made)
+(log_comp10: 0 changes made)
+(log_wageJobMain10: 0 changes made)
+(log_compJobMain10: 0 changes made)
+(hours_per_week_Oct10: 0 changes made)
+(weeks_worked_Oct10: 0 changes made)
+(anyFlag10: 0 changes made)
+(anyFlagFemale10: 0 changes made)
+(in_grad_school10: 0 changes made)
+(scienceMajor10: 0 changes made)
+(scienceMajorA10: 0 changes made)
+(scienceMajorB10: 0 changes made)
+(DKmajor10: 0 changes made)
+(missingMajor10: 0 changes made)
+(otherMajor10: 0 changes made)
+(otherMajorA10: 0 changes made)
+(otherMajorB10: 0 changes made)
+(Major10: 0 changes made)
+(lnParTransHat410: 0 changes made)
+(lnParTransHat210: 0 changes made)
+(prParTrans210: 0 changes made)
+(prParTrans410: 0 changes made)
+(E_ParTrans210: 0 changes made)
+(E_ParTrans410: 0 changes made)
+(whiteCollar10: 0 changes made)
+(choice1510: 0 changes made)
+(choice15A10: 0 changes made)
+(choice15B10: 0 changes made)
+(choice2510: 0 changes made)
+(yearw11: 0 changes made)
+(choice11: 0 changes made)
+(age11: 0 changes made)
+(cum_2yr11: 0 changes made)
+(cum_4yr11: 0 changes made)
+(grad_2yr11: 0 changes made)
+(grad_4yr11: 0 changes made)
+(grades11: 0 changes made)
+(log_wage11: 0 changes made)
+(log_comp11: 0 changes made)
+(log_wageJobMain11: 0 changes made)
+(log_compJobMain11: 0 changes made)
+(hours_per_week_Oct11: 0 changes made)
+(weeks_worked_Oct11: 0 changes made)
+(anyFlag11: 0 changes made)
+(anyFlagFemale11: 0 changes made)
+(in_grad_school11: 0 changes made)
+(scienceMajor11: 0 changes made)
+(scienceMajorA11: 0 changes made)
+(scienceMajorB11: 0 changes made)
+(DKmajor11: 0 changes made)
+(missingMajor11: 0 changes made)
+(otherMajor11: 0 changes made)
+(otherMajorA11: 0 changes made)
+(otherMajorB11: 0 changes made)
+(Major11: 0 changes made)
+(lnParTransHat411: 0 changes made)
+(lnParTransHat211: 0 changes made)
+(prParTrans211: 0 changes made)
+(prParTrans411: 0 changes made)
+(E_ParTrans211: 0 changes made)
+(E_ParTrans411: 0 changes made)
+(whiteCollar11: 0 changes made)
+(choice1511: 0 changes made)
+(choice15A11: 0 changes made)
+(choice15B11: 0 changes made)
+(choice2511: 0 changes made)
+(yearw12: 0 changes made)
+(choice12: 0 changes made)
+(age12: 0 changes made)
+(cum_2yr12: 0 changes made)
+(cum_4yr12: 0 changes made)
+(grad_2yr12: 0 changes made)
+(grad_4yr12: 0 changes made)
+(grades12: 0 changes made)
+(log_wage12: 0 changes made)
+(log_comp12: 0 changes made)
+(log_wageJobMain12: 0 changes made)
+(log_compJobMain12: 0 changes made)
+(hours_per_week_Oct12: 0 changes made)
+(weeks_worked_Oct12: 0 changes made)
+(anyFlag12: 0 changes made)
+(anyFlagFemale12: 0 changes made)
+(in_grad_school12: 0 changes made)
+(scienceMajor12: 0 changes made)
+(scienceMajorA12: 0 changes made)
+(scienceMajorB12: 0 changes made)
+(DKmajor12: 0 changes made)
+(missingMajor12: 0 changes made)
+(otherMajor12: 0 changes made)
+(otherMajorA12: 0 changes made)
+(otherMajorB12: 0 changes made)
+(Major12: 0 changes made)
+(lnParTransHat412: 0 changes made)
+(lnParTransHat212: 0 changes made)
+(prParTrans212: 0 changes made)
+(prParTrans412: 0 changes made)
+(E_ParTrans212: 0 changes made)
+(E_ParTrans412: 0 changes made)
+(whiteCollar12: 0 changes made)
+(choice1512: 0 changes made)
+(choice15A12: 0 changes made)
+(choice15B12: 0 changes made)
+(choice2512: 0 changes made)
+(yearw13: 0 changes made)
+(choice13: 0 changes made)
+(age13: 0 changes made)
+(cum_2yr13: 0 changes made)
+(cum_4yr13: 0 changes made)
+(grad_2yr13: 0 changes made)
+(grad_4yr13: 0 changes made)
+(grades13: 0 changes made)
+(log_wage13: 0 changes made)
+(log_comp13: 0 changes made)
+(log_wageJobMain13: 0 changes made)
+(log_compJobMain13: 0 changes made)
+(hours_per_week_Oct13: 0 changes made)
+(weeks_worked_Oct13: 0 changes made)
+(anyFlag13: 0 changes made)
+(anyFlagFemale13: 0 changes made)
+(in_grad_school13: 0 changes made)
+(scienceMajor13: 0 changes made)
+(scienceMajorA13: 0 changes made)
+(scienceMajorB13: 0 changes made)
+(DKmajor13: 0 changes made)
+(missingMajor13: 0 changes made)
+(otherMajor13: 0 changes made)
+(otherMajorA13: 0 changes made)
+(otherMajorB13: 0 changes made)
+(Major13: 0 changes made)
+(lnParTransHat413: 0 changes made)
+(lnParTransHat213: 0 changes made)
+(prParTrans213: 0 changes made)
+(prParTrans413: 0 changes made)
+(E_ParTrans213: 0 changes made)
+(E_ParTrans413: 0 changes made)
+(whiteCollar13: 0 changes made)
+(choice1513: 0 changes made)
+(choice15A13: 0 changes made)
+(choice15B13: 0 changes made)
+(choice2513: 0 changes made)
+(yearw14: 0 changes made)
+(choice14: 0 changes made)
+(age14: 0 changes made)
+(cum_2yr14: 0 changes made)
+(cum_4yr14: 0 changes made)
+(grad_2yr14: 0 changes made)
+(grad_4yr14: 0 changes made)
+(grades14: 0 changes made)
+(log_wage14: 0 changes made)
+(log_comp14: 0 changes made)
+(log_wageJobMain14: 0 changes made)
+(log_compJobMain14: 0 changes made)
+(hours_per_week_Oct14: 0 changes made)
+(weeks_worked_Oct14: 0 changes made)
+(anyFlag14: 0 changes made)
+(anyFlagFemale14: 0 changes made)
+(in_grad_school14: 0 changes made)
+(scienceMajor14: 0 changes made)
+(scienceMajorA14: 0 changes made)
+(scienceMajorB14: 0 changes made)
+(DKmajor14: 0 changes made)
+(missingMajor14: 0 changes made)
+(otherMajor14: 0 changes made)
+(otherMajorA14: 0 changes made)
+(otherMajorB14: 0 changes made)
+(Major14: 0 changes made)
+(lnParTransHat414: 0 changes made)
+(lnParTransHat214: 0 changes made)
+(prParTrans214: 0 changes made)
+(prParTrans414: 0 changes made)
+(E_ParTrans214: 0 changes made)
+(E_ParTrans414: 0 changes made)
+(whiteCollar14: 0 changes made)
+(choice1514: 0 changes made)
+(choice15A14: 0 changes made)
+(choice15B14: 0 changes made)
+(choice2514: 0 changes made)
+(yearw15: 0 changes made)
+(choice15: 0 changes made)
+(age15: 0 changes made)
+(cum_2yr15: 0 changes made)
+(cum_4yr15: 0 changes made)
+(grad_2yr15: 0 changes made)
+(grad_4yr15: 0 changes made)
+(grades15: 0 changes made)
+(log_wage15: 0 changes made)
+(log_comp15: 0 changes made)
+(log_wageJobMain15: 0 changes made)
+(log_compJobMain15: 0 changes made)
+(hours_per_week_Oct15: 0 changes made)
+(weeks_worked_Oct15: 0 changes made)
+(anyFlag15: 0 changes made)
+(anyFlagFemale15: 0 changes made)
+(in_grad_school15: 0 changes made)
+(scienceMajor15: 0 changes made)
+(scienceMajorA15: 0 changes made)
+(scienceMajorB15: 0 changes made)
+(DKmajor15: 0 changes made)
+(missingMajor15: 0 changes made)
+(otherMajor15: 0 changes made)
+(otherMajorA15: 0 changes made)
+(otherMajorB15: 0 changes made)
+(Major15: 0 changes made)
+(lnParTransHat415: 0 changes made)
+(lnParTransHat215: 0 changes made)
+(prParTrans215: 0 changes made)
+(prParTrans415: 0 changes made)
+(E_ParTrans215: 0 changes made)
+(E_ParTrans415: 0 changes made)
+(whiteCollar15: 0 changes made)
+(choice1515: 0 changes made)
+(choice15A15: 0 changes made)
+(choice15B15: 0 changes made)
+(choice2515: 0 changes made)
+(yearw16: 0 changes made)
+(choice16: 0 changes made)
+(age16: 0 changes made)
+(cum_2yr16: 0 changes made)
+(cum_4yr16: 0 changes made)
+(grad_2yr16: 0 changes made)
+(grad_4yr16: 0 changes made)
+(grades16: 0 changes made)
+(log_wage16: 0 changes made)
+(log_comp16: 0 changes made)
+(log_wageJobMain16: 0 changes made)
+(log_compJobMain16: 0 changes made)
+(hours_per_week_Oct16: 0 changes made)
+(weeks_worked_Oct16: 0 changes made)
+(anyFlag16: 0 changes made)
+(anyFlagFemale16: 0 changes made)
+(in_grad_school16: 0 changes made)
+(scienceMajor16: 0 changes made)
+(scienceMajorA16: 0 changes made)
+(scienceMajorB16: 0 changes made)
+(DKmajor16: 0 changes made)
+(missingMajor16: 0 changes made)
+(otherMajor16: 0 changes made)
+(otherMajorA16: 0 changes made)
+(otherMajorB16: 0 changes made)
+(Major16: 0 changes made)
+(lnParTransHat416: 0 changes made)
+(lnParTransHat216: 0 changes made)
+(prParTrans216: 0 changes made)
+(prParTrans416: 0 changes made)
+(E_ParTrans216: 0 changes made)
+(E_ParTrans416: 0 changes made)
+(whiteCollar16: 0 changes made)
+(choice1516: 0 changes made)
+(choice15A16: 0 changes made)
+(choice15B16: 0 changes made)
+(choice2516: 0 changes made)
+(yearw17: 0 changes made)
+(choice17: 0 changes made)
+(age17: 0 changes made)
+(cum_2yr17: 0 changes made)
+(cum_4yr17: 0 changes made)
+(grad_2yr17: 0 changes made)
+(grad_4yr17: 0 changes made)
+(grades17: 0 changes made)
+(log_wage17: 0 changes made)
+(log_comp17: 0 changes made)
+(log_wageJobMain17: 0 changes made)
+(log_compJobMain17: 0 changes made)
+(hours_per_week_Oct17: 0 changes made)
+(weeks_worked_Oct17: 0 changes made)
+(anyFlag17: 0 changes made)
+(anyFlagFemale17: 0 changes made)
+(in_grad_school17: 0 changes made)
+(scienceMajor17: 0 changes made)
+(scienceMajorA17: 0 changes made)
+(scienceMajorB17: 0 changes made)
+(DKmajor17: 0 changes made)
+(missingMajor17: 0 changes made)
+(otherMajor17: 0 changes made)
+(otherMajorA17: 0 changes made)
+(otherMajorB17: 0 changes made)
+(Major17: 0 changes made)
+(lnParTransHat417: 0 changes made)
+(lnParTransHat217: 0 changes made)
+(prParTrans217: 0 changes made)
+(prParTrans417: 0 changes made)
+(E_ParTrans217: 0 changes made)
+(E_ParTrans417: 0 changes made)
+(whiteCollar17: 0 changes made)
+(choice1517: 0 changes made)
+(choice15A17: 0 changes made)
+(choice15B17: 0 changes made)
+(choice2517: 0 changes made)
+(yearw18: 0 changes made)
+(choice18: 0 changes made)
+(age18: 0 changes made)
+(cum_2yr18: 0 changes made)
+(cum_4yr18: 0 changes made)
+(grad_2yr18: 0 changes made)
+(grad_4yr18: 0 changes made)
+(grades18: 0 changes made)
+(log_wage18: 0 changes made)
+(log_comp18: 0 changes made)
+(log_wageJobMain18: 0 changes made)
+(log_compJobMain18: 0 changes made)
+(hours_per_week_Oct18: 0 changes made)
+(weeks_worked_Oct18: 0 changes made)
+(anyFlag18: 0 changes made)
+(anyFlagFemale18: 0 changes made)
+(in_grad_school18: 0 changes made)
+(scienceMajor18: 0 changes made)
+(scienceMajorA18: 0 changes made)
+(scienceMajorB18: 0 changes made)
+(DKmajor18: 0 changes made)
+(missingMajor18: 0 changes made)
+(otherMajor18: 0 changes made)
+(otherMajorA18: 0 changes made)
+(otherMajorB18: 0 changes made)
+(Major18: 0 changes made)
+(lnParTransHat418: 0 changes made)
+(lnParTransHat218: 0 changes made)
+(prParTrans218: 0 changes made)
+(prParTrans418: 0 changes made)
+(E_ParTrans218: 0 changes made)
+(E_ParTrans418: 0 changes made)
+(whiteCollar18: 0 changes made)
+(choice1518: 0 changes made)
+(choice15A18: 0 changes made)
+(choice15B18: 0 changes made)
+(choice2518: 0 changes made)
+(yearw19: 0 changes made)
+(choice19: 0 changes made)
+(age19: 0 changes made)
+(cum_2yr19: 0 changes made)
+(cum_4yr19: 0 changes made)
+(grad_2yr19: 0 changes made)
+(grad_4yr19: 0 changes made)
+(grades19: 0 changes made)
+(log_wage19: 0 changes made)
+(log_comp19: 0 changes made)
+(log_wageJobMain19: 0 changes made)
+(log_compJobMain19: 0 changes made)
+(hours_per_week_Oct19: 0 changes made)
+(weeks_worked_Oct19: 0 changes made)
+(anyFlag19: 0 changes made)
+(anyFlagFemale19: 0 changes made)
+(in_grad_school19: 0 changes made)
+(scienceMajor19: 0 changes made)
+(scienceMajorA19: 0 changes made)
+(scienceMajorB19: 0 changes made)
+(DKmajor19: 0 changes made)
+(missingMajor19: 0 changes made)
+(otherMajor19: 0 changes made)
+(otherMajorA19: 0 changes made)
+(otherMajorB19: 0 changes made)
+(Major19: 0 changes made)
+(lnParTransHat419: 0 changes made)
+(lnParTransHat219: 0 changes made)
+(prParTrans219: 0 changes made)
+(prParTrans419: 0 changes made)
+(E_ParTrans219: 0 changes made)
+(E_ParTrans419: 0 changes made)
+(whiteCollar19: 0 changes made)
+(choice1519: 0 changes made)
+(choice15A19: 0 changes made)
+(choice15B19: 0 changes made)
+(choice2519: 0 changes made)
+
+. 
+. outsheet using ${clnloc}y97_tscrGPA.csv, comma nolabel replace
+
+. outsheet using ${clnloc}y97_male_tscrGPA.csv if male==1, comma nolabel replac
+> e
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /hpc/group/econ/tmr17/Dropout-R1/src/data-cleaning/nlsy97/y97_crea
+> te_matlab_data_tscrGPA.log
+  log type:  text
+ closed on:  29 Dec 2022, 11:20:56
+-------------------------------------------------------------------------------

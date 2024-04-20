@@ -1,0 +1,2008 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /hpc/group/econ/tmr17/Dropout-R1-SP-GP/src/simulations-counterfact
+> ual/baseline-1minusBeta/postsim.log
+  log type:  text
+ opened on:  25 Aug 2023, 15:13:03
+
+. global datloc "../../../output/cfl/baseline-1minusBeta/"
+
+. 
+. * read in counterfactual CSVs
+. tempfile master
+
+. save `master', replace empty
+(note: dataset contains 0 observations)
+(note: file /work/tmr17/StataTMP/St3613525.000001 not found)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+
+. forv i=1/2300 {
+  2.     capture confirm file ${datloc}CflData`i'.csv
+  3.     if !_rc {
+  4.         di "`i'"
+  5.         insheet using ${datloc}CflData`i'.csv, comma case clear
+  6.         gen id = `i'
+  7.         append using `master'
+  8.         save `master', replace
+  9.     }
+ 10. }
+1
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+2
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+4
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+5
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+6
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+7
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+8
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+9
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+11
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+12
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+13
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+16
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+17
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+19
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+20
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+22
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+23
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+24
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+26
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+27
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+30
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+33
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+36
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+39
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+40
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+42
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+45
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+47
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+48
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+49
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+50
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+51
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+52
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+53
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+54
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+55
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+56
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+57
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+58
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+59
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+60
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+61
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+62
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+63
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+64
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+65
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+66
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+67
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+68
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+69
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+70
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+71
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+72
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+73
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+74
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+75
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+76
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+77
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+78
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+79
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+80
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+81
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+82
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+83
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+84
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+85
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+86
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+87
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+88
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+89
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+90
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+91
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+92
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+93
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+94
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+95
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+96
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+97
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+98
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+99
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+100
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+101
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+102
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+103
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+104
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+105
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+106
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+107
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+108
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+109
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+110
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+111
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+112
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+113
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+114
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+115
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+116
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+117
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+118
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+119
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+120
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+121
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+122
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+123
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+124
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+125
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+126
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+127
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+128
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+129
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+130
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+131
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+132
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+133
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+134
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+135
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+136
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+137
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+138
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+139
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+140
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+141
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+142
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+143
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+144
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+145
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+146
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+147
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+148
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+149
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+150
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+151
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+152
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+153
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+154
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+155
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+156
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+157
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+158
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+159
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+160
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+161
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+162
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+163
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+164
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+165
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+166
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+167
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+168
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+169
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+170
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+171
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+172
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+173
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+174
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+175
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+176
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+177
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+178
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+179
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+180
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+181
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+182
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+183
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+184
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+185
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+186
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+187
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+188
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+189
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+190
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+191
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+192
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+193
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+194
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+195
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+196
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+197
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+198
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+199
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+200
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+201
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+202
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+203
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+204
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+205
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+206
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+207
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+208
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+209
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+210
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+211
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+212
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+213
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+214
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+215
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+216
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+217
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+218
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+219
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+220
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+221
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+222
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+223
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+224
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+225
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+226
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+227
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+228
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+229
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+230
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+231
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+232
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+233
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+234
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+235
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+236
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+237
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+238
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+239
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+240
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+241
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+242
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+243
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+244
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+245
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+246
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+247
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+248
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+249
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+250
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+251
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+252
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+253
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+254
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+255
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+256
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+257
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+258
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+259
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+260
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+261
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+262
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+263
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+264
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+265
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+266
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+267
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+268
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+269
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+270
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+271
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+272
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+273
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+274
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+275
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+276
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+277
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+278
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+279
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+280
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+281
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+282
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+283
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+284
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+285
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+286
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+287
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+288
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+289
+(53 vars, 10 obs)
+(note: variable famInc was byte, now float to accommodate using data's
+       values)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+290
+(53 vars, 10 obs)
+file /work/tmr17/StataTMP/St3613525.000001 saved
+
+. 
+. use `master', clear
+
+. order id simno
+
+. sort id simno
+
+. 
+. l if id==970
+
+. tempfile nls_id
+
+. preserve
+
+.     insheet using "demogs_with_NLS_ID.csv", comma case clear
+(8 vars, 2,300 obs)
+
+.     ren rownum id
+
+.     ren NLS_ID nls_id
+
+.     l if id==970
+
+      +-----------------------------------------------------------------+
+ 970. |  id | nls_id | black | hispanic | HS_gra~s | Parent~e | birthYr |
+      | 970 |   3400 |     0 |        0 |  .044801 |        0 |    1980 |
+      |-----------------------------------------------------------------|
+      |                             famInc                              |
+      |                                2.7                              |
+      +-----------------------------------------------------------------+
+
+.     save `nls_id', replace
+(note: file /work/tmr17/StataTMP/St3613525.000002 not found)
+file /work/tmr17/StataTMP/St3613525.000002 saved
+
+. restore
+
+. 
+. merge m:1 id using `nls_id', keep(match master) keepusing(nls_id) nogen
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                             0
+    matched                             2,710  
+    -----------------------------------------
+
+. order id nls_id
+
+. 
+. //save CflDataWideEMA.dta, replace
+. 
+. d, f
+
+Contains data from /work/tmr17/StataTMP/St3613525.000001
+  obs:         2,710                          
+ vars:            55                          25 Aug 2023 15:13
+ size:       219,510                          
+-------------------------------------------------------------------------------
+              storage   display    value
+variable name   type    format     label      variable label
+-------------------------------------------------------------------------------
+id              float   %9.0g                 
+nls_id          int     %8.0g                 
+simno           byte    %8.0g                 
+choice1         byte    %8.0g                 
+choice2         byte    %8.0g                 
+choice3         byte    %8.0g                 
+choice4         byte    %8.0g                 
+choice5         byte    %8.0g                 
+choice6         byte    %8.0g                 
+choice7         byte    %8.0g                 
+choice8         byte    %8.0g                 
+choice9         byte    %8.0g                 
+choice10        byte    %8.0g                 
+lmstate1        byte    %8.0g                 
+lmstate2        byte    %8.0g                 
+lmstate3        byte    %8.0g                 
+lmstate4        byte    %8.0g                 
+lmstate5        byte    %8.0g                 
+lmstate6        byte    %8.0g                 
+lmstate7        byte    %8.0g                 
+lmstate8        byte    %8.0g                 
+lmstate9        byte    %8.0g                 
+lmstate10       byte    %8.0g                 
+WCoffer1        byte    %8.0g                 
+WCoffer2        byte    %8.0g                 
+WCoffer3        byte    %8.0g                 
+WCoffer4        byte    %8.0g                 
+WCoffer5        byte    %8.0g                 
+WCoffer6        byte    %8.0g                 
+WCoffer7        byte    %8.0g                 
+WCoffer8        byte    %8.0g                 
+WCoffer9        byte    %8.0g                 
+WCoffer10       byte    %8.0g                 
+grad_4yr1       byte    %8.0g                 
+grad_4yr2       byte    %8.0g                 
+grad_4yr3       byte    %8.0g                 
+grad_4yr4       byte    %8.0g                 
+grad_4yr5       byte    %8.0g                 
+grad_4yr6       byte    %8.0g                 
+grad_4yr7       byte    %8.0g                 
+grad_4yr8       byte    %8.0g                 
+grad_4yr9       byte    %8.0g                 
+grad_4yr10      byte    %8.0g                 
+unobtype        byte    %8.0g                 
+abil1           float   %9.0g                 
+abil2           float   %9.0g                 
+abil3           float   %9.0g                 
+abil4           float   %9.0g                 
+abil5           float   %9.0g                 
+black           byte    %8.0g                 
+hispanic        byte    %8.0g                 
+HS_GPA          float   %9.0g                 
+Parent_col      byte    %8.0g                 
+birthYr         int     %8.0g                 
+famInc          float   %9.0g                 
+-------------------------------------------------------------------------------
+Sorted by: 
+     Note: Dataset has changed since last saved.
+
+. 
+. lab def vlchoice 1  "2yr FT BC" 2  "2yr FT WC" 3  "2yr PT BC" 4  "2yr PT WC" 
+> 5  "2yr only" 6  "4yr S FT BC" 7  "4yr S FT WC" 8  "4yr S PT BC" 9  "4yr S PT
+>  WC" 10 "4yr S only" 11 "4yr H FT BC" 12 "4yr H FT WC" 13 "4yr H PT BC" 14 "4
+> yr H PT WC" 15 "4yr H only" 16 "work PT only BC" 17 "work PT only WC" 18 "wor
+> k FT only BC" 19 "work FT only WC" 20 "home production" 21 "grad school FT BC
+> " 22 "grad school FT WC" 23 "grad school PT BC" 24 "grad school PT WC" 25 "gr
+> ad school only"
+
+. 
+. forv t=1/10 {
+  2.     replace choice`t' = 18 if choice`t'==1  & grad_4yr`t'==1
+  3.     replace choice`t' = 19 if choice`t'==2  & grad_4yr`t'==1
+  4.     replace choice`t' = 16 if choice`t'==3  & grad_4yr`t'==1
+  5.     replace choice`t' = 17 if choice`t'==4  & grad_4yr`t'==1
+  6.     replace choice`t' = 20 if choice`t'==5  & grad_4yr`t'==1
+  7.     lab val choice`t' vlchoice
+  8. }
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+. 
+. //save CflDataWide.dta, replace
+. //outsheet using CflDataWide.csv, comma replace
+. 
+. egen id_draw = group(id simno)
+
+. reshape long choice lmstate WCoffer grad_4yr, i(id_draw) j(t)
+(note: j = 1 2 3 4 5 6 7 8 9 10)
+
+Data                               wide   ->   long
+-----------------------------------------------------------------------------
+Number of obs.                     2710   ->   27100
+Number of variables                  56   ->      21
+j variable (10 values)                    ->   t
+xij variables:
+           choice1 choice2 ... choice10   ->   choice
+        lmstate1 lmstate2 ... lmstate10   ->   lmstate
+        WCoffer1 WCoffer2 ... WCoffer10   ->   WCoffer
+     grad_4yr1 grad_4yr2 ... grad_4yr10   ->   grad_4yr
+-----------------------------------------------------------------------------
+
+. xtset id_draw t
+       panel variable:  id_draw (strongly balanced)
+        time variable:  t, 1 to 10
+                delta:  1 unit
+
+. sort id simno t
+
+. 
+. ren abil1 abil2yr 
+
+. ren abil2 abil4yrS
+
+. ren abil3 abil4yrH
+
+. ren abil4 abilWC  
+
+. ren abil5 abilBC  
+
+. 
+. gen prev_grad_4yr = 0
+
+. bys id_draw (t): replace prev_grad_4yr = grad_4yr[_n-1]
+(5,049 real changes made, 2,710 to missing)
+
+. gen  fut_grad_4yr = 0
+
+. bys id_draw (t): replace  fut_grad_4yr = grad_4yr[_n+1]
+(5,968 real changes made, 2,710 to missing)
+
+. 
+. * check correlation and covariance matrices
+. corr abilWC abilBC abil4yrS abil4yrH abil2yr if t==1
+(obs=2,710)
+
+             |   abilWC   abilBC abil4yrS abil4yrH  abil2yr
+-------------+---------------------------------------------
+      abilWC |   1.0000
+      abilBC |   0.6224   1.0000
+    abil4yrS |   0.3211   0.2428   1.0000
+    abil4yrH |   0.2161   0.0560   0.8427   1.0000
+     abil2yr |   0.1552   0.1657   0.4705   0.6629   1.0000
+
+
+. corr abilWC abilBC abil4yrS abil4yrH abil2yr if t==1, covariance
+(obs=2,710)
+
+             |   abilWC   abilBC abil4yrS abil4yrH  abil2yr
+-------------+---------------------------------------------
+      abilWC |  .130316
+      abilBC |  .058748  .068371
+    abil4yrS |  .054275  .029728  .219209
+    abil4yrH |  .041879  .007863  .211845  .288283
+     abil2yr |  .033912  .026229  .133358  .215479  .366484
+
+
+. 
+. sum abil* if t==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     abil2yr |      2,710    .0187423    .6053793   -1.97135   1.878546
+    abil4yrS |      2,710    .0084705     .468198  -1.762069   1.788437
+    abil4yrH |      2,710    .0076188    .5369202  -2.084703   2.003552
+      abilWC |      2,710    .0060517    .3609936  -1.481969   1.331187
+      abilBC |      2,710   -.0005718    .2614793  -1.013604   1.010397
+
+. sum abil* if t==10 & grad_4yr==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     abil2yr |        919    .2756669    .5805735  -1.430046   1.878546
+    abil4yrS |        919    .2907706    .4153977  -1.103688   1.788437
+    abil4yrH |        919    .3508909    .4735812  -.8436804   2.003552
+      abilWC |        919    .1226911    .3650081  -.9824578   1.331187
+      abilBC |        919    .0406243     .261888  -.7028451   .8137026
+
+. 
+. tab unobtype
+
+   unobtype |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      5,870       21.66       21.66
+          2 |      5,650       20.85       42.51
+          3 |        710        2.62       45.13
+          4 |      3,490       12.88       58.01
+          5 |      4,160       15.35       73.36
+          6 |      1,260        4.65       78.01
+          7 |      2,070        7.64       85.65
+          8 |      3,890       14.35      100.00
+------------+-----------------------------------
+      Total |     27,100      100.00
+
+. tab unobtype if grad_4yr==1
+
+   unobtype |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |        885       27.16       27.16
+          2 |        763       23.42       50.58
+          3 |         65        2.00       52.58
+          4 |        363       11.14       63.72
+          5 |        540       16.57       80.29
+          6 |        187        5.74       86.03
+          7 |        140        4.30       90.33
+          8 |        315        9.67      100.00
+------------+-----------------------------------
+      Total |      3,258      100.00
+
+. tab unobtype if t==10, sum(grad_4yr)
+
+            |         Summary of grad_4yr
+   unobtype |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+          1 |   .41226576   .49266235         587
+          2 |          .4   .49033206         565
+          3 |   .28169014   .45302471          71
+          4 |   .29512894   .45675555         349
+          5 |   .35817308   .48004069         416
+          6 |   .38888889   .48944413         126
+          7 |   .19806763   .39950957         207
+          8 |   .22879177   .42059583         389
+------------+------------------------------------
+      Total |   .33911439   .47349609       2,710
+
+. 
+. tab choice
+
+           choice |      Freq.     Percent        Cum.
+------------------+-----------------------------------
+        2yr FT BC |        326        1.20        1.20
+        2yr FT WC |         39        0.14        1.35
+        2yr PT BC |      1,082        3.99        5.34
+        2yr PT WC |        110        0.41        5.75
+         2yr only |        476        1.76        7.50
+      4yr S FT BC |        331        1.22        8.72
+      4yr S FT WC |        146        0.54        9.26
+      4yr S PT BC |        276        1.02       10.28
+      4yr S PT WC |         66        0.24       10.52
+       4yr S only |        790        2.92       13.44
+      4yr H FT BC |        526        1.94       15.38
+      4yr H FT WC |        197        0.73       16.11
+      4yr H PT BC |      2,178        8.04       24.14
+      4yr H PT WC |        428        1.58       25.72
+       4yr H only |      1,913        7.06       32.78
+  work PT only BC |      2,840       10.48       43.26
+  work PT only WC |        494        1.82       45.08
+  work FT only BC |      6,352       23.44       68.52
+  work FT only WC |      1,806        6.66       75.19
+  home production |      6,724       24.81      100.00
+------------------+-----------------------------------
+            Total |     27,100      100.00
+
+. tab choice if grad_4yr==1
+
+           choice |      Freq.     Percent        Cum.
+------------------+-----------------------------------
+  work PT only BC |        337       10.34       10.34
+  work PT only WC |        139        4.27       14.61
+  work FT only BC |      1,154       35.42       50.03
+  work FT only WC |        914       28.05       78.08
+  home production |        714       21.92      100.00
+------------------+-----------------------------------
+            Total |      3,258      100.00
+
+. tab choice if grad_4yr==0
+
+           choice |      Freq.     Percent        Cum.
+------------------+-----------------------------------
+        2yr FT BC |        326        1.37        1.37
+        2yr FT WC |         39        0.16        1.53
+        2yr PT BC |      1,082        4.54        6.07
+        2yr PT WC |        110        0.46        6.53
+         2yr only |        476        2.00        8.53
+      4yr S FT BC |        331        1.39        9.92
+      4yr S FT WC |        146        0.61       10.53
+      4yr S PT BC |        276        1.16       11.69
+      4yr S PT WC |         66        0.28       11.96
+       4yr S only |        790        3.31       15.28
+      4yr H FT BC |        526        2.21       17.48
+      4yr H FT WC |        197        0.83       18.31
+      4yr H PT BC |      2,178        9.14       27.44
+      4yr H PT WC |        428        1.80       29.24
+       4yr H only |      1,913        8.02       37.26
+  work PT only BC |      2,503       10.50       47.76
+  work PT only WC |        355        1.49       49.25
+  work FT only BC |      5,198       21.80       71.05
+  work FT only WC |        892        3.74       74.79
+  home production |      6,010       25.21      100.00
+------------------+-----------------------------------
+            Total |     23,842      100.00
+
+. tab choice if fut_grad_4yr==1 & grad_4yr==0
+
+           choice |      Freq.     Percent        Cum.
+------------------+-----------------------------------
+      4yr S FT BC |         77        8.38        8.38
+      4yr S FT WC |         37        4.03       12.40
+      4yr S PT BC |         45        4.90       17.30
+      4yr S PT WC |         10        1.09       18.39
+       4yr S only |        140       15.23       33.62
+      4yr H FT BC |         89        9.68       43.31
+      4yr H FT WC |         32        3.48       46.79
+      4yr H PT BC |        200       21.76       68.55
+      4yr H PT WC |         38        4.13       72.69
+       4yr H only |        251       27.31      100.00
+------------------+-----------------------------------
+            Total |        919      100.00
+
+. tab choice if grad_4yr==1 & prev_grad_4yr==0
+
+           choice |      Freq.     Percent        Cum.
+------------------+-----------------------------------
+  work PT only BC |        101       10.99       10.99
+  work PT only WC |         46        5.01       16.00
+  work FT only BC |        301       32.75       48.75
+  work FT only WC |        239       26.01       74.76
+  home production |        232       25.24      100.00
+------------------+-----------------------------------
+            Total |        919      100.00
+
+. 
+. qui tabout choice                using "${datloc}choiceAbilsOvrl.tex", replac
+> e c( mean abilWC mean abilBC mean abil4yrS mean abil4yrH mean abil2yr) f(4) s
+> um clab( mean_abilWC mean_abilBC mean_abil4yrS mean_abil4yrH mean_abil2yr ) s
+> tyle(tex)
+
+. qui tabout choice if grad_4yr==1 using "${datloc}choiceAbilsGrad.tex", replac
+> e c( mean abilWC mean abilBC mean abil4yrS mean abil4yrH mean abil2yr) f(4) s
+> um clab( mean_abilWC mean_abilBC mean_abil4yrS mean_abil4yrH mean_abil2yr ) s
+> tyle(tex)
+
+. 
+. tab choice               , sum(abilWC)
+
+            |          Summary of abilWC
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |   .06540318   .34936485         326
+  2yr FT WC |   .07397451   .42482761          39
+  2yr PT BC |   .01794573   .34052705       1,082
+  2yr PT WC |    .0310926    .3558753         110
+   2yr only |  -.08497007   .35518065         476
+  4yr S FT  |   .14453732   .34427757         331
+  4yr S FT  |   .20557716   .38331533         146
+  4yr S PT  |   .10566098   .37232769         276
+  4yr S PT  |   .21318217   .40914254          66
+  4yr S onl |   .03538453   .34351928         790
+  4yr H FT  |   .08949055   .35128264         526
+  4yr H FT  |   .14802944   .36789027         197
+  4yr H PT  |   .06503852   .36066029       2,178
+  4yr H PT  |   .12962854   .35699633         428
+  4yr H onl |    .0033043   .35588565       1,913
+  work PT o |  -.00368522   .35099681       2,840
+  work PT o |   .08533354   .35394304         494
+  work FT o |   .01442785   .35040723       6,352
+  work FT o |   .16647951    .3780315       1,806
+  home prod |  -.10340943   .34176192       6,724
+------------+------------------------------------
+      Total |   .00605173   .36093365      27,100
+
+. tab choice if grad_4yr==1, sum(abilWC)
+
+            |          Summary of abilWC
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  work PT o |   .11143818   .35554906         337
+  work PT o |   .14702255   .33908214         139
+  work FT o |   .11665281   .35405086       1,154
+  work FT o |   .25509314   .39372606         914
+  home prod |  -.00631316   .34627101         714
+------------+------------------------------------
+      Total |   .12929886    .3749231       3,258
+
+. tab choice if grad_4yr==0, sum(abilWC)
+
+            |          Summary of abilWC
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |   .06540318   .34936485         326
+  2yr FT WC |   .07397451   .42482761          39
+  2yr PT BC |   .01794573   .34052705       1,082
+  2yr PT WC |    .0310926    .3558753         110
+   2yr only |  -.08497007   .35518065         476
+  4yr S FT  |   .14453732   .34427757         331
+  4yr S FT  |   .20557716   .38331533         146
+  4yr S PT  |   .10566098   .37232769         276
+  4yr S PT  |   .21318217   .40914254          66
+  4yr S onl |   .03538453   .34351928         790
+  4yr H FT  |   .08949055   .35128264         526
+  4yr H FT  |   .14802944   .36789027         197
+  4yr H PT  |   .06503852   .36066029       2,178
+  4yr H PT  |   .12962854   .35699633         428
+  4yr H onl |    .0033043   .35588565       1,913
+  work PT o |  -.01918526    .3475494       2,503
+  work PT o |   .06117925   .35716253         355
+  work FT o |  -.00826696   .34554857       5,198
+  work FT o |   .07568034    .3381537         892
+  home prod |  -.11494466   .33941012       6,010
+------------+------------------------------------
+      Total |  -.01078994   .35568638      23,842
+
+. tab choice               , sum(abilBC)
+
+            |          Summary of abilBC
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |   .05562744   .25313656         326
+  2yr FT WC |   .07173689   .27364096          39
+  2yr PT BC |   .02041745   .25899732       1,082
+  2yr PT WC |   .02935136   .27003419         110
+   2yr only |  -.05090322   .24060899         476
+  4yr S FT  |   .11029953   .25272525         331
+  4yr S FT  |   .10281582   .24915021         146
+  4yr S PT  |   .04994773   .26676586         276
+  4yr S PT  |   .13443104   .25564706          66
+  4yr S onl |   .01279355   .24448391         790
+  4yr H FT  |   .05566985   .26994874         526
+  4yr H FT  |    .0547001   .27681932         197
+  4yr H PT  |   .02174213   .26088369       2,178
+  4yr H PT  |    .0465061   .26639624         428
+  4yr H onl |  -.02411613   .25518422       1,913
+  work PT o |   .00346679    .2577087       2,840
+  work PT o |   .02816812   .24961556         494
+  work FT o |   .03901634   .26036641       6,352
+  work FT o |   .06120374   .26213052       1,806
+  home prod |  -.08404407   .24671116       6,724
+------------+------------------------------------
+      Total |  -.00057177   .26143585      27,100
+
+. tab choice if grad_4yr==1, sum(abilBC)
+
+            |          Summary of abilBC
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  work PT o |   .03505769    .2595361         337
+  work PT o |   .03355734   .24250319         139
+  work FT o |    .0725437    .2627256       1,154
+  work FT o |   .08939374   .27216332         914
+  home prod |  -.05902193   .24189244         714
+------------+------------------------------------
+      Total |   .04289704   .26580871       3,258
+
+. tab choice if grad_4yr==0, sum(abilBC)
+
+            |          Summary of abilBC
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |   .05562744   .25313656         326
+  2yr FT WC |   .07173689   .27364096          39
+  2yr PT BC |   .02041745   .25899732       1,082
+  2yr PT WC |   .02935136   .27003419         110
+   2yr only |  -.05090322   .24060899         476
+  4yr S FT  |   .11029953   .25272525         331
+  4yr S FT  |   .10281582   .24915021         146
+  4yr S PT  |   .04994773   .26676586         276
+  4yr S PT  |   .13443104   .25564706          66
+  4yr S onl |   .01279355   .24448391         790
+  4yr H FT  |   .05566985   .26994874         526
+  4yr H FT  |    .0547001   .27681932         197
+  4yr H PT  |   .02174213   .26088369       2,178
+  4yr H PT  |    .0465061   .26639624         428
+  4yr H onl |  -.02411613   .25518422       1,913
+  work PT o |  -.00078656   .25721754       2,503
+  work PT o |   .02605798   .25265099         355
+  work FT o |   .03157299   .25927766       5,198
+  work FT o |   .03231847   .24828657         892
+  home prod |  -.08701675   .24712883       6,010
+------------+------------------------------------
+      Total |  -.00651176   .26027505      23,842
+
+. tab choice               , sum(abil4yrS)
+
+            |         Summary of abil4yrS
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |  -.01282408   .44504354         326
+  2yr FT WC |   -.0916836   .47760227          39
+  2yr PT BC |   .07029929   .43336155       1,082
+  2yr PT WC |   .11408935    .4275547         110
+   2yr only |  -.05740462   .42104384         476
+  4yr S FT  |   .22892522   .40873085         331
+  4yr S FT  |   .25022434   .45330765         146
+  4yr S PT  |   .26029941    .4231931         276
+  4yr S PT  |   .19444443   .41127138          66
+  4yr S onl |    .1660347   .42777151         790
+  4yr H FT  |   .13254918    .4262803         526
+  4yr H FT  |   .20769267   .44233705         197
+  4yr H PT  |   .17380676   .41390218       2,178
+  4yr H PT  |   .19811177    .4386436         428
+  4yr H onl |   .11190779   .44309795       1,913
+  work PT o |  -.01645836   .46105063       2,840
+  work PT o |   .10489699   .45446747         494
+  work FT o |  -.03590402   .46257298       6,352
+  work FT o |   .14581039   .49333044       1,806
+  home prod |  -.14582704   .45707172       6,724
+------------+------------------------------------
+      Total |   .00847047   .46812021      27,100
+
+. tab choice if grad_4yr==1, sum(abil4yrS)
+
+            |         Summary of abil4yrS
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  work PT o |   .30138338   .43869477         337
+  work PT o |   .33069667   .41288414         139
+  work FT o |    .2917154   .42241532       1,154
+  work FT o |   .36136787   .43977001         914
+  home prod |   .26793042   .41681135         714
+------------+------------------------------------
+      Total |   .30870631   .42867293       3,258
+
+. tab choice if grad_4yr==0, sum(abil4yrS)
+
+            |         Summary of abil4yrS
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |  -.01282408   .44504354         326
+  2yr FT WC |   -.0916836   .47760227          39
+  2yr PT BC |   .07029929   .43336155       1,082
+  2yr PT WC |   .11408935    .4275547         110
+   2yr only |  -.05740462   .42104384         476
+  4yr S FT  |   .22892522   .40873085         331
+  4yr S FT  |   .25022434   .45330765         146
+  4yr S PT  |   .26029941    .4231931         276
+  4yr S PT  |   .19444443   .41127138          66
+  4yr S onl |    .1660347   .42777151         790
+  4yr H FT  |   .13254918    .4262803         526
+  4yr H FT  |   .20769267   .44233705         197
+  4yr H PT  |   .17380676   .41390218       2,178
+  4yr H PT  |   .19811177    .4386436         428
+  4yr H onl |   .11190779   .44309795       1,913
+  work PT o |  -.05925207   .44711831       2,503
+  work PT o |   .01648529   .43968836         355
+  work FT o |   -.1086383   .43906098       5,198
+  work FT o |  -.07506353   .44537045         892
+  home prod |  -.19498225   .43630907       6,010
+------------+------------------------------------
+      Total |  -.03255664   .45823242      23,842
+
+. tab choice               , sum(abil4yrH)
+
+            |         Summary of abil4yrH
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |  -.07358844   .49230797         326
+  2yr FT WC |  -.14606105   .47894602          39
+  2yr PT BC |   .08044535   .49102854       1,082
+  2yr PT WC |   .15946388   .52250013         110
+   2yr only |  -.05863197    .4812542         476
+  4yr S FT  |   .20064787   .47583843         331
+  4yr S FT  |   .20371836   .53939342         146
+  4yr S PT  |   .23825849   .50698788         276
+  4yr S PT  |   .12122043   .44504024          66
+  4yr S onl |   .15253298   .49567193         790
+  4yr H FT  |   .16078081   .47134284         526
+  4yr H FT  |   .25793947   .50601857         197
+  4yr H PT  |   .22186353   .47609821       2,178
+  4yr H PT  |     .246935   .49361511         428
+  4yr H onl |   .15837304   .50120607       1,913
+  work PT o |  -.02228675   .53315526       2,840
+  work PT o |   .09851093   .52193658         494
+  work FT o |  -.06279823   .53110367       6,352
+  work FT o |    .1544866   .57213744       1,806
+  home prod |  -.15224206   .52515312       6,724
+------------+------------------------------------
+      Total |   .00761876   .53683105      27,100
+
+. tab choice if grad_4yr==1, sum(abil4yrH)
+
+            |         Summary of abil4yrH
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  work PT o |   .38976861   .48572437         337
+  work PT o |   .40147583   .47502667         139
+  work FT o |   .35276588   .47456012       1,154
+  work FT o |   .42162971   .50134084         914
+  home prod |   .34227473   .46714683         714
+------------+------------------------------------
+      Total |   .37569144   .48262363       3,258
+
+. tab choice if grad_4yr==0, sum(abil4yrH)
+
+            |         Summary of abil4yrH
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |  -.07358844   .49230797         326
+  2yr FT WC |  -.14606105   .47894602          39
+  2yr PT BC |   .08044535   .49102854       1,082
+  2yr PT WC |   .15946388   .52250013         110
+   2yr only |  -.05863197    .4812542         476
+  4yr S FT  |   .20064787   .47583843         331
+  4yr S FT  |   .20371836   .53939342         146
+  4yr S PT  |   .23825849   .50698788         276
+  4yr S PT  |   .12122043   .44504024          66
+  4yr S onl |   .15253298   .49567193         790
+  4yr H FT  |   .16078081   .47134284         526
+  4yr H FT  |   .25793947   .50601857         197
+  4yr H PT  |   .22186353   .47609821       2,178
+  4yr H PT  |     .246935   .49361511         428
+  4yr H onl |   .15837304   .50120607       1,913
+  work PT o |  -.07776524   .51469367       2,503
+  work PT o |  -.02011476   .49118832         355
+  work FT o |  -.15505698   .49787649       5,198
+  work FT o |  -.11924524   .50730947         892
+  home prod |  -.21099165   .50015186       6,010
+------------+------------------------------------
+      Total |  -.04267823   .52412363      23,842
+
+. tab choice               , sum(abil2yr)
+
+            |         Summary of abil2yr
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |  -.01222486   .59290902         326
+  2yr FT WC |  -.11670024   .49510487          39
+  2yr PT BC |   .11645291   .58445814       1,082
+  2yr PT WC |   .11069859   .65603614         110
+   2yr only |   -.0515469   .55375707         476
+  4yr S FT  |   .20816232   .58263404         331
+  4yr S FT  |   .15853801   .64280234         146
+  4yr S PT  |   .15300697   .57392285         276
+  4yr S PT  |   .10434659    .5452574          66
+  4yr S onl |   .06875172   .57991295         790
+  4yr H FT  |   .16873291   .57109405         526
+  4yr H FT  |   .21888907   .57693356         197
+  4yr H PT  |    .1645527   .58225862       2,178
+  4yr H PT  |   .23105583   .57635506         428
+  4yr H onl |   .12799921   .59773974       1,913
+  work PT o |   .00598296   .61277586       2,840
+  work PT o |   .09356703   .61627752         494
+  work FT o |  -.02076843   .60214497       6,352
+  work FT o |   .11802329   .62074329       1,806
+  home prod |  -.11468428   .59107836       6,724
+------------+------------------------------------
+      Total |   .01874226   .60527875      27,100
+
+. tab choice if grad_4yr==1, sum(abil2yr)
+
+            |         Summary of abil2yr
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  work PT o |   .33767255   .58361752         337
+  work PT o |   .32703879   .52077405         139
+  work FT o |   .28529908   .58332086       1,154
+  work FT o |   .30859306   .60026378         914
+  home prod |   .23945823   .59551584         714
+------------+------------------------------------
+      Total |   .28898601   .58879622       3,258
+
+. tab choice if grad_4yr==0, sum(abil2yr)
+
+            |         Summary of abil2yr
+     choice |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  2yr FT BC |  -.01222486   .59290902         326
+  2yr FT WC |  -.11670024   .49510487          39
+  2yr PT BC |   .11645291   .58445814       1,082
+  2yr PT WC |   .11069859   .65603614         110
+   2yr only |   -.0515469   .55375707         476
+  4yr S FT  |   .20816232   .58263404         331
+  4yr S FT  |   .15853801   .64280234         146
+  4yr S PT  |   .15300697   .57392285         276
+  4yr S PT  |   .10434659    .5452574          66
+  4yr S onl |   .06875172   .57991295         790
+  4yr H FT  |   .16873291   .57109405         526
+  4yr H FT  |   .21888907   .57693356         197
+  4yr H PT  |    .1645527   .58225862       2,178
+  4yr H PT  |   .23105583   .57635506         428
+  4yr H onl |   .12799921   .59773974       1,913
+  work PT o |  -.03867521   .60292237       2,503
+  work PT o |   .00215133   .62723182         355
+  work FT o |  -.08871801   .58496153       5,198
+  work FT o |  -.07724662    .5796122         892
+  home prod |  -.15675712   .57631095       6,010
+------------+------------------------------------
+      Total |  -.01818644   .59809909      23,842
+
+. 
+. sum WCoffer
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |     27,100    .3457196    .4756111          0          1
+
+. sum WCoffer if grad_4yr==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |      3,258    .6080417    .4882624          0          1
+
+. sum WCoffer if grad_4yr==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |     23,842    .3098733    .4624509          0          1
+
+. gen prev_WC = 0
+
+. bys id_draw (t): replace prev_WC = inlist(choice[_n-1],2,4,7,9,12,14,17,19) i
+> f grad_4yr==0
+(2,019 real changes made)
+
+. bys id_draw (t): replace prev_WC = inlist(choice[_n-1],17,19,22,24)         i
+> f grad_4yr==1
+(792 real changes made)
+
+. sum WCoffer if prev_WC==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |      2,811           1           0          1          1
+
+. sum WCoffer if prev_WC==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |     24,289    .2699988     .443968          0          1
+
+. sum WCoffer if prev_WC==1 & grad_4yr==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |      2,019           1           0          1          1
+
+. sum WCoffer if prev_WC==0 & grad_4yr==0
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |     21,823    .2460248     .430703          0          1
+
+. sum WCoffer if prev_WC==1 & grad_4yr==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |        792           1           0          1          1
+
+. sum WCoffer if prev_WC==0 & grad_4yr==1
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     WCoffer |      2,466    .4821573    .4997829          0          1
+
+. 
+. save ${datloc}CflData.dta, replace
+(note: file ../../../output/cfl/baseline-1minusBeta/CflData.dta not found)
+file ../../../output/cfl/baseline-1minusBeta/CflData.dta saved
+
+. 
+. * create table like in model fit
+. * Running cumulative choice variables
+. gen in_2yr      = inrange(choice,1,5)
+
+. gen in_4yr      = inrange(choice,6,15)
+
+. gen in_college  = inrange(choice,1,15)
+
+. gen workFT      = inlist( choice,1,2,6,7,11,12,18,19)
+
+. gen workPT      = inlist( choice,3,4,8,9,13,14,16,17)
+
+. gen whiteCollar = inlist( choice,2,4,7,9,12,14,17,19)
+
+. bys id_draw (t): gen Lchoice              =     L.choice 
+(2,710 missing values generated)
+
+. bys id_draw (t): gen cum_2yr              = sum(L.in_2yr)
+
+. bys id_draw (t): gen cum_4yr              = sum(L.in_4yr)
+
+. bys id_draw (t): gen cum_college          = sum(L.in_college)
+
+. bys id_draw (t): gen experFT              = sum(L.workFT)
+
+. bys id_draw (t): gen experPT              = sum(L.workPT)
+
+.             gen exper                = experFT+.5*experPT
+
+. bys id_draw (t): gen experFT_white_collar = sum((L.workFT==1)*(L.whiteCollar=
+> =1))
+
+. bys id_draw (t): gen experPT_white_collar = sum((L.workPT==1)*(L.whiteCollar=
+> =1))
+
+.             gen exper_white_collar   = experFT_white_collar+.5*experPT_white_
+> collar
+
+. 
+. gen firstCol = 100*(choice>0  & choice<16 & cum_2yr==0 & cum_4yr==0)
+
+. gen first2yr = 100*(choice>0  & choice<6  & cum_2yr==0 & cum_4yr==0)
+
+. gen first4yr = 100*(choice>5  & choice<16 & cum_2yr==0 & cum_4yr==0)
+
+. gen leaveCol = 100*(choice>15 & ((cum_2yr+cum_4yr)>=1) & Lchoice>0  & Lchoice
+> <16 & grad_4yr==0)
+
+. gen leave2yr = 100*(choice>15 & ((cum_2yr+cum_4yr)>=1) & Lchoice>0  & Lchoice
+> <6  & grad_4yr==0)
+
+. gen leave4yr = 100*(choice>15 & ((cum_2yr+cum_4yr)>=1) & Lchoice>5  & Lchoice
+> <16 & grad_4yr==0)
+
+. gen reentCol = 100*(choice>0  & choice<16 & ((cum_2yr+cum_4yr)>=1) & Lchoice>
+> 15 & grad_4yr==0)
+
+. gen reent2yr = 100*(choice>0  & choice<6  & ((cum_2yr+cum_4yr)>=1) & Lchoice>
+> 15 & grad_4yr==0)
+
+. gen reent4yr = 100*(choice>5  & choice<16 & ((cum_2yr+cum_4yr)>=1) & Lchoice>
+> 15 & grad_4yr==0)
+
+. gen grad100  = 100*grad_4yr
+
+. 
+. tab Lchoice choice, row nofreq
+
+           |                         choice
+   Lchoice | 2yr FT BC  2yr FT WC  2yr PT BC  2yr PT WC   2yr only |     Total
+-----------+-------------------------------------------------------+----------
+         1 |      2.28       0.00      17.59       0.33       0.65 |    100.00 
+         2 |     10.53       0.00       5.26       0.00       0.00 |    100.00 
+         3 |      0.66       0.00       1.88       0.19       0.75 |    100.00 
+         4 |      0.93       0.93       2.78       0.00       0.00 |    100.00 
+         5 |      2.67       0.00      10.00       0.44       1.33 |    100.00 
+         6 |      5.83       0.97      27.51       0.97       2.59 |    100.00 
+         7 |     12.14       0.71      12.86       5.00       0.00 |    100.00 
+         8 |      1.89       0.38       7.58       0.38       4.17 |    100.00 
+         9 |      5.00       0.00       3.33       3.33       0.00 |    100.00 
+        10 |      5.43       0.68      12.09       2.58      11.28 |    100.00 
+        11 |      1.20       0.00       8.60       0.60       0.80 |    100.00 
+        12 |      1.04       0.52       4.66       0.00       1.04 |    100.00 
+        13 |      0.23       0.00       1.02       0.09       0.14 |    100.00 
+        14 |      0.00       0.24       0.24       0.24       0.24 |    100.00 
+        15 |      1.46       0.11       5.28       0.90       2.98 |    100.00 
+        16 |      0.87       0.00       1.43       0.16       0.79 |    100.00 
+        17 |      1.82       0.46       1.14       0.23       0.23 |    100.00 
+        18 |      1.14       0.04       5.40       0.22       0.77 |    100.00 
+        19 |      0.98       0.39       1.44       0.13       0.26 |    100.00 
+        20 |      0.56       0.12       2.05       0.17       2.52 |    100.00 
+-----------+-------------------------------------------------------+----------
+     Total |      1.20       0.13       4.04       0.36       1.63 |    100.00 
+
+
+           |                         choice
+   Lchoice | 4yr S FT   4yr S FT   4yr S PT   4yr S PT   4yr S onl |     Total
+-----------+-------------------------------------------------------+----------
+         1 |      2.28       0.65       3.58       0.00       0.65 |    100.00 
+         2 |      2.63       2.63       5.26       0.00       0.00 |    100.00 
+         3 |      1.50       0.56       0.66       0.09       2.54 |    100.00 
+         4 |      4.63       1.85       1.85       0.00       0.93 |    100.00 
+         5 |      1.11       0.67       0.44       0.00       4.44 |    100.00 
+         6 |      0.32       0.00       0.00       0.32       1.62 |    100.00 
+         7 |      0.71       1.43       0.00       0.00       0.00 |    100.00 
+         8 |      1.89       1.52       0.38       0.00       2.65 |    100.00 
+         9 |      3.33       8.33       0.00       0.00       3.33 |    100.00 
+        10 |      0.14       0.14       0.14       0.00       1.22 |    100.00 
+        11 |      4.80       0.20      12.60       1.80       6.40 |    100.00 
+        12 |     13.99       4.66       8.81       2.07       1.04 |    100.00 
+        13 |      4.78       1.72       4.08       1.11      13.50 |    100.00 
+        14 |      9.88       8.71       2.35       2.59       3.06 |    100.00 
+        15 |      3.59       1.40       3.20       0.62      16.11 |    100.00 
+        16 |      0.24       0.04       0.12       0.00       0.79 |    100.00 
+        17 |      0.46       0.46       0.00       0.00       0.00 |    100.00 
+        18 |      0.11       0.04       0.06       0.02       0.22 |    100.00 
+        19 |      0.20       0.07       0.07       0.00       0.00 |    100.00 
+        20 |      0.05       0.02       0.02       0.00       0.34 |    100.00 
+-----------+-------------------------------------------------------+----------
+     Total |      1.33       0.58       1.10       0.25       3.08 |    100.00 
+
+
+           |                         choice
+   Lchoice | 4yr H FT   4yr H FT   4yr H PT   4yr H PT   4yr H onl |     Total
+-----------+-------------------------------------------------------+----------
+         1 |      2.28       0.00      16.29       0.33       0.65 |    100.00 
+         2 |     10.53       0.00      13.16       2.63       0.00 |    100.00 
+         3 |      7.14       1.32      38.53       7.24      23.50 |    100.00 
+         4 |     23.15      11.11      26.85       9.26       5.56 |    100.00 
+         5 |      1.56       0.22       6.00       0.67       5.56 |    100.00 
+         6 |      0.65       0.00       2.59       0.00       1.29 |    100.00 
+         7 |      0.71       1.43       3.57       2.14       0.00 |    100.00 
+         8 |      2.27       1.52      13.26       0.76      23.11 |    100.00 
+         9 |     13.33      16.67       6.67       1.67       1.67 |    100.00 
+        10 |      0.41       0.14       0.68       0.14       4.76 |    100.00 
+        11 |      0.20       0.00      15.20       0.60       3.00 |    100.00 
+        12 |      3.11       1.04      12.44       3.63       0.52 |    100.00 
+        13 |      5.52       1.72      26.03       4.83      20.60 |    100.00 
+        14 |     10.12       8.00      22.82      10.35       7.06 |    100.00 
+        15 |      1.01       0.34       5.90       1.29       7.58 |    100.00 
+        16 |      3.88       1.03      13.70       2.34      19.49 |    100.00 
+        17 |      7.97       6.83      12.30       5.01       4.56 |    100.00 
+        18 |      0.46       0.06       2.60       0.26       0.87 |    100.00 
+        19 |      0.66       0.26       2.36       0.26       0.13 |    100.00 
+        20 |      0.13       0.03       0.81       0.19       1.80 |    100.00 
+-----------+-------------------------------------------------------+----------
+     Total |      2.06       0.77       8.47       1.60       6.88 |    100.00 
+
+
+           |                         choice
+   Lchoice | work PT o  work PT o  work FT o  work FT o  home prod |     Total
+-----------+-------------------------------------------------------+----------
+         1 |     23.45       1.30      21.17       0.65       5.86 |    100.00 
+         2 |      7.89       0.00      34.21       5.26       0.00 |    100.00 
+         3 |      3.38       0.28       6.11       0.85       2.82 |    100.00 
+         4 |      0.93       0.00       4.63       3.70       0.93 |    100.00 
+         5 |     12.22       0.44      27.11       3.11      22.00 |    100.00 
+         6 |     11.00       1.29      27.51       8.41       7.12 |    100.00 
+         7 |      5.71       1.43      27.14      23.57       1.43 |    100.00 
+         8 |      4.55       1.52      14.77       7.58       9.85 |    100.00 
+         9 |      1.67       0.00       8.33      23.33       0.00 |    100.00 
+        10 |      4.89       1.36      20.79       8.15      25.00 |    100.00 
+        11 |     15.80       3.00      18.00       3.00       4.20 |    100.00 
+        12 |      7.77       1.04      22.80       9.33       0.52 |    100.00 
+        13 |      2.27       0.79       5.71       2.37       3.48 |    100.00 
+        14 |      0.47       0.24       5.88       7.06       0.47 |    100.00 
+        15 |      6.29       1.68      14.82       4.55      20.89 |    100.00 
+        16 |      6.42       1.31      20.00       4.40      23.01 |    100.00 
+        17 |      2.05       1.37      30.07      20.50       4.56 |    100.00 
+        18 |     25.31       2.47      37.44       4.97      17.56 |    100.00 
+        19 |      8.92       3.08      49.70      28.46       2.62 |    100.00 
+        20 |      7.29       1.65      22.35       5.97      53.95 |    100.00 
+-----------+-------------------------------------------------------+----------
+     Total |     10.78       1.69      24.15       6.72      23.18 |    100.00 
+
+
+. 
+. tab t, sum(firstCol) mean
+
+            | Summary of
+            |  firstCol
+          t |        Mean
+------------+------------
+          1 |   26.494465
+          2 |   18.154982
+          3 |   12.583026
+          4 |   9.1512915
+          5 |   6.7527675
+          6 |   3.3948339
+          7 |   2.6199262
+          8 |    2.398524
+          9 |   2.3247232
+         10 |   .81180812
+------------+------------
+      Total |   8.4686347
+
+. tab t, sum(leaveCol) mean
+
+            | Summary of
+            |  leaveCol
+          t |        Mean
+------------+------------
+          1 |           0
+          2 |   6.6789668
+          3 |   7.9704797
+          4 |   10.295203
+          5 |   10.553506
+          6 |   9.5571956
+          7 |   7.7121771
+          8 |   8.0073801
+          9 |   6.8634686
+         10 |    8.302583
+------------+------------
+      Total |   7.5940959
+
+. tab t, sum(reentCol) mean
+
+            | Summary of
+            |  reentCol
+          t |        Mean
+------------+------------
+          1 |           0
+          2 |           0
+          3 |   2.1771218
+          4 |   3.2472325
+          5 |   4.8339483
+          6 |   5.6826568
+          7 |   6.5682657
+          8 |   6.6420664
+          9 |   5.4612546
+         10 |   3.6162362
+------------+------------
+      Total |   3.8228782
+
+. tab t, sum(grad100 ) mean
+
+            | Summary of
+            |   grad100
+          t |        Mean
+------------+------------
+          1 |           0
+          2 |           0
+          3 |           0
+          4 |   1.1439114
+          5 |   4.9446494
+          6 |   10.774908
+          7 |   17.121771
+          8 |   23.321033
+          9 |    29.00369
+         10 |   33.911439
+------------+------------
+      Total |    12.02214
+
+. 
+. qui tabout t using "${datloc}modelFitCfl.tex", replace c( mean firstCol mean 
+> leaveCol mean reentCol mean grad100) f(2) sum clab( entry attrition reentry g
+> raduation ) style(tex)
+
+. qui tabout t using "${datloc}modelFitCflExt.tex", replace c( mean first2yr me
+> an first4yr mean leave2yr mean leave4yr mean reent2yr mean reent4yr mean grad
+> 100) f(2) sum clab( entry2 entry4 attrition2 attrition4 reentry2 reentry4 gra
+> duation ) style(tex)
+
+. qui tabout t if WCoffer==1 using "${datloc}modelFitCflExtWC.tex", replace c( 
+> mean first2yr mean first4yr mean leave2yr mean leave4yr mean reent2yr mean re
+> ent4yr mean grad100) f(2) sum clab( entry2 entry4 attrition2 attrition4 reent
+> ry2 reentry4 graduation ) style(tex)
+
+. qui tabout t if WCoffer==0 using "${datloc}modelFitCflExtBC.tex", replace c( 
+> mean first2yr mean first4yr mean leave2yr mean leave4yr mean reent2yr mean re
+> ent4yr mean grad100) f(2) sum clab( entry2 entry4 attrition2 attrition4 reent
+> ry2 reentry4 graduation ) style(tex)
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /hpc/group/econ/tmr17/Dropout-R1-SP-GP/src/simulations-counterfact
+> ual/baseline-1minusBeta/postsim.log
+  log type:  text
+ closed on:  25 Aug 2023, 15:13:14
+-------------------------------------------------------------------------------

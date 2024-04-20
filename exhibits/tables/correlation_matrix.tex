@@ -1,0 +1,29 @@
+\begin{table}[ht]
+\caption{Ability Correlation Matrix and Variances of Unobserved Abilities and Raw Outcomes}
+\label{tab:cov}
+\centering
+\begin{threeparttable}
+\begin{tabular}{lccccc}
+\toprule
+ & White Collar & Blue Collar & Science & Non-Science & 2-year \\ 
+\midrule
+White Collar & 1.000 & & & & \\ 
+ & (---) & & & & \\ 
+Blue Collar & 0.615 & 1.000 & & & \\ 
+ & (0.037) & (---) & & & \\ 
+Science & 0.283 & 0.239 & 1.000 & & \\ 
+ & (0.085) & (0.096) & (---) & & \\ 
+Non-Science & 0.194 & 0.045 & 0.831 & 1.000 & \\ 
+ & (0.062) & (0.062) & (0.052) & (---) & \\ 
+2-year & 0.153 & 0.162 & 0.470 & 0.669 & 1.000 \\ 
+ & (0.082) & (0.079) & (0.106) & (0.076) & (---) \\ 
+\midrule
+\textit{Variance of Unobserved Abilities}  & 0.130 & 0.072 & 0.207 & 0.274 & 0.353 \\ 
+ & (0.010) & (0.005) & (0.039) & (0.027) & (0.034) \\ 
+\midrule
+\textit{Variance of Raw Outcomes}  & 0.360 & 0.272 & 0.842 & 0.828 & 1.029 \\ 
+\bottomrule
+\end{tabular}
+\footnotesize Notes: Bootstrap standard errors in parentheses. ``Variance of Unobserved Abilities'' refers to the diagonal elements of the covariance matrix corresponding to the correlation matrix presented here. ``Variance of Raw Outcomes'' refers to the variance of the corresponding outcome variables (log wages, college GPA). Each cell of the correlation matrix contains at least  127 unique individuals and at most 1,810 unique individuals. Our estimation sample contains 2,300 unique individuals. 
+\end{threeparttable}
+\end{table}

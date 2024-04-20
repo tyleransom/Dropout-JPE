@@ -1,0 +1,665 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /hpc/group/econ/tmr17/Dropout-R1/src/data-cleaning/sipp/create_sip
+> p.log
+  log type:  text
+ opened on:  29 Dec 2022, 09:38:22
+
+. 
+. * Combine core and topic modules
+. use ${data_loc}/sippl04puw3.dta, clear
+
+. keep `idvars' `demogs' `incvars' srefmon ehrefper
+
+. merge m:1 ssuid epppnum using ${data_loc}/sippp04putm3.dta, keep(match master
+> ) nogen keepusing(`idvars' `asstvrs')
+(label spanel already defined)
+(label tfipsst already defined)
+(label eoutcome already defined)
+(label rfid2l already defined)
+(label epopstat already defined)
+(label eppintvw already defined)
+(label esex already defined)
+(label erace already defined)
+(label eorigin already defined)
+(label errp already defined)
+(label tage already defined)
+(label ems already defined)
+(label epnspous already defined)
+(label epnmom already defined)
+(label epndad already defined)
+(label epnguard already defined)
+(label rdesgpnt already defined)
+(label eeducate already defined)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                         2,474
+        from master                     2,474  
+        from using                          0  
+
+    matched                           396,518  
+    -----------------------------------------
+
+. merge m:1 ssuid epppnum using ${data_loc}/sippp04putm4.dta, keep(match master
+> ) nogen keepusing(`idvars' `taxvars')
+(label spanel already defined)
+(label tfipsst already defined)
+(label eoutcome already defined)
+(label rfid2l already defined)
+(label epopstat already defined)
+(label eppintvw already defined)
+(label eppmis4l already defined)
+(label esex already defined)
+(label erace already defined)
+(label eorigin already defined)
+(label errp already defined)
+(label tage already defined)
+(label ems already defined)
+(label epnspous already defined)
+(label epnmom already defined)
+(label epndad already defined)
+(label epnguard already defined)
+(label rdesgpnt already defined)
+(label eeducate already defined)
+(label sinthhid already defined)
+
+    Result                           # of obs.
+    -----------------------------------------
+    not matched                        35,764
+        from master                    35,764  
+        from using                          0  
+
+    matched                           363,228  
+    -----------------------------------------
+
+. 
+. * Restrict to reference month
+. keep if srefmon==4
+(299,014 observations deleted)
+
+. 
+. * Find head of HH
+. destring epppnum, force replace
+epppnum: all characters numeric; replaced as int
+
+. gen head = ehrefper==epppnum
+
+. 
+. * Generate race variable
+. gen hispanic = (eorigin==1)
+
+. gen white = (erace == 1 & hispanic != 1)
+
+. gen black = (erace == 2 & hispanic != 1)
+
+. gen other = !hispanic & !white & !black
+
+. 
+. generat race = .
+(99,978 missing values generated)
+
+. replace race=1 if white
+(69,753 real changes made)
+
+. replace race=2 if black
+(12,458 real changes made)
+
+. replace race=3 if hispanic
+(10,817 real changes made)
+
+. replace race=4 if other
+(6,950 real changes made)
+
+. lab def vlrace 1 "White" 2 "Black" 3 "Hispanic" 4 "Other"
+
+. lab val race vlrace
+
+. 
+. * Generate education variable
+. generat educlev = .
+(99,978 missing values generated)
+
+. replace educlev = 1 if eeducate<=38
+(37,290 real changes made)
+
+. replace educlev = 2 if eeducate==39
+(20,269 real changes made)
+
+. replace educlev = 3 if inrange(eeducate,40,43)
+(25,312 real changes made)
+
+. replace educlev = 4 if inrange(eeducate,44,47)
+(17,107 real changes made)
+
+. lab def vleduc 1 "HS Dropout" 2 "HS Grad" 3 "Some College" 4 "BA or higher"
+
+. lab val educlev vleduc
+
+. 
+. * Convert monthly income to annual
+. replace thtotinc = 0 if thtotinc<=0
+(17 real changes made)
+
+. replace thtotinc = 12*thtotinc
+(98,799 real changes made)
+
+. 
+. * Identify households with teenagers
+. gen hasteenA = inrange(tage,15,18)
+
+. bys hhid: egen hasteen = mean(hasteenA)
+
+. gen hasTeen = hasteen>0
+
+. drop hasteenA hasteen
+
+. 
+. * Restrict only to household heads who have teenagers in home
+. keep if head & hasTeen
+(95,014 observations deleted)
+
+. 
+. * Create assets that only contribute to EFC
+. sum thhintbk thhintot thhore thhotast thhvehcl, d
+
+         RE: Interest Earning assets held in banking
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%          500                      Mean            9606.58
+                        Largest       Std. Dev.      25236.37
+75%         6000         238000
+90%        26000         240000       Variance       6.37e+08
+95%        56300         243600       Skewness       4.449237
+99%       140000         285000       Kurtosis       27.55661
+
+          RE: Interest Earning assets held in other
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%            0                      Mean           934.5999
+                        Largest       Std. Dev.      14049.62
+75%            0         240548
+90%            0         413223       Variance       1.97e+08
+95%            0         490000       Skewness       26.19353
+99%        15000         500000       Kurtosis       812.9687
+
+         RE: Equity in real estate that is not your
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0        -105000
+ 5%            0        -105000
+10%            0         -92500       Obs               4,964
+25%            0         -50000       Sum of Wgt.       4,964
+
+50%            0                      Mean           17923.26
+                        Largest       Std. Dev.       92485.9
+75%            0        1250000
+90%         7500        1300000       Variance       8.55e+09
+95%        89000        1550000       Skewness       8.654218
+99%       472000        1730000       Kurtosis       99.69563
+
+                 RE: Equity in other assets
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%            0                      Mean           8425.049
+                        Largest       Std. Dev.        105660
+75%         1000        2505250
+90%         4922        3000000       Variance       1.12e+10
+95%        11000        3000300       Skewness       23.21987
+99%       100000        3057500       Kurtosis       598.1142
+
+                 RE: Net equity in vehicles
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%       -15845         -69500
+ 5%        -7100         -61635
+10%        -3350         -56850       Obs               4,964
+25%            0         -45051       Sum of Wgt.       4,964
+
+50%       3212.5                      Mean           5841.718
+                        Largest       Std. Dev.      10628.89
+75%      10237.5          67275
+90%        19170          70500       Variance       1.13e+08
+95%        24899          82725       Skewness       1.286838
+99%        43800          84350       Kurtosis       9.036237
+
+. 
+. replace thhintbk = 0 if thhintbk < 0
+(0 real changes made)
+
+. replace thhintot = 0 if thhintot < 0
+(0 real changes made)
+
+. replace thhore   = 0 if thhore   < 0
+(4 real changes made)
+
+. replace thhotast = 0 if thhotast < 0
+(0 real changes made)
+
+. replace thhvehcl = 0 if thhvehcl < 0
+(882 real changes made)
+
+. 
+. sum thhintbk thhintot thhore thhotast thhvehcl, d
+
+         RE: Interest Earning assets held in banking
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%          500                      Mean            9606.58
+                        Largest       Std. Dev.      25236.37
+75%         6000         238000
+90%        26000         240000       Variance       6.37e+08
+95%        56300         243600       Skewness       4.449237
+99%       140000         285000       Kurtosis       27.55661
+
+          RE: Interest Earning assets held in other
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%            0                      Mean           934.5999
+                        Largest       Std. Dev.      14049.62
+75%            0         240548
+90%            0         413223       Variance       1.97e+08
+95%            0         490000       Skewness       26.19353
+99%        15000         500000       Kurtosis       812.9687
+
+         RE: Equity in real estate that is not your
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%            0                      Mean           17994.27
+                        Largest       Std. Dev.      92436.03
+75%            0        1250000
+90%         7500        1300000       Variance       8.54e+09
+95%        89000        1550000       Skewness       8.667292
+99%       472000        1730000       Kurtosis       99.88258
+
+                 RE: Equity in other assets
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%            0                      Mean           8425.049
+                        Largest       Std. Dev.        105660
+75%         1000        2505250
+90%         4922        3000000       Variance       1.12e+10
+95%        11000        3000300       Skewness       23.21987
+99%       100000        3057500       Kurtosis       598.1142
+
+                 RE: Net equity in vehicles
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%            0              0       Obs               4,964
+25%            0              0       Sum of Wgt.       4,964
+
+50%       3212.5                      Mean           6851.745
+                        Largest       Std. Dev.      9353.976
+75%      10237.5          67275
+90%        19170          70500       Variance       8.75e+07
+95%        24899          82725       Skewness       2.348693
+99%        43800          84350       Kurtosis       10.80579
+
+. 
+. gen EFCassets = thhintbk+thhintot+thhore+thhotast+thhvehcl
+
+. gen netWorth = thhtnw
+
+. gen famInc = thtotinc
+
+. 
+. foreach var in EFCassets netWorth famInc {
+  2.     gen `var'000 = `var'/1000
+  3. }
+
+. gen netWorthM = netWorth/1000000
+
+. 
+. mdesc EFCassets000 thhintbk thhintot thhore thhotast thhvehcl
+     Variable      Missing      Total     Missing/Total
+    ------------------------------------------------------------
+EFCassets000           0        4964              0
+    thhintbk           0        4964              0
+    thhintot           0        4964              0
+      thhore           0        4964              0
+    thhotast           0        4964              0
+    thhvehcl           0        4964              0
+
+. sum EFCassets000, d
+
+                        EFCassets000
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%            0              0
+10%         .006              0       Obs               4,964
+25%        1.525              0       Sum of Wgt.       4,964
+
+50%        7.725                      Mean           43.81224
+                        Largest       Std. Dev.      162.4659
+75%       25.925        2949.95
+90%       91.325         3288.8       Variance       26395.15
+95%        169.2        3477.95       Skewness       11.72649
+99%       683.32       3537.475       Kurtosis       192.8556
+
+. sum famInc000, d
+
+                          famInc000
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%            0              0
+ 5%        7.632              0
+10%       14.292              0       Obs               4,964
+25%       29.832              0       Sum of Wgt.       4,964
+
+50%       54.696                      Mean           69.95688
+                        Largest       Std. Dev.       68.3545
+75%       90.798        657.072
+90%       132.42        686.028       Variance       4672.337
+95%      166.944        695.052       Skewness       3.814305
+99%       457.14        816.372       Kurtosis       25.66334
+
+. count
+  4,964
+
+. count if EFCassets000==0 & famInc000<=0
+  16
+
+. kdensity EFCassets000, graphregion(color(white))
+
+. // graph export EFCkdens.eps, replace
+. // graph export EFCkdens.pdf, replace
+. 
+. tab race educlev
+
+           |                   educlev
+      race | HS Dropou    HS Grad  Some Coll  BA or hig |     Total
+-----------+--------------------------------------------+----------
+     White |       273        833      1,327        898 |     3,331 
+     Black |       115        221        329         65 |       730 
+  Hispanic |       267        119        152         45 |       583 
+     Other |        49         64        120         87 |       320 
+-----------+--------------------------------------------+----------
+     Total |       704      1,237      1,928      1,095 |     4,964 
+
+
+. tab race educlev, sum(EFCassets000) mean nofreq
+
+                           Means of EFCassets000
+
+           |                 educlev
+      race | HS Dropou    HS Grad  Some Coll  BA or hig |     Total
+-----------+--------------------------------------------+----------
+     White | 29.390751   31.32609  43.653131  101.67135 | 55.042596
+     Black | 6.4529217  7.5553258  9.3629726  30.142646 | 10.207538
+  Hispanic | 15.883606  14.004151   20.54248   75.28122 | 21.299363
+     Other | 6.2411633  23.918313   48.68105  75.744092 | 44.587659
+-----------+--------------------------------------------+----------
+     Total | 18.909802  25.029609   36.29269  94.280856 | 43.812242
+
+. tab race educlev, sum(netWorth000 ) mean nofreq
+
+                           Means of netWorth000
+
+           |                 educlev
+      race | HS Dropou    HS Grad  Some Coll  BA or hig |     Total
+-----------+--------------------------------------------+----------
+     White |  115.9089  147.92708  197.20622  417.30303 | 237.55544
+     Black | 31.681252  50.852041  56.264417  127.91282 | 57.132837
+  Hispanic | 77.420314  92.518327  96.722283  254.99524 | 99.240957
+     Other | 54.917919  91.824109  157.89518  321.91255 |  173.5048
+-----------+--------------------------------------------+----------
+     Total | 83.307778  122.35084  162.78675  385.87546 | 190.64931
+
+. tab race educlev, sum(famInc000   ) mean nofreq
+
+                            Means of famInc000
+
+           |                 educlev
+      race | HS Dropou    HS Grad  Some Coll  BA or hig |     Total
+-----------+--------------------------------------------+----------
+     White | 42.384967  62.361652  73.407463  120.36381 |  80.76156
+     Black | 24.821948  34.726642  41.816389  76.903016 | 40.116986
+  Hispanic | 37.181438  48.634185  54.127658  89.042667 | 47.940371
+     Other | 35.012816  55.581375    62.0144  95.402483 | 65.670562
+-----------+--------------------------------------------+----------
+     Total | 37.029392  55.753048  65.787566  114.51355 | 69.956884
+
+. 
+. * Now estimate the imputation regression
+. gen lnEFCassets = log(EFCassets) if inrange(EFCassets,1,680000)
+(527 missing values generated)
+
+. gen lnFamInc    = log(famInc)    if inrange(famInc,1,450000)
+(110 missing values generated)
+
+. reg lnEFCassets c.netWorthM##c.netWorthM lnFamInc b1.race##b1.educlev
+
+      Source |       SS           df       MS      Number of obs   =     4,351
+-------------+----------------------------------   F(18, 4332)     =    143.05
+       Model |  6074.61187        18  337.478437   Prob > F        =    0.0000
+    Residual |  10219.6315     4,332  2.35910238   R-squared       =    0.3728
+-------------+----------------------------------   Adj R-squared   =    0.3702
+       Total |  16294.2434     4,350  3.74580307   Root MSE        =    1.5359
+
+------------------------------------------------------------------------------
+ lnEFCassets |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   netWorthM |   5.255093    .178142    29.50   0.000     4.905843    5.604342
+             |
+ c.netWorthM#|
+ c.netWorthM |  -1.913535     .11755   -16.28   0.000    -2.143993   -1.683076
+             |
+    lnFamInc |   .3113251   .0278729    11.17   0.000     .2566801    .3659702
+             |
+        race |
+      Black  |  -.1909873   .2190869    -0.87   0.383    -.6205098    .2385352
+   Hispanic  |   -.348915   .1470622    -2.37   0.018    -.6372321   -.0605979
+      Other  |  -.8345145   .2725162    -3.06   0.002    -1.368786   -.3002434
+             |
+     educlev |
+    HS Grad  |   .1705307   .1168522     1.46   0.145    -.0585595    .3996208
+Some Coll..  |   .2982295   .1125751     2.65   0.008     .0775247    .5189342
+BA or hig..  |   .5590433   .1205499     4.64   0.000     .3227037    .7953828
+             |
+race#educlev |
+      Black #|
+    HS Grad  |  -.3508782   .2573261    -1.36   0.173     -.855369    .1536126
+      Black #|
+Some Coll..  |  -.3372525   .2436107    -1.38   0.166    -.8148541    .1403492
+      Black #|
+BA or hig..  |   .0192319   .3019112     0.06   0.949    -.5726686    .6111324
+   Hispanic #|
+    HS Grad  |   .3629062   .2216451     1.64   0.102    -.0716317    .7974441
+   Hispanic #|
+Some Coll..  |   .0815695   .2036042     0.40   0.689     -.317599     .480738
+   Hispanic #|
+BA or hig..  |  -.0038466   .2825377    -0.01   0.989    -.5577651    .5500718
+      Other #|
+    HS Grad  |    .806685    .342481     2.36   0.019      .135247    1.478123
+      Other #|
+Some Coll..  |   .8694467   .3130575     2.78   0.006     .2556939      1.4832
+      Other #|
+BA or hig..  |   .7000476   .3266113     2.14   0.032     .0597224    1.340373
+             |
+       _cons |   4.677884   .3031299    15.43   0.000     4.083594    5.272174
+------------------------------------------------------------------------------
+
+. reg lnEFCassets b1.race##b1.educlev#(c.netWorth000##c.netWorth000 c.lnFamInc)
+note: 4.educlev#c.netWorth000 omitted because of collinearity
+note: 4.educlev#c.netWorth000#c.netWorth000 omitted because of collinearity
+note: 4.educlev#c.lnFamInc omitted because of collinearity
+
+      Source |       SS           df       MS      Number of obs   =     4,351
+-------------+----------------------------------   F(48, 4302)     =     56.87
+       Model |   6325.5966        48  131.783262   Prob > F        =    0.0000
+    Residual |  9968.64677     4,302  2.31721217   R-squared       =    0.3882
+-------------+----------------------------------   Adj R-squared   =    0.3814
+       Total |  16294.2434     4,350  3.74580307   Root MSE        =    1.5222
+
+------------------------------------------------------------------------------
+ lnEFCassets |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        race#|
+          c. |
+ netWorth000 |
+      White  |   .0049482   .0003911    12.65   0.000     .0041814     .005715
+      Black  |   .0263056   .0063654     4.13   0.000     .0138261    .0387852
+   Hispanic  |   .0063867    .002136     2.99   0.003      .002199    .0105744
+      Other  |   .0202909   .0052935     3.83   0.000     .0099129    .0306688
+             |
+        race#|
+          c. |
+ netWorth000#|
+          c. |
+ netWorth000 |
+      White  |  -2.03e-06   2.85e-07    -7.12   0.000    -2.59e-06   -1.47e-06
+      Black  |  -.0000509    .000025    -2.03   0.042       -.0001   -1.81e-06
+   Hispanic  |  -5.67e-06   3.61e-06    -1.57   0.117    -.0000127    1.42e-06
+      Other  |   -.000024   .0000103    -2.32   0.020    -.0000442   -3.72e-06
+             |
+        race#|
+  c.lnFamInc |
+      White  |   .3464398   .0278789    12.43   0.000     .2917829    .4010968
+      Black  |   .2555593   .0399296     6.40   0.000     .1772767    .3338419
+   Hispanic  |   .3084097   .0331118     9.31   0.000     .2434936    .3733259
+      Other  |    .220343   .0418718     5.26   0.000     .1382528    .3024333
+             |
+     educlev#|
+          c. |
+ netWorth000 |
+ HS Dropout  |  -.0015022   .0008579    -1.75   0.080    -.0031842    .0001798
+    HS Grad  |   .0008704   .0006051     1.44   0.150    -.0003158    .0020566
+Some Coll..  |   .0015504   .0005106     3.04   0.002     .0005493    .0025514
+BA or hig..  |          0  (omitted)
+             |
+     educlev#|
+          c. |
+ netWorth000#|
+          c. |
+ netWorth000 |
+ HS Dropout  |   1.03e-06   4.50e-07     2.30   0.022     1.51e-07    1.92e-06
+    HS Grad  |  -4.48e-07   4.96e-07    -0.90   0.366    -1.42e-06    5.24e-07
+Some Coll..  |  -8.51e-07   3.66e-07    -2.33   0.020    -1.57e-06   -1.34e-07
+BA or hig..  |          0  (omitted)
+             |
+     educlev#|
+  c.lnFamInc |
+ HS Dropout  |  -.0502993   .0148303    -3.39   0.001    -.0793744   -.0212243
+    HS Grad  |   -.049211    .011094    -4.44   0.000    -.0709611    -.027461
+Some Coll..  |   -.045923   .0104624    -4.39   0.000    -.0664347   -.0254114
+BA or hig..  |          0  (omitted)
+             |
+        race#|
+     educlev#|
+          c. |
+ netWorth000 |
+      Black #|
+    HS Grad  |  -.0182851   .0068486    -2.67   0.008    -.0317119   -.0048582
+      Black #|
+Some Coll..  |  -.0155061   .0066488    -2.33   0.020    -.0285412   -.0024711
+      Black #|
+BA or hig..  |  -.0188082   .0068649    -2.74   0.006     -.032267   -.0053494
+   Hispanic #|
+    HS Grad  |  -.0027848   .0026106    -1.07   0.286    -.0079029    .0023334
+   Hispanic #|
+Some Coll..  |  -.0025639   .0028842    -0.89   0.374    -.0082184    .0030906
+   Hispanic #|
+BA or hig..  |   .0056335   .0051412     1.10   0.273     -.004446     .015713
+      Other #|
+    HS Grad  |  -.0162746    .006124    -2.66   0.008    -.0282808   -.0042683
+      Other #|
+Some Coll..  |  -.0120391   .0055193    -2.18   0.029    -.0228598   -.0012184
+      Other #|
+BA or hig..  |  -.0163778   .0054189    -3.02   0.003    -.0270017   -.0057539
+             |
+        race#|
+     educlev#|
+          c. |
+ netWorth000#|
+          c. |
+ netWorth000 |
+      Black #|
+    HS Grad  |   .0000435   .0000254     1.71   0.088    -6.43e-06    .0000933
+      Black #|
+Some Coll..  |   .0000379   .0000254     1.50   0.135    -.0000118    .0000876
+      Black #|
+BA or hig..  |   .0000455   .0000253     1.80   0.072    -4.09e-06    .0000951
+   Hispanic #|
+    HS Grad  |   5.16e-06   3.66e-06     1.41   0.158    -2.01e-06    .0000123
+   Hispanic #|
+Some Coll..  |   4.85e-06   4.63e-06     1.05   0.296    -4.24e-06    .0000139
+   Hispanic #|
+BA or hig..  |  -.0000105   .0000104    -1.01   0.312     -.000031    9.89e-06
+      Other #|
+    HS Grad  |   .0000254   .0000115     2.21   0.027     2.89e-06    .0000478
+      Other #|
+Some Coll..  |   .0000194   .0000105     1.85   0.064    -1.14e-06    .0000398
+      Other #|
+BA or hig..  |   .0000231   .0000104     2.23   0.026     2.77e-06    .0000434
+             |
+        race#|
+     educlev#|
+  c.lnFamInc |
+      Black #|
+    HS Grad  |   .0313898   .0322264     0.97   0.330    -.0317906    .0945702
+      Black #|
+Some Coll..  |   .0288721   .0303812     0.95   0.342    -.0306907    .0884349
+      Black #|
+BA or hig..  |   .0555831   .0382949     1.45   0.147    -.0194947    .1306609
+   Hispanic #|
+    HS Grad  |   .0395969    .025692     1.54   0.123    -.0107727    .0899664
+   Hispanic #|
+Some Coll..  |    .022055   .0251457     0.88   0.380    -.0272435    .0713534
+   Hispanic #|
+BA or hig..  |  -.0323817   .0379234    -0.85   0.393    -.1067311    .0419676
+      Other #|
+    HS Grad  |   .1199971   .0388917     3.09   0.002     .0437493    .1962449
+      Other #|
+Some Coll..  |   .0998191   .0373621     2.67   0.008     .0265701    .1730681
+      Other #|
+BA or hig..  |   .1199449   .0408856     2.93   0.003      .039788    .2001018
+             |
+       _cons |    4.96361   .2963961    16.75   0.000     4.382521      5.5447
+------------------------------------------------------------------------------
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /hpc/group/econ/tmr17/Dropout-R1/src/data-cleaning/sipp/create_sip
+> p.log
+  log type:  text
+ closed on:  29 Dec 2022, 09:38:38
+-------------------------------------------------------------------------------
